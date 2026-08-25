@@ -1,0 +1,159 @@
+"""Unified metrics computation and run artifact persistence."""
+import json
+import os
+
+import numpy as np
+import torch
+from sklearn import metrics
+
+
+def _to_class_indices(y):
+    y = np.asarray(y)
+    if y.ndim == 2 and y.shape[1] > 1:
+        return y.argmax(axis=1)
+    return y.reshape(-1)
+
+
+def _to_hard_predictions(y_pred, sigmoid=False):
+    y_pred = np.asarray(y_pred)
+    if sigmoid or (y_pred.ndim == 2 and not np.all(np.isin(y_pred, [0, 1]))):
+        if y_pred.ndim == 1:
+            return (y_pred > 0.5).astype(int)
+        if y_pred.shape[1] == 1:
+            return (y_pred.reshape(-1) > 0.5).astype(int)
+        return (y_pred > 0.5).astype(int).argmax(axis=1) if y_pred.ndim == 2 else (y_pred > 0.5).astype(int)
+    if y_pred.ndim == 2 and y_pred.shape[1] > 1:
+        return y_pred.argmax(axis=1)
+    return y_pred.reshape(-1).astype(int)
+
+
+def compute_classification_metrics(y_true, y_pred, y_prob=None, sigmoid=False):
+    """Metrics suited to imbalanced fraud detection."""
+    y_true_idx = _to_class_indices(y_true)
+    y_pred_idx = _to_hard_predictions(y_pred, sigmoid=sigmoid)
+
+    out = {
+        'accuracy': float(metrics.accuracy_score(y_true_idx, y_pred_idx)),
+        'f1_micro': float(metrics.f1_score(y_true_idx, y_pred_idx, average='micro', zero_division=0)),
+        'f1_macro': float(metrics.f1_score(y_true_idx, y_pred_idx, average='macro', zero_division=0)),
+        'f1_weighted': float(metrics.f1_score(y_true_idx, y_pred_idx, average='weighted', zero_division=0)),
+        'precision_macro': float(metrics.precision_score(y_true_idx, y_pred_idx, average='macro', zero_division=0)),
+        'recall_macro': float(metrics.recall_score(y_true_idx, y_pred_idx, average='macro', zero_division=0)),
+    }
+
+    if y_prob is not None:
+        y_prob = np.asarray(y_prob)
+        n_classes = len(np.unique(y_true_idx))
+        try:
+            if n_classes == 2:
+                prob_pos = y_prob[:, 1] if y_prob.ndim == 2 and y_prob.shape[1] > 1 else y_prob.reshape(-1)
+                out['auc_roc'] = float(metrics.roc_auc_score(y_true_idx, prob_pos))
+            elif y_prob.ndim == 2 and y_prob.shape[1] == n_classes:
+                out['auc_roc_macro'] = float(metrics.roc_auc_score(
+                    y_true_idx, y_prob, multi_class='ovr', average='macro'))
+        except ValueError:
+            pass
+
+    return out
+
+
+def run_output_dir(save_dir, model_name, dataset_name=None, seed=None):
+    parts = [save_dir, model_name]
+    if dataset_name:
+        parts.append(str(dataset_name))
+    if seed is not None:
+        parts.append('seed{}'.format(seed))
+    return os.path.join(*parts)
+
+
+def save_run_outputs(
+    save_dir,
+    model_name,
+    config,
+    split_info,
+    test_metrics,
+    model=None,
+    train_metrics=None,
+    predictions=None,
+    probabilities=None,
+    test_indices=None,
+    train_indices=None,
+    y_test=None,
+    y_train=None,
+):
+    """
+    Unified artifact layout under save_dir:
+
+    - config.json
+    - metrics.json
+    - split.npz
+    - predictions.npz
+    - checkpoint.pt
+    """
+    os.makedirs(save_dir, exist_ok=True)
+
+    config_path = os.path.join(save_dir, 'config.json')
+    with open(config_path, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2, default=str)
+
+    metrics_payload = {
+        'model': model_name,
+        'split': split_info,
+        'test': test_metrics,
+    }
+    if train_metrics is not None:
+        metrics_payload['train'] = train_metrics
+
+    metrics_path = os.path.join(save_dir, 'metrics.json')
+    with open(metrics_path, 'w', encoding='utf-8') as f:
+        json.dump(metrics_payload, f, indent=2)
+
+    split_arrays = {}
+    if train_indices is not None:
+        split_arrays['train_idx'] = np.asarray(train_indices)
+    if test_indices is not None:
+        split_arrays['test_idx'] = np.asarray(test_indices)
+    if y_train is not None:
+        split_arrays['y_train'] = np.asarray(y_train)
+    if y_test is not None:
+        split_arrays['y_test'] = np.asarray(y_test)
+    if split_arrays:
+        np.savez_compressed(os.path.join(save_dir, 'split.npz'), **split_arrays)
+
+    if predictions is not None or probabilities is not None:
+        np.savez_compressed(
+            os.path.join(save_dir, 'predictions.npz'),
+            predictions=np.asarray(predictions) if predictions is not None else np.array([]),
+            probabilities=np.asarray(probabilities) if probabilities is not None else np.array([]),
+            test_idx=np.asarray(test_indices) if test_indices is not None else np.array([]),
+        )
+
+    checkpoint_path = os.path.join(save_dir, 'checkpoint.pt')
+    if model is not None:
+        payload = {
+            'model_name': model_name,
+            'config': config,
+            'state_dict': model.state_dict(),
+        }
+        torch.save(payload, checkpoint_path)
+
+    print('Run saved to: {}'.format(os.path.abspath(save_dir)))
+    for name in ['config.json', 'metrics.json', 'split.npz', 'predictions.npz', 'checkpoint.pt']:
+        path = os.path.join(save_dir, name)
+        if os.path.exists(path):
+            print('  - {}'.format(name))
+    return save_dir
+
+
+def load_checkpoint(checkpoint_path, map_location='cpu'):
+    return torch.load(checkpoint_path, map_location=map_location)
+
+
+def load_run_metrics(save_dir):
+    with open(os.path.join(save_dir, 'metrics.json'), 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def load_run_config(save_dir):
+    with open(os.path.join(save_dir, 'config.json'), 'r', encoding='utf-8') as f:
+        return json.load(f)

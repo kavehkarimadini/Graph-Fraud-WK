@@ -21,7 +21,7 @@ It is revised based on the [GraphSage](https://github.com/williamleif/GraphSAGE/
 ## Run the code
 Go to `algorithms/GraphConsis/`, and run the following command in the terminal:
 
-`python -m supervised_train --train_prefix ../../dataset/ --file_name YelpChi.mat --model graphsage_mean --sigmoid True --epochs 3 --samples_1 10 -samples_2 5 --context_dim 128 --train_perc 1. --gpu 1`
+`python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --model graphsage_mean --sigmoid --epochs 3 --samples_1 10 --samples_2 5 --context_dim 128 --train_perc 1. --gpu 0`
 
 or run `supervised_train.py` in your IDEs.
 
@@ -35,6 +35,6 @@ or run `supervised_train.py` in your IDEs.
 For more information about the arguments, please refer to `supervised_train.py`.
 
 ## Note
-- the major differences of GraphSage and GraphConsis are in the `neighbor_sampler.py' and 'supervised_models.py'. For neighbor_sampler, we use distance sampler that computing the consistency score and sampling probability. For supervised model, the GraphConsis model considers all the relations and learn relation vectors and attention weights for each sample.
+- GraphSAGE and GraphConsis now use PyTorch Geometric `SAGEConv` (and relation-level attention for GraphConsis).
 
 - Before running the code, please remember unzip the given dataset. 

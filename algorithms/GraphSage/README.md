@@ -16,7 +16,7 @@ The GraphSAGE model is proposed by the [paper](http://papers.nips.cc/paper/6703-
 We revise the original code of [graphsage](https://github.com/williamleif/GraphSAGE/tree/master/graphsage) so that it can load our data format and train the model.
 
 # Run the code
-`python -m graphsage.supervised_train --train_prefix ../../dataset --model graphsage_mean --sigmoid`
+`python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --model graphsage_mean --sigmoid`
 
 # Note
 - Since graphsage only supports one type of relation, hence we only use the one major relation as the adjacency matrix. In the code, it only reads `rur` relation. You may change it by revise

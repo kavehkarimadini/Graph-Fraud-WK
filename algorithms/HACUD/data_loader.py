@@ -22,22 +22,26 @@ def unzip_file(zip_src, dst_dir):
         print('Zip Error.')
 
 
-def load_data_dblp(path='../../dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat'):
+def load_data_dblp(path='../../dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat',
+                   test_size=0.4, seed=48):
     data = sio.loadmat(path)
     truelabels, features = data['label'], data['features'].astype(float)
     N = features.shape[0]
-    rownetworks = []
-    
-    rownetworks.append(data['net_APA'] - np.eye(N))
-    rownetworks.append(data['net_APCPA'] - np.eye(N))
-    rownetworks.append(data['net_APTPA'] - np.eye(N))
-    
-    # rownetworks = [data['net_APA'] - np.eye(N), data['net_APCPA'] - np.eye(N), data['net_APTPA'] - np.eye(N)]
+    rownetworks = [
+        data['net_APA'] - np.eye(N),
+        data['net_APCPA'] - np.eye(N),
+        data['net_APTPA'] - np.eye(N),
+    ]
     y = truelabels
-    index = range(len(y))
-    X_train, X_test, y_train, y_test = train_test_split(index, y, stratify=y, test_size=0.4, random_state=48,
-                                                        shuffle=True)
-
+    index = np.arange(len(y))
+    strat = y.reshape(-1) if y.ndim == 1 else y.argmax(axis=1)
+    try:
+        X_train, X_test, y_train, y_test = train_test_split(
+            index, y, stratify=strat, test_size=test_size, random_state=seed, shuffle=True)
+    except ValueError as exc:
+        print('Warning: stratified split failed ({}). Falling back to random split.'.format(exc))
+        X_train, X_test, y_train, y_test = train_test_split(
+            index, y, test_size=test_size, random_state=seed, shuffle=True)
     return rownetworks, features, X_train, y_train, X_test, y_test
 
 

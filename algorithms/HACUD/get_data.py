@@ -11,11 +11,14 @@ from data_loader import load_data_dblp
 import os
 
 class Data(object):
-    def __init__(self, path, save_path):
+    def __init__(self, path, save_path, test_size=0.4, seed=48):
         self.path = path
         self.save_path = save_path
-        
-        self.rownetworks, self.features, self.X_train, self.y_train, self.X_test, self.y_test = load_data_dblp(path)
+        self.test_size = test_size
+        self.seed = seed
+
+        self.rownetworks, self.features, self.X_train, self.y_train, self.X_test, self.y_test = load_data_dblp(
+            path, test_size=test_size, seed=seed)
         self.n_nodes = 0
         self.n_train, self.n_test = 0, 0
         

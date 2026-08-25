@@ -15,3 +15,6 @@ dataset/YelpChi_hand.mat
 */.Ds_Store
 */__pycache__
 dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat
+results/
+tmp/
+.venv/

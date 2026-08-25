@@ -1,6 +1,5 @@
-tensorflow>=1.14.0,<2.0
+torch>=1.12.0
+torch-geometric>=2.3.0
 numpy>=1.16.4
 scipy>=1.2.1
-scikit_learn>=0.21rc2
-networkx<=1.11
-
+scikit-learn>=0.21

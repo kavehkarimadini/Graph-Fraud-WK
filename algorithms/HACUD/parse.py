@@ -53,7 +53,16 @@ def parse_args():
                         help='Specify the test type from {part, full}, indicating whether the reference is done in mini-batch')
 
     parser.add_argument('--gpu', nargs='?', default='0')
-    
+
+    parser.add_argument('--seed', type=int, default=123,
+                        help='Random seed for stratified split and training.')
+    parser.add_argument('--save_dir', type=str, default='results',
+                        help='Root directory for unified evaluation outputs.')
+    parser.add_argument('--test_size', type=float, default=None,
+                        help='Held-out test fraction (default 0.4 for dblp).')
+    parser.add_argument('--no_save', action='store_true',
+                        help='Skip writing unified evaluation artifacts.')
+
     parser.add_argument('--early_stop', type = int, default=10)
 
     parser.add_argument('--report', type=int, default=0,

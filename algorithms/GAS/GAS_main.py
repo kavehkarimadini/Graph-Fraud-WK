@@ -3,123 +3,78 @@ This code is due to Yutong Deng (@yutongD), Yingtong Dou (@YingtongDou) and UIC 
 DGFraud (A Deep Graph-based Toolbox for Fraud Detection)
 https://github.com/safe-graph/DGFraud
 '''
-import tensorflow as tf
 import argparse
 import os
 import sys
+
+import numpy as np
+import torch
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../..')))
 from algorithms.GAS.GAS import GAS
-import time
-from utils.data_loader import *
-from utils.utils import *
+from utils.data_loader import load_data_gas
+from utils.standalone_train import finish, run_epochs
+from utils.training import add_save_args, resolve_test_size
+from utils.torch_helpers import get_device, set_seed
 
 
-# os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
-
-# init the common args, expect the model specific args
 def arg_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seed', type=int, default=123, help='Random seed.')
-    parser.add_argument('--dataset_str', type=str, default='example', help="['dblp','example']")
-    parser.add_argument('--epoch_num', type=int, default=30, help='Number of epochs to train.')
+    parser.add_argument('--seed', type=int, default=123)
+    parser.add_argument('--dataset_str', type=str, default='example')
+    parser.add_argument('--epoch_num', type=int, default=30)
     parser.add_argument('--batch_size', type=int, default=1000)
-    parser.add_argument('--momentum', type=int, default=0.9)
-    parser.add_argument('--learning_rate', default=0.001, help='the ratio of training set in whole dataset.')
-
-    # GAS
-    parser.add_argument('--review_num sample', default=7, help='review number.')
-    parser.add_argument('--gcn_dim', type=int, default=5, help='gcn layer size.')
+    parser.add_argument('--learning_rate', type=float, default=0.001)
+    parser.add_argument('--gpu', type=str, default='0')
+    parser.add_argument('--gcn_dim', type=int, default=5)
     parser.add_argument('--encoding1', type=int, default=64)
     parser.add_argument('--encoding2', type=int, default=64)
     parser.add_argument('--encoding3', type=int, default=64)
     parser.add_argument('--encoding4', type=int, default=64)
-
-    args = parser.parse_args()
-    return args
-
-
-def set_env(args):
-    tf.reset_default_graph()
-    np.random.seed(args.seed)
-    tf.set_random_seed(args.seed)
+    add_save_args(parser)
+    return parser.parse_args()
 
 
-# get batch data
-def get_data(ix, int_batch, train_size):
-    if ix + int_batch >= train_size:
-        ix = train_size - int_batch
-        end = train_size
-    else:
-        end = ix + int_batch
-    return train_data[ix:end], train_label[ix:end]
-
-
-def load_data(args):
-    if args.dataset_str == 'example':
-        adj_list, features, train_data, train_label, test_data, test_label = load_data_gas()
-        node_embedding_r = features[0].shape[1]
-        node_embedding_u = features[1].shape[1]
-        node_embedding_i = features[2].shape[1]
-        node_size = features[0].shape[0]
-
-        # node_embedding_i = node_embedding_r = node_size
-        h_u_size = adj_list[0].shape[1] * (node_embedding_r + node_embedding_u)
-        h_i_size = adj_list[2].shape[1] * (node_embedding_r + node_embedding_i)
-
-        class_size = train_label.shape[1]
-        train_size = len(train_data)
-
-        paras = [node_size, node_embedding_r, node_embedding_u, node_embedding_i, class_size, train_size, h_u_size,
-                 h_i_size]
-
-    return adj_list, features, train_data, train_label, test_data, test_label, paras
+def _gas_labels(n_nodes, train_data, train_label, test_data, test_label):
+    labels = np.zeros((n_nodes, train_label.shape[1]))
+    labels[train_data] = train_label
+    labels[test_data] = test_label
+    return labels
 
 
 def train(args, adj_list, features, train_data, train_label, test_data, test_label, paras):
-    with tf.Session() as sess:
-        adj_data = adj_list
-        net = GAS(session=sess, nodes=paras[0], class_size=paras[4], embedding_r=paras[1], embedding_u=paras[2],
-                      embedding_i=paras[3], h_u_size=paras[6], h_i_size=paras[7],
-                      encoding1=args.encoding1, encoding2=args.encoding2, encoding3=args.encoding3,
-                      encoding4=args.encoding4, gcn_dim=args.gcn_dim)
+    device = get_device(args.gpu)
+    net = GAS(nodes=paras[0], class_size=paras[4], embedding_r=paras[1], embedding_u=paras[2],
+              embedding_i=paras[3], h_u_size=paras[6], h_i_size=paras[7],
+              encoding1=args.encoding1, encoding2=args.encoding2, encoding3=args.encoding3,
+              encoding4=args.encoding4, gcn_dim=args.gcn_dim, device=device)
+    optimizer = torch.optim.Adam(net.parameters(), lr=args.learning_rate)
 
-        sess.run(tf.global_variables_initializer())
-        # net.load(sess)
+    def fit_fn(batch_data, batch_label, opt):
+        return net.fit_batch(features, adj_list, batch_label, batch_data, optimizer=opt)
 
-        t_start = time.clock()
-        for epoch in range(args.epoch_num):
-            train_loss = 0
-            train_acc = 0
-            count = 0
-            for index in range(0, paras[3], args.batch_size):
-                batch_data, batch_label = get_data(index, args.batch_size, paras[3])
-                loss, acc, pred, prob = net.train(features, adj_data, batch_label,
-                                                  batch_data, args.learning_rate,
-                                                  args.momentum)
-
-                print("batch loss: {:.4f}, batch acc: {:.4f}".format(loss, acc))
-                # print(prob, pred)
-
-                train_loss += loss
-                train_acc += acc
-                count += 1
-            train_loss = train_loss / count
-            train_acc = train_acc / count
-            print("epoch{:d} : train_loss: {:.4f}, train_acc: {:.4f}".format(epoch, train_loss, train_acc))
-            # net.save(sess)
-
-        t_end = time.clock()
-        print("train time=", "{:.5f}".format(t_end - t_start))
-        print("Train end!")
-
-        test_acc, test_pred, test_probabilities, test_tags = net.test(features, adj_data, test_label,
-                                                                      test_data)
-
-    print("test acc:", test_acc)
+    run_epochs(net, optimizer, args, paras[3], train_data, train_label, fit_fn)
+    finish(
+        net, args, 'GAS', None, adj_list,
+        train_data, train_label, test_data, test_label, paras[0],
+        lambda: net.evaluate(features, adj_list, train_label, train_data),
+        lambda: net.evaluate(features, adj_list, test_label, test_data),
+        sigmoid=True,
+    )
 
 
 if __name__ == "__main__":
     args = arg_parser()
-    set_env(args)
-    adj_list, features, train_data, train_label, test_data, test_label, paras = load_data(args)
+    set_seed(args.seed)
+    test_size = resolve_test_size(args, 'GAS')
+    adj_list, features, train_data, train_label, test_data, test_label = load_data_gas(
+        test_size=test_size, seed=args.seed)
+    node_embedding_r = features[0].shape[1]
+    node_embedding_u = features[1].shape[1]
+    node_embedding_i = features[2].shape[1]
+    node_size = features[0].shape[0]
+    h_u_size = adj_list[0].shape[1] * (node_embedding_r + node_embedding_u)
+    h_i_size = adj_list[2].shape[1] * (node_embedding_r + node_embedding_i)
+    paras = [node_size, node_embedding_r, node_embedding_u, node_embedding_i,
+             train_label.shape[1], len(train_data), h_u_size, h_i_size]
     train(args, adj_list, features, train_data, train_label, test_data, test_label, paras)
