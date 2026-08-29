@@ -70,6 +70,16 @@ def load_data(args):
     test_size = resolve_test_size(args, args.model)
     split_kw = dict(test_size=test_size, seed=args.seed)
 
+    # GAS needs a User-Review-Item graph (load_data_gas), not DBLP's author graph.
+    if args.model == 'GAS' and args.dataset_str != 'example':
+        raise ValueError(
+            "GAS only supports --dataset_str example (User-Review-Item toy graph). "
+            "DBLP is an author-paper graph used by FdGars, Player2Vec, GeniePath, and GEM, "
+            "and does not provide the review/user/item adjacencies GAS needs. "
+            "Run: python main.py --model GAS --dataset_str example --epoch_num 100 "
+            "--batch_size 4 --gpu 0"
+        )
+
     if args.dataset_str == 'dblp':
         adj_list, features, train_data, train_label, test_data, test_label = load_data_dblp(
             'dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat', **split_kw)

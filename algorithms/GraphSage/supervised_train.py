@@ -15,6 +15,7 @@ import numpy as np
 import torch
 from torch_geometric.data import Data
 from torch_geometric.loader import NeighborLoader
+from torch_geometric.typing import WITH_PYG_LIB, WITH_TORCH_SPARSE
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../..')))
 from algorithms.GraphSage.models import SupervisedGraphsage
@@ -43,6 +44,37 @@ def parse_args():
     add_save_args(parser)
     parser.set_defaults(test_size=0.2)
     return parser.parse_args()
+
+
+def train_epoch_sampled(model, optimizer, loader, device):
+    total_loss = steps = 0
+    for batch in loader:
+        batch = batch.to(device)
+        optimizer.zero_grad()
+        logits = model(batch.x, batch.edge_index)[:batch.batch_size]
+        loss = model.loss(logits, batch.y[:batch.batch_size])
+        loss.backward()
+        torch.nn.utils.clip_grad_value_(model.parameters(), 5.0)
+        optimizer.step()
+        total_loss += loss.item()
+        steps += 1
+    return total_loss / max(steps, 1)
+
+
+def train_epoch_full(model, optimizer, x, edge_index, y, train_idx, batch_size):
+    permutation = train_idx[torch.randperm(train_idx.size(0), device=train_idx.device)]
+    total_loss = steps = 0
+    for start in range(0, permutation.size(0), batch_size):
+        batch = permutation[start:start + batch_size]
+        optimizer.zero_grad()
+        logits = model(x, edge_index)
+        loss = model.loss(logits[batch], y[batch])
+        loss.backward()
+        torch.nn.utils.clip_grad_value_(model.parameters(), 5.0)
+        optimizer.step()
+        total_loss += loss.item()
+        steps += 1
+    return total_loss / max(steps, 1)
 
 
 def predict_split(model, data, idx, sigmoid):
@@ -80,25 +112,27 @@ def main():
     ).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
 
-    train_loader = NeighborLoader(
-        data, num_neighbors=[args.samples_1, args.samples_2],
-        batch_size=args.batch_size, input_nodes=data.train_mask, shuffle=True)
+    train_idx = train_idx.to(device)
+    test_idx = test_idx.to(device)
+    use_sampling = bool(WITH_PYG_LIB or WITH_TORCH_SPARSE)
+    train_loader = None
+    if use_sampling:
+        train_loader = NeighborLoader(
+            data, num_neighbors=[args.samples_1, args.samples_2],
+            batch_size=args.batch_size, input_nodes=data.train_mask, shuffle=True)
+    else:
+        print('NeighborLoader needs pyg-lib or torch-sparse; using full-graph minibatches.')
 
     t_start = time.perf_counter()
     for epoch in range(args.epochs):
         model.train()
-        total_loss = steps = 0
-        for batch in train_loader:
-            batch = batch.to(device)
-            optimizer.zero_grad()
-            logits = model(batch.x, batch.edge_index)[:batch.batch_size]
-            loss = model.loss(logits, batch.y[:batch.batch_size])
-            loss.backward()
-            torch.nn.utils.clip_grad_value_(model.parameters(), 5.0)
-            optimizer.step()
-            total_loss += loss.item()
-            steps += 1
-        print('Epoch {:d} loss: {:.4f}'.format(epoch, total_loss / max(steps, 1)))
+        if use_sampling:
+            avg_loss = train_epoch_sampled(model, optimizer, train_loader, device)
+        else:
+            avg_loss = train_epoch_full(
+                model, optimizer, data.x, data.edge_index, data.y,
+                train_idx, args.batch_size)
+        print('Epoch {:d} loss: {:.4f}'.format(epoch, avg_loss))
 
     print('train time=', '{:.5f}'.format(time.perf_counter() - t_start))
     model.eval()

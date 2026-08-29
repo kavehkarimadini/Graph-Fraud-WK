@@ -1,28 +1,4 @@
-<p align="center">
-    <br>
-    <a href="https://image.flaticon.com/icons/svg/1671/1671517.svg">
-        <img src="https://github.com/safe-graph/DGFraud/blob/master/DGFraud_logo.png" width="400"/>
-    </a>
-    <br>
-<p>
-<p align="center">
-    <a href="https://travis-ci.org/github/safe-graph/DGFraud">
-        <img alt="PRs Welcome" src="https://travis-ci.org/safe-graph/DGFraud.svg?branch=master">
-    </a>
-    <a href="https://github.com/safe-graph/DGFraud/blob/master/LICENSE">
-        <img alt="GitHub" src="https://img.shields.io/github/license/safe-graph/DGFraud">
-    </a>
-    <a href="https://github.com/safe-graph/DGFraud/pulls">
-        <img alt="GitHub release" src="https://img.shields.io/github/v/release/safe-graph/DGFraud?include_prereleases">
-    </a>
-    <a href="https://github.com/safe-graph/DGFraud/archive/master.zip">
-        <img alt="PRs" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
-    </a>
-</p>
-
-<h3 align="center">
-<p>A Deep Graph-based Toolbox for Fraud Detection
-</h3>
+A Deep Graph-based Toolbox for Fraud Detection
 
 **Introduction**
 
@@ -35,6 +11,7 @@ We welcome contributions on adding new fraud detectors and extending the toolbox
 If you use this toolbox, please cite one of the papers below and the [algorithms](#implemented-models) you used:
 
 CIKM'20 ([PDF](https://arxiv.org/pdf/2008.08692.pdf))
+
 ```bibtex
 @inproceedings{dou2020enhancing,
   title={Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters},
@@ -43,7 +20,9 @@ CIKM'20 ([PDF](https://arxiv.org/pdf/2008.08692.pdf))
   year={2020}
 }
 ```
+
 SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
+
 ```bibtex
 @inproceedings{liu2020alleviating,
   title={Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection},
@@ -54,6 +33,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 ```
 
 **Useful Resources**
+
 - [PyGOD: A Python Library for Graph Outlier Detection (Anomaly Detection)](https://github.com/pygod-team/pygod)
 - [UGFraud: An Unsupervised Graph-based Toolbox for Fraud Detection](https://github.com/safe-graph/UGFraud)
 - [Graph-based Fraud Detection Paper List](https://github.com/safe-graph/graph-fraud-detection-papers)
@@ -65,6 +45,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 - [Outlier Detection DataSets (ODDS)](http://odds.cs.stonybrook.edu/)
 
 **Table of Contents**
+
 - [Installation](#installation)
 - [Datasets](#datasets)
 - [User Guide](#user-guide)
@@ -79,14 +60,21 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 
 ---
 
+
+
 ## Installation
 
+
+
 ### Requirements
+
 - Python **3.10–3.12** recommended (3.13 may lack CUDA wheels for some torch builds)
 - NVIDIA GPU + recent driver (optional; CPU works too)
 - `torch` (CUDA build for GPU)
 - `torch-geometric`
 - `numpy`, `scipy`, `scikit-learn`
+
+
 
 ### Setup with `uv` (recommended, GPU)
 
@@ -120,8 +108,11 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available(), tor
 You want a version like `2.x.x+cu128` and `True`.
 
 If CUDA is unavailable, common causes are:
+
 - CPU `torch` was installed again from PyPI
 - Python version has no CUDA wheel → recreate with `uv venv --python 3.12`
+
+
 
 ### Setup with `pip` (alternative)
 
@@ -136,9 +127,14 @@ pip install -r requirements.txt
 
 ---
 
+
+
 ## Datasets
 
+
+
 ### DBLP
+
 Pre-processed DBLP from [Jhy1993/HAN](https://github.com/Jhy1993/HAN). Used by **FdGars**, **Player2Vec**, **GeniePath**, **GEM**, and **HACUD**.
 
 Extract the archive first.
@@ -160,10 +156,13 @@ unzip DBLP4057_GAT_with_idx_tra200_val_800.zip
 You should see `DBLP4057_GAT_with_idx_tra200_val_800.mat`.
 
 ### Example graphs
+
 Small synthetic graphs for **SemiGNN**, **GAS**, and **GEM** are built in `utils/data_loader.py` (`load_example_semi`, `load_data_gas`, `load_example_gem`). Use these for quick smoke tests without DBLP/Yelp.
 
 ### YelpChi
+
 For **GraphConsis** / **GraphSAGE**, unzip `dataset/YelpChi.zip`. The `.mat` file includes:
+
 - `net_rur`, `net_rtr`, `net_rsr`: sparse adjacency matrices for three relations
 - `features`: 32-d handcrafted features
 - `label`: `1` = spam, `0` = benign
@@ -172,7 +171,11 @@ Preprocessing details: [CIKM'20](https://arxiv.org/pdf/2008.08692.pdf). For full
 
 ---
 
+
+
 ## User Guide
+
+
 
 ### Quick start (unified entry: `main.py`)
 
@@ -199,20 +202,26 @@ Models available via `main.py`: `Player2Vec`, `FdGars`, `GEM`, `SemiGNN`, `GAS`,
 
 Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.py`):
 
-| Model | Command |
-|-------|---------|
-| Player2Vec | `cd algorithms/Player2Vec` then `python Player2Vec_main.py --gpu 0` |
-| FdGars | `python FdGars_main.py --gpu 0` |
-| GAS | `python GAS_main.py --gpu 0` |
-| GEM | `python GEM_main.py --dataset_str example --gpu 0` |
-| SemiGNN | `python SemiGNN_main.py --batch_size 4 --gpu 0` |
-| GeniePath | `python GeniePath_main.py --gpu 0` |
-| GraphSAGE | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0` |
-| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` |
-| HACUD | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4` |
+
+| Model       | Command                                                                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Player2Vec  | `cd algorithms/Player2Vec` then `python Player2Vec_main.py --gpu 0`                                                                              |
+| FdGars      | `python FdGars_main.py --gpu 0`                                                                                                                  |
+| GAS         | `python GAS_main.py --gpu 0`                                                                                                                     |
+| GEM         | `python GEM_main.py --dataset_str example --gpu 0`                                                                                               |
+| SemiGNN     | `python SemiGNN_main.py --batch_size 4 --gpu 0`                                                                                                  |
+| GeniePath   | `python GeniePath_main.py --gpu 0`                                                                                                               |
+| GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`               |
+| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` or `python supervised_train.py --train_prefix ../../dataset/ --file_name DBLP4057_GAT_with_idx_tra200_val_800.mat --sigmoid --epochs 3 --gpu 0`|
+| HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
+
+
+
 
 ### Running on your own data
+
 See `load_data_dblp()` in `utils/data_loader.py` as a template. You need:
+
 - adjacency matrix / matrices (or adjlists for GAS)
 - feature matrix
 - label matrix
@@ -221,7 +230,9 @@ See `load_data_dblp()` in `utils/data_loader.py` as a template. You need:
 Then point `--dataset_str` / paths at your files, or edit the corresponding `*_main.py`.
 
 ### Training API (for developers)
+
 Models are `torch.nn.Module` subclasses. Use:
+
 - `fit_batch(...)` for a training step (do not confuse with `nn.Module.train()`, which only sets train mode)
 - `evaluate(...)` for evaluation (returns `acc, pred, prob, tags`)
 - `save(path)` / `load(path)` for checkpoints (legacy single-file `.pt`; unified runs use `checkpoint.pt` under `results/<Model>/<dataset>/seed<seed>/`)
@@ -229,6 +240,8 @@ Models are `torch.nn.Module` subclasses. Use:
 After `main.py` training, evaluation artifacts are written via `utils.training.finalize_run` / `utils.evaluation.save_run_outputs` (see [Evaluation & Saved Outputs](#evaluation--saved-outputs)).
 
 ---
+
+
 
 ## Command Examples
 
@@ -262,6 +275,8 @@ uv pip install torch torch-geometric numpy scipy scikit-learn
 python main.py --model GAS --gpu -1
 ```
 
+
+
 ### Dataset preparation
 
 ```powershell
@@ -286,6 +301,8 @@ cd dataset && unzip YelpChi.zip && cd ..
 
 ---
 
+
+
 ### `main.py` — unified trainer
 
 `main.py` supports: `Player2Vec`, `FdGars`, `GEM`, `SemiGNN`, `GAS`, `GeniePath`.
@@ -304,6 +321,8 @@ python main.py --model SemiGNN --dataset_str example --epoch_num 2 --batch_size 
   --init_emb_size 4 --semi_encoding1 3 --semi_encoding2 2 --semi_encoding3 4 `
   --alpha 0.5 --lamtha 0.5 --gpu 0
 ```
+
+
 
 #### DBLP training (requires extracted `.mat`)
 
@@ -328,12 +347,14 @@ python main.py --model GEM --dataset_str dblp --gpu 0 `
   --epoch_num 30 --batch_size 1000 --hop 2 --k 32
 ```
 
+
+
 #### Tuning common hyperparameters via `main.py`
 
 ```powershell
 # Lower learning rate, more epochs, fixed seed for reproducibility
 python main.py --model GAS --dataset_str example --gpu 0 `
-  --learning_rate 0.0005 --epoch_num 50 --seed 42
+  --learning_rate 0.0005   --seed 42
 
 # Larger GAS encoder dimensions
 python main.py --model GAS --dataset_str example --gpu 0 `
@@ -350,6 +371,8 @@ python main.py --model GeniePath --dataset_str dblp --gpu 0 `
 ```
 
 ---
+
+
 
 ### Per-model scripts
 
@@ -372,6 +395,8 @@ python Player2Vec_main.py --gpu 0 --seed 42 --epoch_num 50 --batch_size 512
 cd ../..
 ```
 
+
+
 #### FdGars (`algorithms/FdGars/FdGars_main.py`)
 
 ```powershell
@@ -385,6 +410,8 @@ python FdGars_main.py --gpu 0 --hidden1 32 --hidden2 32 --gcn_output 8 --batch_s
 
 cd ../..
 ```
+
+
 
 #### GAS (`algorithms/GAS/GAS_main.py`)
 
@@ -402,6 +429,8 @@ python GAS_main.py --gpu 0 --dataset_str example `
 cd ../..
 ```
 
+
+
 #### GEM (`algorithms/GEM/GEM_main.py`)
 
 ```powershell
@@ -415,6 +444,8 @@ python GEM_main.py --dataset_str dblp --gpu 0 --hop 2 --k 32 --epoch_num 50
 
 cd ../..
 ```
+
+
 
 #### SemiGNN (`algorithms/SemiGNN/SemiGNN_main.py`)
 
@@ -432,6 +463,8 @@ python SemiGNN_main.py --gpu 0 --batch_size 4 `
 cd ../..
 ```
 
+
+
 #### GeniePath (`algorithms/GeniePath/GeniePath_main.py`)
 
 ```powershell
@@ -445,6 +478,8 @@ python GeniePath_main.py --gpu 0 --heads 4 --layer_num 2 --dim 64 --batch_size 2
 
 cd ../..
 ```
+
+
 
 #### GraphSAGE (`algorithms/GraphSage/supervised_train.py`)
 
@@ -474,6 +509,8 @@ python supervised_train.py `
 
 cd ../..
 ```
+
+
 
 #### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
@@ -505,6 +542,8 @@ python supervised_train.py `
 cd ../..
 ```
 
+
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -528,18 +567,24 @@ cd ../..
 
 ---
 
+
+
 ### Quick reference — which script for which dataset?
 
-| Goal | Command |
-|------|---------|
-| Fast sanity check, no data download | `python main.py --model GAS --epoch_num 2 --batch_size 4 --gpu 0` |
-| DBLP + Player2Vec | `python main.py --model Player2Vec --dataset_str dblp --gpu 0` |
-| DBLP + FdGars | `python main.py --model FdGars --dataset_str dblp --gpu 0` |
-| YelpChi + GraphSAGE | `cd algorithms/GraphSage` → `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0` |
-| YelpChi + GraphConsis | `cd algorithms/GraphConsis` → `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0` |
-| DBLP + HACUD | `cd algorithms/HACUD` → `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4` |
+
+| Goal                                | Command                                                                                                                            |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Fast sanity check, no data download | `python main.py --model GAS --epoch_num 2 --batch_size 4 --gpu 0`                                                                  |
+| DBLP + Player2Vec                   | `python main.py --model Player2Vec --dataset_str dblp --gpu 0`                                                                     |
+| DBLP + FdGars                       | `python main.py --model FdGars --dataset_str dblp --gpu 0`                                                                         |
+| YelpChi + GraphSAGE                 | `cd algorithms/GraphSage` → `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`    |
+| YelpChi + GraphConsis               | `cd algorithms/GraphConsis` → `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0` |
+| DBLP + HACUD                        | `cd algorithms/HACUD` → `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`              |
+
 
 ---
+
+
 
 ## Evaluation & Saved Outputs
 
@@ -548,6 +593,8 @@ Every training entry point (`main.py`, `*_main.py`, GraphSAGE/GraphConsis `super
 1. **Splits data with stratified train/test** (preserves class balance for imbalanced fraud labels).
 2. **Evaluates train and test** after the last epoch.
 3. **Writes unified artifacts** under `results/` (unless `--no_save`).
+
+
 
 ### Unified run layout
 
@@ -560,27 +607,34 @@ results/<Model>/<dataset>/seed<seed>/
   checkpoint.pt     # {state_dict, config, model_name}
 ```
 
-| File | Contents |
-|------|----------|
-| `config.json` | All training arguments (model, seed, test_size, lr, …) |
-| `metrics.json` | `train` / `test` metrics (accuracy, F1 micro/macro/weighted, precision, recall, AUC when available) plus `split` report |
-| `split.npz` | Stratified indices and labels for reproducible re-evaluation |
-| `predictions.npz` | Held-out test predictions and probabilities |
-| `checkpoint.pt` | PyTorch checkpoint for loading the trained model |
+
+| File              | Contents                                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `config.json`     | All training arguments (model, seed, test_size, lr, …)                                                                  |
+| `metrics.json`    | `train` / `test` metrics (accuracy, F1 micro/macro/weighted, precision, recall, AUC when available) plus `split` report |
+| `split.npz`       | Stratified indices and labels for reproducible re-evaluation                                                            |
+| `predictions.npz` | Held-out test predictions and probabilities                                                                             |
+| `checkpoint.pt`   | PyTorch checkpoint for loading the trained model                                                                        |
+
 
 Examples:
+
 - `results/GAS/example/seed123/metrics.json`
 - `results/Player2Vec/dblp/seed123/checkpoint.pt`
 - `results/GraphSage/YelpChi/seed123/predictions.npz`
 - `results/HACUD/dblp/seed123/split.npz`
 
+
+
 ### Stratified split defaults
 
-| Context | Default `--test_size` |
-|---------|----------------------|
-| DBLP (`dataset_str=dblp`, HACUD) | `0.4` |
+
+| Context                                | Default `--test_size`              |
+| -------------------------------------- | ---------------------------------- |
+| DBLP (`dataset_str=dblp`, HACUD)       | `0.4`                              |
 | Example toy graphs (GAS, GEM, SemiGNN) | `0.4` (GAS) / `0.2` (GEM, SemiGNN) |
-| YelpChi (GraphSAGE, GraphConsis) | `0.2` |
+| YelpChi (GraphSAGE, GraphConsis)       | `0.2`                              |
+
 
 Override with `--test_size 0.3 --seed 42` on any script that supports `add_save_args`.
 
@@ -629,6 +683,8 @@ python supervised_train.py `
 cd ../..
 ```
 
+
+
 ### Inspect saved evaluation
 
 ```powershell
@@ -642,6 +698,8 @@ python evaluate.py --run_dir results/GAS/example/seed123 --verify
 python -c "import json; print(json.load(open('results/GAS/example/seed123/metrics.json', encoding='utf-8')))"
 python -c "import numpy as np; s=np.load('results/GAS/example/seed123/split.npz'); print(s.files, s['train_idx'].shape, s['test_idx'].shape)"
 ```
+
+
 
 ### Load a checkpoint and re-evaluate
 
@@ -664,128 +722,173 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 
 ---
 
+
+
 ## Training Arguments
+
+
 
 ### Shared args (`main.py` and most `*_main.py`)
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--seed` | `123` | Random seed |
-| `--dataset_str` | `example` or `dblp` | Dataset key (`example` / `dblp`) |
-| `--epoch_num` | `30` | Training epochs |
-| `--batch_size` | `1000` (SemiGNN scripts often use `4`) | Batch size |
-| `--learning_rate` | `0.001` | Adam learning rate |
-| `--gpu` | `0` | CUDA device id (unavailable → CPU) |
-| `--momentum` | `0.9` | Kept for API compatibility |
-| `--save_dir` | `results` | Root folder for eval outputs (`main.py`) |
-| `--no_save` | flag | Do not write metrics / predictions / checkpoint |
+
+| Argument          | Default                                | Description                                     |
+| ----------------- | -------------------------------------- | ----------------------------------------------- |
+| `--seed`          | `123`                                  | Random seed                                     |
+| `--dataset_str`   | `example` or `dblp`                    | Dataset key (`example` / `dblp`)                |
+| `--epoch_num`     | `30`                                   | Training epochs                                 |
+| `--batch_size`    | `1000` (SemiGNN scripts often use `4`) | Batch size                                      |
+| `--learning_rate` | `0.001`                                | Adam learning rate                              |
+| `--gpu`           | `0`                                    | CUDA device id (unavailable → CPU)              |
+| `--momentum`      | `0.9`                                  | Kept for API compatibility                      |
+| `--save_dir`      | `results`                              | Root folder for eval outputs (`main.py`)        |
+| `--no_save`       | flag                                   | Do not write metrics / predictions / checkpoint |
+
+
+
 
 ### Player2Vec / FdGars (GCN)
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--hidden1` | `16` | GCN hidden units (layer 1) |
-| `--hidden2` | `16` | GCN hidden units (FdGars) |
-| `--gcn_output` | `4` | Embedding / encoding size |
+
+| Argument       | Default | Description                |
+| -------------- | ------- | -------------------------- |
+| `--hidden1`    | `16`    | GCN hidden units (layer 1) |
+| `--hidden2`    | `16`    | GCN hidden units (FdGars)  |
+| `--gcn_output` | `4`     | Embedding / encoding size  |
+
+
+
 
 ### GAS
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--gcn_dim` | `5` | Homogeneous GCN dim (legacy) |
-| `--encoding1` | `64` | Review aggregator output |
-| `--encoding2` | `64` | Attention hidden size |
-| `--encoding3` | `64` | User/item aggregator output |
-| `--encoding4` | `64` | Comment-graph encoding (legacy) |
+
+| Argument      | Default | Description                     |
+| ------------- | ------- | ------------------------------- |
+| `--gcn_dim`   | `5`     | Homogeneous GCN dim (legacy)    |
+| `--encoding1` | `64`    | Review aggregator output        |
+| `--encoding2` | `64`    | Attention hidden size           |
+| `--encoding3` | `64`    | User/item aggregator output     |
+| `--encoding4` | `64`    | Comment-graph encoding (legacy) |
+
+
+
 
 ### SemiGNN
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--init_emb_size` | `4` | Initial node embedding dim |
-| `--semi_encoding1` | `3` | First view-attention width |
-| `--semi_encoding2` | `2` | Second view-attention width |
-| `--semi_encoding3` | `4` | MLP units |
-| `--alpha` | `0.5` | Supervised vs graph loss weight |
-| `--lamtha` | `0.5` | L2 weight multiplier |
+
+| Argument           | Default | Description                     |
+| ------------------ | ------- | ------------------------------- |
+| `--init_emb_size`  | `4`     | Initial node embedding dim      |
+| `--semi_encoding1` | `3`     | First view-attention width      |
+| `--semi_encoding2` | `2`     | Second view-attention width     |
+| `--semi_encoding3` | `4`     | MLP units                       |
+| `--alpha`          | `0.5`   | Supervised vs graph loss weight |
+| `--lamtha`         | `0.5`   | L2 weight multiplier            |
+
+
+
 
 ### GEM
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--hop` | `1` | Number of GEM layers |
-| `--k` | `16` | Encoding / hidden size |
+
+| Argument | Default | Description            |
+| -------- | ------- | ---------------------- |
+| `--hop`  | `1`     | Number of GEM layers   |
+| `--k`    | `16`    | Encoding / hidden size |
+
+
+
 
 ### GeniePath
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--dim` | `128` | Breadth (GAT) width |
-| `--lstm_hidden` | `128` | Depth LSTM size |
-| `--heads` | `1` | GAT heads |
-| `--layer_num` | `4` | Number of GeniePath layers |
+
+| Argument        | Default | Description                |
+| --------------- | ------- | -------------------------- |
+| `--dim`         | `128`   | Breadth (GAT) width        |
+| `--lstm_hidden` | `128`   | Depth LSTM size            |
+| `--heads`       | `1`     | GAT heads                  |
+| `--layer_num`   | `4`     | Number of GeniePath layers |
+
+
+
 
 ### GraphSAGE (`algorithms/GraphSage/supervised_train.py`)
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--train_prefix` | `../../dataset/` | Dataset directory |
-| `--file_name` | `YelpChi.mat` | `.mat` file name |
-| `--epochs` | `10` | Epochs |
-| `--learning_rate` | `0.01` | Learning rate |
-| `--dim_1` | `128` | Hidden size |
-| `--samples_1` / `--samples_2` | `25` / `10` | Neighbor samples per layer |
-| `--batch_size` | `512` | Batch size |
-| `--dropout` | `0.0` | Dropout |
-| `--weight_decay` | `0.0` | Weight decay |
-| `--sigmoid` | flag | Use sigmoid (multi-label style) loss |
-| `--gpu` | `0` | Device |
-| `--save_dir` | `../../results/GraphSage` | Eval output directory |
-| `--no_save` | flag | Skip writing eval outputs |
+
+| Argument                      | Default                   | Description                          |
+| ----------------------------- | ------------------------- | ------------------------------------ |
+| `--train_prefix`              | `../../dataset/`          | Dataset directory                    |
+| `--file_name`                 | `YelpChi.mat`             | `.mat` file name                     |
+| `--epochs`                    | `10`                      | Epochs                               |
+| `--learning_rate`             | `0.01`                    | Learning rate                        |
+| `--dim_1`                     | `128`                     | Hidden size                          |
+| `--samples_1` / `--samples_2` | `25` / `10`               | Neighbor samples per layer           |
+| `--batch_size`                | `512`                     | Batch size                           |
+| `--dropout`                   | `0.0`                     | Dropout                              |
+| `--weight_decay`              | `0.0`                     | Weight decay                         |
+| `--sigmoid`                   | flag                      | Use sigmoid (multi-label style) loss |
+| `--gpu`                       | `0`                       | Device                               |
+| `--save_dir`                  | `../../results/GraphSage` | Eval output directory                |
+| `--no_save`                   | flag                      | Skip writing eval outputs            |
+
+
+
 
 ### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
 Same as GraphSAGE, plus:
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--context_dim` | `0` | Context embedding dim (`0` disables) |
-| `--train_perc` | `1.` | Fraction of the 80% train split to use |
-| `--save_dir` | `../../results/GraphConsis` | Eval output directory |
-| `--no_save` | flag | Skip writing eval outputs |
+
+| Argument        | Default                     | Description                            |
+| --------------- | --------------------------- | -------------------------------------- |
+| `--context_dim` | `0`                         | Context embedding dim (`0` disables)   |
+| `--train_perc`  | `1.`                        | Fraction of the 80% train split to use |
+| `--save_dir`    | `../../results/GraphConsis` | Eval output directory                  |
+| `--no_save`     | flag                        | Skip writing eval outputs              |
+
+
+
 
 ### HACUD (`algorithms/HACUD/main.py`)
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--dataset` | `dblp` | Dataset name |
-| `--epoch` | `500` | Epochs |
-| `--embed_size` | `64` | Node embedding size |
-| `--batch_size` | `64` | Batch size |
-| `--lr` | `0.001` | Learning rate |
-| `--reg` | `1e-3` | L2 regularization |
-| `--n_fc` | `4` | Number of FC layers |
-| `--fc` | `[32,16,8,4]` | FC widths |
-| `--adj_type` | `norm` | `plain` / `norm` / `mean` |
-| `--gpu` | `0` | Device |
+
+| Argument       | Default       | Description               |
+| -------------- | ------------- | ------------------------- |
+| `--dataset`    | `dblp`        | Dataset name              |
+| `--epoch`      | `500`         | Epochs                    |
+| `--embed_size` | `64`          | Node embedding size       |
+| `--batch_size` | `64`          | Batch size                |
+| `--lr`         | `0.001`       | Learning rate             |
+| `--reg`        | `1e-3`        | L2 regularization         |
+| `--n_fc`       | `4`           | Number of FC layers       |
+| `--fc`         | `[32,16,8,4]` | FC widths                 |
+| `--adj_type`   | `norm`        | `plain` / `norm` / `mean` |
+| `--gpu`        | `0`           | Device                    |
+
 
 ---
 
+
+
 ## Implemented Models
 
-| Model | Paper | Venue | Reference |
-|-------|--------|--------|--------|
-| **SemiGNN** | [A Semi-supervised Graph Attentive Network for Financial Fraud Detection](https://arxiv.org/pdf/2003.01171) | ICDM 2019 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/semignn.txt) |
-| **Player2Vec** | [Key Player Identification in Underground Forums over Attributed Heterogeneous Information Network Embedding Framework](http://mason.gmu.edu/~lzhao9/materials/papers/lp0110-zhangA.pdf) | CIKM 2019 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/player2vec.txt) |
-| **GAS** | [Spam Review Detection with Graph Convolutional Networks](https://arxiv.org/abs/1908.10679) | CIKM 2019 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/gas.txt) |
-| **FdGars** | [FdGars: Fraudster Detection via Graph Convolutional Networks in Online App Review System](https://dl.acm.org/citation.cfm?id=3316586) | WWW 2019 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/fdgars.txt) |
-| **GeniePath** | [GeniePath: Graph Neural Networks with Adaptive Receptive Paths](https://arxiv.org/abs/1802.00910) | AAAI 2019 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/geniepath.txt) |
-| **GEM** | [Heterogeneous Graph Neural Networks for Malicious Account Detection](https://arxiv.org/pdf/2002.12307.pdf) | CIKM 2018 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/gem.txt) |
-| **GraphSAGE** | [Inductive Representation Learning on Large Graphs](https://arxiv.org/pdf/1706.02216.pdf) | NIPS 2017 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphsage.txt) |
-| **GraphConsis** | [Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection](https://arxiv.org/pdf/2005.00625.pdf) | SIGIR 2020 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphconsis.txt) |
-| **HACUD** | [Cash-Out User Detection Based on Attributed Heterogeneous Information Network with a Hierarchical Attention Mechanism](https://aaai.org/ojs/index.php/AAAI/article/view/3884) | AAAI 2019 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/hacud.txt) |
+
+| Model           | Paper                                                                                                                                                                                    | Venue      | Reference                                                                             |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| **SemiGNN**     | [A Semi-supervised Graph Attentive Network for Financial Fraud Detection](https://arxiv.org/pdf/2003.01171)                                                                              | ICDM 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/semignn.txt)     |
+| **Player2Vec**  | [Key Player Identification in Underground Forums over Attributed Heterogeneous Information Network Embedding Framework](http://mason.gmu.edu/~lzhao9/materials/papers/lp0110-zhangA.pdf) | CIKM 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/player2vec.txt)  |
+| **GAS**         | [Spam Review Detection with Graph Convolutional Networks](https://arxiv.org/abs/1908.10679)                                                                                              | CIKM 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/gas.txt)         |
+| **FdGars**      | [FdGars: Fraudster Detection via Graph Convolutional Networks in Online App Review System](https://dl.acm.org/citation.cfm?id=3316586)                                                   | WWW 2019   | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/fdgars.txt)      |
+| **GeniePath**   | [GeniePath: Graph Neural Networks with Adaptive Receptive Paths](https://arxiv.org/abs/1802.00910)                                                                                       | AAAI 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/geniepath.txt)   |
+| **GEM**         | [Heterogeneous Graph Neural Networks for Malicious Account Detection](https://arxiv.org/pdf/2002.12307.pdf)                                                                              | CIKM 2018  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/gem.txt)         |
+| **GraphSAGE**   | [Inductive Representation Learning on Large Graphs](https://arxiv.org/pdf/1706.02216.pdf)                                                                                                | NIPS 2017  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphsage.txt)   |
+| **GraphConsis** | [Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection](https://arxiv.org/pdf/2005.00625.pdf)                                                        | SIGIR 2020 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphconsis.txt) |
+| **HACUD**       | [Cash-Out User Detection Based on Attributed Heterogeneous Information Network with a Hierarchical Attention Mechanism](https://aaai.org/ojs/index.php/AAAI/article/view/3884)           | AAAI 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/hacud.txt)       |
+
+
+
 
 ### Backend notes (PyTorch Geometric)
+
 - **Player2Vec / FdGars:** multi-layer GCN (`GCNConv`) (+ meta-path attention for Player2Vec)
 - **GeniePath:** GAT breadth (`GATConv`) + LSTM depth
 - **GraphSAGE / GraphConsis:** `SAGEConv` (GraphConsis adds multi-relation attention)
@@ -793,21 +896,27 @@ Same as GraphSAGE, plus:
 
 ---
 
+
+
 ## Model Comparison
 
-| Model | Application | Graph Type | Base Model |
-|-------|--------|--------|--------|
-| **SemiGNN** | Financial Fraud | Heterogeneous | GAT, LINE, DeepWalk |
-| **Player2Vec** | Cyber Criminal | Heterogeneous | GAT, GCN |
-| **GAS** | Opinion Fraud | Heterogeneous | GCN, GAT |
-| **FdGars** | Opinion Fraud | Homogeneous | GCN |
-| **GeniePath** | Financial Fraud | Homogeneous | GAT |
-| **GEM** | Financial Fraud | Heterogeneous | GCN |
-| **GraphSAGE** | Opinion Fraud | Homogeneous | GraphSAGE |
-| **GraphConsis** | Opinion Fraud | Heterogeneous | GraphSAGE |
-| **HACUD** | Financial Fraud | Heterogeneous | GAT |
+
+| Model           | Application     | Graph Type    | Base Model          |
+| --------------- | --------------- | ------------- | ------------------- |
+| **SemiGNN**     | Financial Fraud | Heterogeneous | GAT, LINE, DeepWalk |
+| **Player2Vec**  | Cyber Criminal  | Heterogeneous | GAT, GCN            |
+| **GAS**         | Opinion Fraud   | Heterogeneous | GCN, GAT            |
+| **FdGars**      | Opinion Fraud   | Homogeneous   | GCN                 |
+| **GeniePath**   | Financial Fraud | Homogeneous   | GAT                 |
+| **GEM**         | Financial Fraud | Heterogeneous | GCN                 |
+| **GraphSAGE**   | Opinion Fraud   | Homogeneous   | GraphSAGE           |
+| **GraphConsis** | Opinion Fraud   | Heterogeneous | GraphSAGE           |
+| **HACUD**       | Financial Fraud | Heterogeneous | GAT                 |
+
 
 ---
+
+
 
 ## Repository Structure
 
@@ -820,14 +929,37 @@ Same as GraphSAGE, plus:
   - `torch_helpers.py` — device selection, tensors, edge_index conversion, `save_evaluation`
 - `main.py` — unified trainer for Player2Vec, FdGars, GAS, GEM, SemiGNN, GeniePath
 - `results/` — evaluation outputs after training (`metrics.json`, `predictions.npz`, `*.pt`)
+
 ---
 
+
+
 ## TODO List
+
 - The log loss for GEM model
 - Time-based sampling for GEM
 - Add sampling methods
 - Benchmarking SOTA models
 - Scalable implementation
 
-## How to Contribute
-You are welcome to contribute to this open-source toolbox. Create issues or email [bdscsafegraph@gmail.com](mailto:bdscsafegraph@gmail.com) for inquiry.
+----------------------------------
+cd algorithms/GraphSage
+
+python supervised_train.py `
+  --model graphsage_mean `
+  --learning_rate 0.01 `
+  --train_prefix ../../dataset/ `
+  --file_name YelpChi.mat `
+  --epochs 100 `
+  --dropout 0.0 `
+  --weight_decay 0.0 `
+  --dim_1 128 `
+  --batch_size 512 `
+  --sigmoid `
+  --gpu 0 `
+  --seed 123 `
+  --samples_1 25 `
+  --samples_2 10 `
+  --save_dir results `
+  --test_size 0.2
+-------------------------------------
