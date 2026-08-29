@@ -3,14 +3,18 @@ import numpy as np
 import scipy.sparse as sp
 
 
-def normalize_adj(adj):
-    adj = adj + sp.eye(adj.shape[0])
+def normalize_adj(adj, dense=None):
+    n = adj.shape[0]
+    if dense is None:
+        dense = n <= 8000
+    adj = adj + sp.eye(n)
     adj = sp.coo_matrix(adj)
     rowsum = np.array(adj.sum(1))
     d_inv_sqrt = np.power(rowsum, -0.5).flatten()
     d_inv_sqrt[np.isinf(d_inv_sqrt)] = 0.
     d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
-    return adj.dot(d_mat_inv_sqrt).transpose().dot(d_mat_inv_sqrt).toarray()
+    out = adj.dot(d_mat_inv_sqrt).transpose().dot(d_mat_inv_sqrt).tocoo()
+    return out.toarray() if dense else out
 
 
 def pad_adjlist(x_data):

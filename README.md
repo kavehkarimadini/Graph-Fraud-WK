@@ -963,3 +963,5 @@ python supervised_train.py `
   --save_dir results `
   --test_size 0.2
 -------------------------------------
+cd algorithms/FdGars
+python FdGars_main.py --dataset_str yelpchi --epoch_num 100 --batch_size 512 --gpu 0 --seed 123

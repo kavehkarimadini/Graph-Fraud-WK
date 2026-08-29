@@ -1,5 +1,7 @@
+import os
 import numpy as np
 import scipy.io as sio
+import scipy.sparse as sp
 import zipfile
 
 from sklearn.model_selection import train_test_split
@@ -34,6 +36,32 @@ def load_data_dblp(path='../../dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat'
     y = truelabels
     X_train, X_test, y_train, y_test = _split_indices(y, test_size=test_size, seed=seed)
     return rownetworks, features, X_train, y_train, X_test, y_test
+
+
+def load_data_yelpchi(path='../../dataset/YelpChi.mat', test_size=0.2, seed=48,
+                      relation='net_rur'):
+    """Homogeneous YelpChi graph (review-user-review) for GCN models such as FdGars."""
+    if not os.path.isfile(path):
+        raise FileNotFoundError(
+            "YelpChi file not found at {}. Unzip dataset/YelpChi.zip first "
+            "(Expand-Archive on Windows).".format(os.path.abspath(path)))
+    data = sio.loadmat(path)
+    truelabels = np.array(data['label']).reshape(-1).astype(int)
+    features = data['features'].astype(float)
+    if sp.issparse(features):
+        features = np.asarray(features.todense())
+    else:
+        features = np.asarray(features)
+    if relation not in data:
+        raise KeyError("Relation '{}' not in YelpChi.mat; available keys: {}".format(
+            relation, list(data.keys())))
+    adj = data[relation]
+    if not sp.issparse(adj):
+        adj = sp.csr_matrix(adj)
+    n_classes = int(truelabels.max()) + 1
+    y = np.eye(n_classes, dtype=float)[truelabels]
+    X_train, X_test, y_train, y_test = _split_indices(y, test_size=test_size, seed=seed)
+    return [adj], features, X_train, y_train, X_test, y_test
 
 
 def load_example_semi(test_size=0.2, seed=48):

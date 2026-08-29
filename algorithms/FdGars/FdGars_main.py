@@ -11,7 +11,7 @@ import torch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../..')))
 from algorithms.FdGars.FdGars import FdGars
-from utils.data_loader import load_data_dblp
+from utils.data_loader import load_data_dblp, load_data_yelpchi
 from utils.standalone_train import finish, run_epochs
 from utils.training import add_save_args, resolve_test_size
 from utils.utils import normalize_adj
@@ -21,7 +21,8 @@ from utils.torch_helpers import get_device, set_seed
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--seed', type=int, default=123)
-    parser.add_argument('--dataset_str', type=str, default='dblp')
+    parser.add_argument('--dataset_str', type=str, default='dblp',
+                        help="['dblp','yelpchi']")
     parser.add_argument('--epoch_num', type=int, default=30)
     parser.add_argument('--batch_size', type=int, default=1000)
     parser.add_argument('--learning_rate', type=float, default=0.001)
@@ -58,7 +59,16 @@ if __name__ == "__main__":
     args = arg_parser()
     set_seed(args.seed)
     test_size = resolve_test_size(args, 'FdGars')
-    adj_list, features, train_data, train_label, test_data, test_label = load_data_dblp(
-        test_size=test_size, seed=args.seed)
+    split_kw = dict(test_size=test_size, seed=args.seed)
+    ds = args.dataset_str.lower()
+    if ds in ('yelp', 'yelpchi'):
+        adj_list, features, train_data, train_label, test_data, test_label = load_data_yelpchi(
+            '../../dataset/YelpChi.mat', **split_kw)
+    elif ds == 'dblp':
+        adj_list, features, train_data, train_label, test_data, test_label = load_data_dblp(
+            **split_kw)
+    else:
+        raise ValueError(
+            "FdGars supports --dataset_str dblp or yelpchi, not '{}'.".format(args.dataset_str))
     paras = [features.shape[0], features.shape[1], train_label.shape[1], len(train_data)]
     train(args, adj_list, features, train_data, train_label, test_data, test_label, paras)
