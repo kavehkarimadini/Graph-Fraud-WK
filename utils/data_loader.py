@@ -5,6 +5,7 @@ import scipy.sparse as sp
 import zipfile
 
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from utils.split import split_report, stratified_train_test_split
 from utils.utils import pad_adjlist
@@ -105,6 +106,134 @@ def load_data_amazon_multi(path='../../dataset/Amazon.mat', test_size=0.2, seed=
         relations = list(AMAZON_RELATIONS)
     return _load_mat_graph(path, relations, test_size=test_size, seed=seed,
                            dataset_name='Amazon')
+
+
+def resolve_tgraph_path(name, prefix=None):
+    """Locate a DGL binary such as dataset/tfinance or dataset/tsocial (no extension)."""
+    name = os.path.basename(str(name)).replace('.zip', '').replace('.bin', '')
+    candidates = []
+    if prefix:
+        candidates.append(os.path.join(prefix, name))
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates.extend([
+        os.path.join('dataset', name),
+        os.path.join(here, '..', 'dataset', name),
+        os.path.join(os.getcwd(), 'dataset', name),
+        os.path.join(os.getcwd(), '..', '..', 'dataset', name),
+        name,
+    ])
+    for path in candidates:
+        path = os.path.normpath(path)
+        if os.path.isfile(path):
+            return path
+    raise FileNotFoundError(
+        "DGL graph '{}' not found. Unzip dataset/{}.zip into dataset/ "
+        "(the extracted file has no extension).".format(name, name))
+
+
+def load_tgraph_arrays(name, prefix=None):
+    """Load T-Finance / T-Social without DGL: features, labels, src, dst (numpy)."""
+    from utils.dgl_bin import load_dgl_v2_homo_arrays
+    path = resolve_tgraph_path(name, prefix=prefix)
+    return load_dgl_v2_homo_arrays(path)
+
+
+class HomoGraph(object):
+    """Minimal DGL-like homogeneous graph (ndata, in_degrees, sparse adj)."""
+
+    def __init__(self, src, dst, n, features, labels):
+        import torch
+        self.ndata = {
+            'feature': torch.as_tensor(np.asarray(features), dtype=torch.float32),
+            'label': torch.as_tensor(np.asarray(labels), dtype=torch.long).view(-1),
+        }
+        self._src = torch.as_tensor(np.asarray(src), dtype=torch.long)
+        self._dst = torch.as_tensor(np.asarray(dst), dtype=torch.long)
+        self._n = int(n)
+        self._adj = None
+        self._in_deg = torch.bincount(self._dst, minlength=self._n)
+
+    def num_nodes(self):
+        return self._n
+
+    def in_degrees(self):
+        return self._in_deg
+
+    def edges(self):
+        return self._src, self._dst
+
+    @property
+    def adj(self):
+        import torch
+        if self._adj is None:
+            idx = torch.stack([self._dst, self._src], dim=0)
+            val = torch.ones(self._src.numel(), dtype=torch.float32, device=self._src.device)
+            self._adj = torch.sparse_coo_tensor(
+                idx, val, (self._n, self._n), device=self._src.device).coalesce()
+        return self._adj
+
+    def to(self, device):
+        self.ndata = {k: v.to(device) for k, v in self.ndata.items()}
+        self._src = self._src.to(device)
+        self._dst = self._dst.to(device)
+        self._in_deg = self._in_deg.to(device)
+        self._adj = None
+        return self
+
+
+def load_tgraph_dgl(name, prefix=None):
+    """Load T-Finance / T-Social as a HomoGraph (DGL v2 binary, no DGL import)."""
+    features, labels, src, dst = load_tgraph_arrays(name, prefix=prefix)
+    return HomoGraph(src, dst, features.shape[0], features, labels)
+
+
+def load_data_tfinance(path='../../dataset/tfinance', test_size=0.4, seed=48):
+    """Homogeneous T-Finance graph for GCN-style models (one-hot labels)."""
+    return _load_tgraph_numpy(path, test_size=test_size, seed=seed)
+
+
+def load_data_tsocial(path='../../dataset/tsocial', test_size=0.4, seed=48):
+    """Homogeneous T-Social graph for GCN-style models (one-hot labels)."""
+    return _load_tgraph_numpy(path, test_size=test_size, seed=seed)
+
+
+def _load_tgraph_numpy(path, test_size=0.4, seed=48):
+    features, truelabels, src, dst = load_tgraph_arrays(path)
+    n = features.shape[0]
+    adj = sp.coo_matrix(
+        (np.ones(len(src), dtype=np.float32), (src, dst)), shape=(n, n))
+    n_classes = int(truelabels.max()) + 1
+    y = np.eye(n_classes, dtype=float)[truelabels]
+    X_train, X_test, y_train, y_test = _split_indices(y, test_size=test_size, seed=seed)
+    return [adj], features, X_train, y_train, X_test, y_test
+
+
+def load_tgraph_pyg(name, prefix=None, test_size=0.2, seed=48, normalize=True):
+    """T-Finance / T-Social as PyG tensors for GraphConsis (single relation)."""
+    import torch
+
+    feat, labels, src, dst = load_tgraph_arrays(name, prefix=prefix)
+    edge_index = torch.stack(
+        [torch.as_tensor(src, dtype=torch.long), torch.as_tensor(dst, dtype=torch.long)], dim=0)
+    if normalize:
+        feat = StandardScaler().fit_transform(feat)
+    x = torch.tensor(np.asarray(feat), dtype=torch.float32)
+    y = torch.tensor(labels, dtype=torch.long)
+    train_idx, test_idx = stratified_train_test_split(labels, test_size=test_size, seed=seed)
+    train_idx_t = torch.tensor(np.asarray(train_idx), dtype=torch.long)
+    test_idx_t = torch.tensor(np.asarray(test_idx), dtype=torch.long)
+    split_info = split_report(labels, train_idx, test_idx)
+    split_info.update({'test_fraction': float(test_size), 'seed': int(seed), 'stratified': True})
+    return x, [edge_index], y, train_idx_t, test_idx_t, split_info
+
+
+def scipy_to_dgl(adj, features, labels):
+    """Build a homogeneous graph from a scipy adjacency matrix (BWGNN)."""
+    coo = sp.coo_matrix(adj) if not sp.issparse(adj) else adj.tocoo()
+    y = np.asarray(labels)
+    if y.ndim == 2 and y.shape[1] > 1:
+        y = y.argmax(axis=1)
+    return HomoGraph(coo.row, coo.col, np.asarray(features).shape[0], features, y.reshape(-1))
 
 
 def load_example_semi(test_size=0.2, seed=48):

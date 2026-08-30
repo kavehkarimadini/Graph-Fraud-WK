@@ -73,6 +73,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 - `torch` (CUDA build for GPU)
 - `torch-geometric`
 - `numpy`, `scipy`, `scikit-learn`
+- **BWGNN:** `sympy` (see uv step 4). T-Finance / T-Social binaries are read without DGL.
 
 
 
@@ -95,6 +96,12 @@ uv pip install torch --index-url https://download.pytorch.org/whl/cu128
 
 # 3) Install the remaining packages (do not reinstall torch from PyPI after this)
 uv pip install torch-geometric numpy scipy scikit-learn
+
+# 4) BWGNN extra (beta-wavelet coefficients)
+uv pip install sympy
+# Do not `uv pip install dgl` on Python 3.13 / recent Windows CUDA: PyPI ships
+# dgl==0.1.3 whose libdgl.dll fails to load. T-Finance/T-Social are loaded
+# from the DGL v2 binary without importing DGL.
 ```
 
 **Important:** Do not run a plain `uv pip install -r requirements.txt` after the CUDA install unless you keep the CUDA index. `requirements.txt` only pins `torch>=...`, and PyPI often installs the **CPU** wheel and overwrites the GPU build.
@@ -122,6 +129,7 @@ cd DGFraud
 # Install CUDA torch from https://pytorch.org/ first, then:
 pip install torch-geometric
 pip install -r requirements.txt
+# BWGNN: pip install sympy
 # or: python setup.py install
 ```
 
@@ -169,6 +177,21 @@ For **GraphConsis** / **GraphSAGE**, unzip `dataset/YelpChi.zip`. The `.mat` fil
 
 Preprocessing details: [CIKM'20](https://arxiv.org/pdf/2008.08692.pdf). For full Yelp metadata, contact [ytongdou@gmail.com](mailto:ytongdou@gmail.com).
 
+### T-Finance and T-Social
+
+DGL v2 binaries from [Tang et al., ICML 2022](https://proceedings.mlr.press/v162/tang22b.html) (BWGNN). Unzip into `dataset/` so you have extension-less files `dataset/tfinance` and `dataset/tsocial`. They are loaded without importing DGL (see `utils/dgl_bin.py`).
+
+**Windows PowerShell:**
+
+```powershell
+cd dataset
+Expand-Archive -Path tfinance.zip -DestinationPath . -Force
+Expand-Archive -Path tsocial.zip -DestinationPath . -Force
+cd ..
+```
+
+Used by **BWGNN** and **GraphConsis** (`--file_name tfinance` or `tsocial`). T-Social is large (multi-GB); BWGNN uses a smaller hidden size (`--hid_dim 10 --order 5`).
+
 ---
 
 
@@ -212,7 +235,8 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | SemiGNN     | `python SemiGNN_main.py --batch_size 4 --gpu 0`                                                                                                  |
 | GeniePath   | `python GeniePath_main.py --gpu 0`                                                                                                               |
 | GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`               |
-| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` or `python supervised_train.py --train_prefix ../../dataset/ --file_name DBLP4057_GAT_with_idx_tra200_val_800.mat --sigmoid --epochs 3 --gpu 0`|
+| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`) |
+| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0`                                                                                                              |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
 
 
@@ -514,7 +538,7 @@ cd ../..
 
 #### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
-Uses all three Yelp relations (`net_rur`, `net_rtr`, `net_rsr`) with relation attention.
+Uses Yelp relations (`net_rur`, `net_rtr`, `net_rsr`), Amazon relations (`net_upu`, `net_usu`, `net_uvu`), or a single T-Finance / T-Social adjacency.
 
 ```powershell
 cd algorithms/GraphConsis
@@ -530,14 +554,31 @@ python supervised_train.py `
   --dim_1 128 --batch_size 512 `
   --gpu 0
 
-# Use only half of the training split (train_perc=0.5 → 40% of all nodes)
-python supervised_train.py `
-  --train_prefix ../../dataset/ `
-  --file_name YelpChi.mat `
-  --sigmoid `
-  --train_perc 0.5 `
-  --epochs 10 --learning_rate 0.01 `
-  --gpu 0
+# T-Finance / T-Social (DGL binaries; unzip dataset/tfinance.zip and tsocial.zip first)
+python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --epochs 50 --gpu 0
+python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --epochs 20 --batch_size 256 --gpu 0
+
+cd ../..
+```
+
+
+
+#### BWGNN (`algorithms/BWGNN/BWGNN_main.py`)
+
+Requires sympy (README uv step 4) and unzipped `dataset/tfinance` / `dataset/tsocial`.
+
+```powershell
+cd algorithms/BWGNN
+
+# Paper defaults: 40% train, hid 64, wavelet order 2
+python BWGNN_main.py --dataset tfinance --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
+
+# T-Social is much larger — smaller hidden size and higher order (as in the paper)
+python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 --epochs 100 --gpu 0
+
+# Homogeneous Amazon / YelpChi .mat
+python BWGNN_main.py --dataset amazon --gpu 0
+python BWGNN_main.py --dataset yelpchi --gpu 0
 
 cd ../..
 ```
@@ -848,6 +889,22 @@ Same as GraphSAGE, plus:
 
 
 
+### BWGNN (`algorithms/BWGNN/BWGNN_main.py`)
+
+
+| Argument          | Default    | Description                                         |
+| ----------------- | ---------- | --------------------------------------------------- |
+| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon`       |
+| `--train_ratio`   | `None`     | Train fraction (paper: `0.4`); else uses `--test_size` |
+| `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)         |
+| `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)             |
+| `--epochs`        | `100`      | Epochs                                              |
+| `--learning_rate` | `0.01`     | Learning rate                                       |
+| `--gpu`           | `0`        | Device                                              |
+
+
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -883,6 +940,7 @@ Same as GraphSAGE, plus:
 | **GraphSAGE**   | [Inductive Representation Learning on Large Graphs](https://arxiv.org/pdf/1706.02216.pdf)                                                                                                | NIPS 2017  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphsage.txt)   |
 | **GraphConsis** | [Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection](https://arxiv.org/pdf/2005.00625.pdf)                                                        | SIGIR 2020 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphconsis.txt) |
 | **HACUD**       | [Cash-Out User Detection Based on Attributed Heterogeneous Information Network with a Hierarchical Attention Mechanism](https://aaai.org/ojs/index.php/AAAI/article/view/3884)           | AAAI 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/hacud.txt)       |
+| **BWGNN**       | [Rethinking Graph Neural Networks for Anomaly Detection](https://proceedings.mlr.press/v162/tang22b.html)                                                                                | ICML 2022  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bwgnn.txt)       |
 
 
 
@@ -892,6 +950,7 @@ Same as GraphSAGE, plus:
 - **Player2Vec / FdGars:** multi-layer GCN (`GCNConv`) (+ meta-path attention for Player2Vec)
 - **GeniePath:** GAT breadth (`GATConv`) + LSTM depth
 - **GraphSAGE / GraphConsis:** `SAGEConv` (GraphConsis adds multi-relation attention)
+- **BWGNN:** beta-wavelet polynomial filters (`PolyConv`) with `torch.sparse`
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -912,6 +971,7 @@ Same as GraphSAGE, plus:
 | **GraphSAGE**   | Opinion Fraud   | Homogeneous   | GraphSAGE           |
 | **GraphConsis** | Opinion Fraud   | Heterogeneous | GraphSAGE           |
 | **HACUD**       | Financial Fraud | Heterogeneous | GAT                 |
+| **BWGNN**       | Graph Anomaly   | Homogeneous   | Beta wavelet GNN    |
 
 
 ---
@@ -1014,3 +1074,51 @@ python supervised_train.py `
 ```
 
 Outputs: `algorithms/GraphConsis/results/GraphConsis/YelpChi/seed123/` and `.../Amazon/seed123/`. Amazon’s `net_usu` is dense, so the first epoch can take a while to load.
+
+---------------------------------------
+BWGNN is in `algorithms/BWGNN`, and T-Finance / T-Social loaders are in `utils/data_loader.py` (`load_tgraph_dgl`, `load_tgraph_pyg`, `load_data_tfinance`, `load_data_tsocial`) plus `utils/dgl_bin.py`. GraphConsis accepts `--file_name tfinance` or `tsocial`.
+
+**Install (after your CUDA torch step)** — also in the README uv section:
+
+```powershell
+uv pip install sympy
+```
+
+Do not `uv pip install dgl` on Python 3.13 / recent Windows CUDA: PyPI’s `dgl==0.1.3` fails to load `libdgl.dll`. Unzip `dataset/tfinance.zip` and `dataset/tsocial.zip` so you have extension-less `dataset/tfinance` and `dataset/tsocial`.
+
+**GraphConsis**
+
+```powershell
+cd algorithms/GraphConsis
+python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --epochs 50 --gpu 0
+
+cd algorithms\GraphConsis
+python supervised_train.py `
+  --train_prefix ../../dataset/ `
+  --file_name tfinance `
+  --sigmoid `
+  --epochs 50 `
+  --learning_rate 0.01 `
+  --dim_1 128 `
+  --batch_size 16 `
+  --dropout 0.0 `
+  --weight_decay 0.0 `
+  --context_dim 0 `
+  --samples_1 25 `
+  --samples_2 10 `
+  --test_size 0.6 `
+  --seed 123 `
+  --gpu 0
+
+python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --epochs 20 --batch_size 256 --gpu 0
+```
+
+**BWGNN** (paper settings: 40% train)
+
+```powershell
+cd algorithms/BWGNN
+python BWGNN_main.py --dataset tfinance --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 --epochs 100 --gpu 0
+```
+
+T-Social is multi-GB; keep `--hid_dim 10`. BWGNN also takes `--dataset amazon` or `yelpchi`.

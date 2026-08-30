@@ -17,6 +17,8 @@ def default_test_size(model_name, dataset_str):
     ds = (dataset_str or '').lower()
     if ds in ('yelp', 'yelpchi'):
         return 0.2
+    if ds in ('tfinance', 'tsocial', 'amazon'):
+        return 0.4
     if ds == 'dblp':
         return 0.4
     if model_name in ('SemiGNN', 'GEM', 'GraphSage', 'GraphConsis'):

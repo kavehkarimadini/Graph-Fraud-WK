@@ -1,0 +1,6 @@
+@InProceedings{tang2022rethinking,
+  title = {Rethinking Graph Neural Networks for Anomaly Detection},
+  author = {Tang, Jianheng and Li, Jiajin and Gao, Ziqi and Li, Jia},
+  booktitle = {International Conference on Machine Learning},
+  year = {2022}
+}

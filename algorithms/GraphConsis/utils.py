@@ -11,7 +11,12 @@ from torch_geometric.utils import from_scipy_sparse_matrix
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils.split import split_report, stratified_train_test_split
-from utils.data_loader import AMAZON_RELATIONS, YELPCHI_RELATIONS
+from utils.data_loader import AMAZON_RELATIONS, YELPCHI_RELATIONS, load_tgraph_pyg
+
+
+def _is_tgraph(file_name):
+    name = os.path.basename(str(file_name)).lower().replace('.zip', '').replace('.bin', '')
+    return name in ('tfinance', 'tsocial')
 
 
 def _default_relations(file_name, data):
@@ -48,6 +53,10 @@ def load_mat_full(prefix='./example_data/', file_name='YelpChi.mat',
 
 def load_data(prefix='../../dataset/', file_name='YelpChi.mat', relations=None,
               normalize=True, test_size=0.2, seed=48):
+    if _is_tgraph(file_name):
+        return load_tgraph_pyg(
+            file_name, prefix=prefix, test_size=test_size, seed=seed, normalize=normalize)
+
     adjs, feats, truelabels, train_idx, test_idx = load_mat_full(
         prefix, file_name, relations, test_size, seed)
     if normalize:

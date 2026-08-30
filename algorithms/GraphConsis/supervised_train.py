@@ -19,7 +19,7 @@ from algorithms.GraphConsis.supervised_models import SupervisedGraphconsis
 from algorithms.GraphConsis.utils import load_data
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.torch_helpers import get_device, set_seed
-from utils.training import add_save_args
+from utils.training import add_save_args, resolve_test_size
 
 
 def parse_args():
@@ -40,7 +40,6 @@ def parse_args():
     parser.add_argument('--samples_1', type=int, default=25)
     parser.add_argument('--samples_2', type=int, default=10)
     add_save_args(parser)
-    parser.set_defaults(test_size=0.2)
     return parser.parse_args()
 
 
@@ -58,6 +57,11 @@ def main():
     args = parse_args()
     set_seed(args.seed)
     device = get_device(args.gpu)
+    dataset_name = os.path.splitext(os.path.basename(args.file_name))[0]
+    if getattr(args, 'dataset_str', None) is None:
+        args.dataset_str = dataset_name
+    if args.test_size is None:
+        args.test_size = resolve_test_size(args, 'GraphConsis')
     x, edge_indices, y, train_idx, test_idx, split_info = load_data(
         args.train_prefix, args.file_name, test_size=args.test_size, seed=args.seed)
     x = x.to(device)
@@ -105,7 +109,7 @@ def main():
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'GraphConsis'
-        out_dir = run_output_dir(args.save_dir, 'GraphConsis', args.file_name.replace('.mat', ''), args.seed)
+        out_dir = run_output_dir(args.save_dir, 'GraphConsis', dataset_name, args.seed)
         save_run_outputs(
             out_dir, 'GraphConsis', config, split_info,
             test_metrics, model=model, train_metrics=train_metrics,
