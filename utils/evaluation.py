@@ -83,12 +83,17 @@ def compute_classification_metrics(y_true, y_pred, y_prob=None, sigmoid=False):
     return out
 
 
-def run_output_dir(save_dir, model_name, dataset_name=None, seed=None):
+def run_output_dir(save_dir, model_name, dataset_name=None, seed=None, run_tag=None):
     parts = [save_dir, model_name]
     if dataset_name:
         parts.append(str(dataset_name))
     if seed is not None:
-        parts.append('seed{}'.format(seed))
+        seed_part = 'seed{}'.format(seed)
+        if run_tag:
+            seed_part = '{}_{}'.format(seed_part, run_tag)
+        parts.append(seed_part)
+    elif run_tag:
+        parts.append(str(run_tag))
     return os.path.join(*parts)
 
 

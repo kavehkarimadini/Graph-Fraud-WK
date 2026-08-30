@@ -6,7 +6,7 @@ Adapted from https://github.com/squareRoot3/Rethinking-Anomaly-Detection
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import scipy
 import sympy

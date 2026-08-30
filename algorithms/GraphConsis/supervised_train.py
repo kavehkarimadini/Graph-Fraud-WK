@@ -14,7 +14,7 @@ import time
 import numpy as np
 import torch
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.GraphConsis.supervised_models import SupervisedGraphconsis
 from algorithms.GraphConsis.utils import load_data
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
@@ -39,6 +39,8 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=123)
     parser.add_argument('--samples_1', type=int, default=25)
     parser.add_argument('--samples_2', type=int, default=10)
+    parser.add_argument('--run_tag', type=str, default=None,
+                        help='Optional suffix on the output folder (e.g. a timestamp).')
     add_save_args(parser)
     return parser.parse_args()
 
@@ -53,8 +55,10 @@ def predict_split(model, x, edge_indices, y, idx, sigmoid):
     return metrics, y_true, y_pred
 
 
-def main():
-    args = parse_args()
+def train(args=None):
+    """Train GraphConsis. ``args`` is an argparse Namespace (see ``parse_args``)."""
+    if args is None:
+        args = parse_args()
     set_seed(args.seed)
     device = get_device(args.gpu)
     dataset_name = os.path.splitext(os.path.basename(args.file_name))[0]
@@ -106,10 +110,13 @@ def main():
     print('Train metrics:', train_metrics)
     print('Test metrics:', test_metrics)
 
+    out_dir = None
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'GraphConsis'
-        out_dir = run_output_dir(args.save_dir, 'GraphConsis', dataset_name, args.seed)
+        out_dir = run_output_dir(
+            args.save_dir, 'GraphConsis', dataset_name, args.seed,
+            run_tag=getattr(args, 'run_tag', None))
         save_run_outputs(
             out_dir, 'GraphConsis', config, split_info,
             test_metrics, model=model, train_metrics=train_metrics,
@@ -117,6 +124,11 @@ def main():
             train_indices=train_idx.cpu().numpy(), test_indices=test_idx.cpu().numpy(),
             y_train=y[train_idx].cpu().numpy(), y_test=y_true,
         )
+    return test_metrics, out_dir
+
+
+def main():
+    train(parse_args())
 
 
 if __name__ == '__main__':

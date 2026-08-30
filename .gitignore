@@ -17,5 +17,6 @@ dataset/YelpChi_hand.mat
 dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat
 dataset/
 results/
+notebook_runs/
 tmp/
 .venv/

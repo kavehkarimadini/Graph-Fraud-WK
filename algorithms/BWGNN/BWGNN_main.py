@@ -14,7 +14,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.BWGNN.BWGNN import BWGNN
 from utils.data_loader import (
     load_data_amazon, load_data_yelpchi, load_tgraph_dgl, scipy_to_dgl,
@@ -39,6 +39,8 @@ def parse_args():
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--seed', type=int, default=123)
     parser.add_argument('--data_prefix', type=str, default='../../dataset/')
+    parser.add_argument('--run_tag', type=str, default=None,
+                        help='Optional suffix on the output folder (e.g. a timestamp).')
     add_save_args(parser)
     return parser.parse_args()
 
@@ -83,8 +85,10 @@ def class_weight(labels, train_idx, device):
     return torch.tensor([1.0, (n_neg / n_pos).item()], device=device)
 
 
-def main():
-    args = parse_args()
+def train(args=None):
+    """Train BWGNN. ``args`` is an argparse Namespace (see ``parse_args``)."""
+    if args is None:
+        args = parse_args()
     args.dataset_str = args.dataset
     if args.train_ratio is not None:
         args.test_size = 1.0 - args.train_ratio
@@ -136,10 +140,13 @@ def main():
     print('Train metrics:', train_metrics)
     print('Test metrics:', test_metrics)
 
+    out_dir = None
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'BWGNN'
-        out_dir = run_output_dir(args.save_dir, 'BWGNN', args.dataset, args.seed)
+        out_dir = run_output_dir(
+            args.save_dir, 'BWGNN', args.dataset, args.seed,
+            run_tag=getattr(args, 'run_tag', None))
         save_run_outputs(
             out_dir, 'BWGNN', config, split_info,
             test_metrics, model=model, train_metrics=train_metrics,
@@ -148,6 +155,11 @@ def main():
             train_indices=train_idx.cpu().numpy(), test_indices=test_idx.cpu().numpy(),
             y_train=y_train, y_test=y_test,
         )
+    return test_metrics, out_dir
+
+
+def main():
+    train(parse_args())
 
 
 if __name__ == '__main__':
