@@ -27,10 +27,27 @@ def _to_hard_predictions(y_pred, sigmoid=False):
     return y_pred.reshape(-1).astype(int)
 
 
+def _g_mean(y_true_idx, y_pred_idx):
+    """Geometric mean of per-class recalls (sqrt(TPR * TNR) in the binary case)."""
+    recalls = metrics.recall_score(y_true_idx, y_pred_idx, average=None, zero_division=0)
+    recalls = np.asarray(recalls, dtype=float)
+    if recalls.size == 0 or np.any(recalls <= 0):
+        return 0.0
+    return float(np.prod(recalls) ** (1.0 / recalls.size))
+
+
+def _binary_positive_scores(y_prob):
+    y_prob = np.asarray(y_prob)
+    if y_prob.ndim == 2 and y_prob.shape[1] > 1:
+        return y_prob[:, 1]
+    return y_prob.reshape(-1)
+
+
 def compute_classification_metrics(y_true, y_pred, y_prob=None, sigmoid=False):
     """Metrics suited to imbalanced fraud detection."""
     y_true_idx = _to_class_indices(y_true)
     y_pred_idx = _to_hard_predictions(y_pred, sigmoid=sigmoid)
+    n_classes = len(np.unique(y_true_idx))
 
     out = {
         'accuracy': float(metrics.accuracy_score(y_true_idx, y_pred_idx)),
@@ -39,20 +56,29 @@ def compute_classification_metrics(y_true, y_pred, y_prob=None, sigmoid=False):
         'f1_weighted': float(metrics.f1_score(y_true_idx, y_pred_idx, average='weighted', zero_division=0)),
         'precision_macro': float(metrics.precision_score(y_true_idx, y_pred_idx, average='macro', zero_division=0)),
         'recall_macro': float(metrics.recall_score(y_true_idx, y_pred_idx, average='macro', zero_division=0)),
+        'g_mean': _g_mean(y_true_idx, y_pred_idx),
     }
 
-    if y_prob is not None:
-        y_prob = np.asarray(y_prob)
-        n_classes = len(np.unique(y_true_idx))
-        try:
-            if n_classes == 2:
-                prob_pos = y_prob[:, 1] if y_prob.ndim == 2 and y_prob.shape[1] > 1 else y_prob.reshape(-1)
-                out['auc_roc'] = float(metrics.roc_auc_score(y_true_idx, prob_pos))
-            elif y_prob.ndim == 2 and y_prob.shape[1] == n_classes:
-                out['auc_roc_macro'] = float(metrics.roc_auc_score(
-                    y_true_idx, y_prob, multi_class='ovr', average='macro'))
-        except ValueError:
-            pass
+    scores = y_pred if y_prob is None else y_prob
+    scores = np.asarray(scores)
+    try:
+        if n_classes == 2:
+            pos = _binary_positive_scores(scores)
+            auroc = float(metrics.roc_auc_score(y_true_idx, pos))
+            auprc = float(metrics.average_precision_score(y_true_idx, pos))
+            out['auroc'] = auroc
+            out['auprc'] = auprc
+            out['auc_roc'] = auroc
+        elif scores.ndim == 2 and scores.shape[1] == n_classes:
+            auroc = float(metrics.roc_auc_score(
+                y_true_idx, scores, multi_class='ovr', average='macro'))
+            y_true_oh = np.eye(n_classes)[y_true_idx]
+            auprc = float(metrics.average_precision_score(y_true_oh, scores, average='macro'))
+            out['auroc'] = auroc
+            out['auprc'] = auprc
+            out['auc_roc_macro'] = auroc
+    except ValueError:
+        pass
 
     return out
 

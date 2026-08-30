@@ -11,13 +11,29 @@ from torch_geometric.utils import from_scipy_sparse_matrix
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils.split import split_report, stratified_train_test_split
+from utils.data_loader import AMAZON_RELATIONS, YELPCHI_RELATIONS
+
+
+def _default_relations(file_name, data):
+    name = os.path.basename(file_name).lower()
+    if 'amazon' in name:
+        candidates = list(AMAZON_RELATIONS)
+    elif 'yelp' in name:
+        candidates = list(YELPCHI_RELATIONS)
+    else:
+        candidates = [k for k in data.keys() if isinstance(k, str) and k.startswith('net_')]
+    rels = [r for r in candidates if r in data]
+    if not rels:
+        raise KeyError('No relation matrices found in {}. Keys: {}'.format(
+            file_name, [k for k in data.keys() if not str(k).startswith('__')]))
+    return rels
 
 
 def load_mat_full(prefix='./example_data/', file_name='YelpChi.mat',
                   relations=None, test_size=0.2, seed=48):
-    if relations is None:
-        relations = ['net_rur', 'net_rtr', 'net_rsr']
     data = sio.loadmat(os.path.join(prefix, file_name))
+    if relations is None:
+        relations = _default_relations(file_name, data)
     truelabels, features = data['label'], data['features'].astype(float)
     truelabels = np.array(truelabels).reshape(-1)
     if sp.issparse(features):

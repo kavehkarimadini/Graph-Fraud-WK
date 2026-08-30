@@ -71,7 +71,7 @@ def verify_predictions(run_dir, metrics):
     print(json.dumps(recomputed, indent=2))
 
     saved = metrics.get('test', {})
-    for key in ['accuracy', 'f1_micro', 'f1_macro', 'f1_weighted']:
+    for key in ['accuracy', 'f1_micro', 'f1_macro', 'f1_weighted', 'auroc', 'auprc', 'g_mean']:
         if key in saved and key in recomputed:
             delta = abs(saved[key] - recomputed[key])
             print('  {} saved={:.6f} recomputed={:.6f} delta={:.6f}'.format(

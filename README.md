@@ -611,7 +611,7 @@ results/<Model>/<dataset>/seed<seed>/
 | File              | Contents                                                                                                                |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `config.json`     | All training arguments (model, seed, test_size, lr, …)                                                                  |
-| `metrics.json`    | `train` / `test` metrics (accuracy, F1 micro/macro/weighted, precision, recall, AUC when available) plus `split` report |
+| `metrics.json`    | `train` / `test` metrics (accuracy, F1 micro/macro/weighted, precision, recall, AUROC, AUPRC, G-Mean) plus `split` report |
 | `split.npz`       | Stratified indices and labels for reproducible re-evaluation                                                            |
 | `predictions.npz` | Held-out test predictions and probabilities                                                                             |
 | `checkpoint.pt`   | PyTorch checkpoint for loading the trained model                                                                        |
@@ -965,3 +965,52 @@ python supervised_train.py `
 -------------------------------------
 cd algorithms/FdGars
 python FdGars_main.py --dataset_str yelpchi --epoch_num 100 --batch_size 512 --gpu 0 --seed 123
+--------------------------------------------
+
+From `algorithms/GraphConsis`. GraphConsis now picks Yelp relations (`net_rur`, `net_rtr`, `net_rsr`) or Amazon relations (`net_upu`, `net_usu`, `net_uvu`) from the file name.
+
+**YelpChi**
+
+```powershell
+cd algorithms/GraphConsis
+
+python supervised_train.py `
+  --train_prefix ../../dataset/ `
+  --file_name YelpChi.mat `
+  --sigmoid `
+  --epochs 50 `
+  --learning_rate 0.01 `
+  --dim_1 128 `
+  --batch_size 512 `
+  --dropout 0.0 `
+  --weight_decay 0.0 `
+  --context_dim 0 `
+  --samples_1 25 `
+  --samples_2 10 `
+  --test_size 0.2 `
+  --seed 123 `
+  --gpu 0
+```
+
+**Amazon**
+
+```powershell
+python supervised_train.py `
+  --train_prefix ../../dataset/ `
+  --file_name Amazon.mat `
+  --sigmoid `
+  --epochs 50 `
+  --learning_rate 0.01 `
+  --dim_1 128 `
+  --batch_size 512 `
+  --dropout 0.0 `
+  --weight_decay 0.0 `
+  --context_dim 0 `
+  --samples_1 25 `
+  --samples_2 10 `
+  --test_size 0.2 `
+  --seed 123 `
+  --gpu 0
+```
+
+Outputs: `algorithms/GraphConsis/results/GraphConsis/YelpChi/seed123/` and `.../Amazon/seed123/`. Amazon’s `net_usu` is dense, so the first epoch can take a while to load.

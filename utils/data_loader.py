@@ -38,13 +38,20 @@ def load_data_dblp(path='../../dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat'
     return rownetworks, features, X_train, y_train, X_test, y_test
 
 
-def load_data_yelpchi(path='../../dataset/YelpChi.mat', test_size=0.2, seed=48,
-                      relation='net_rur'):
-    """Homogeneous YelpChi graph (review-user-review) for GCN models such as FdGars."""
+YELPCHI_RELATIONS = ('net_rur', 'net_rtr', 'net_rsr')
+AMAZON_RELATIONS = ('net_upu', 'net_usu', 'net_uvu')
+
+
+def _mat_user_keys(data):
+    return [k for k in data.keys() if not k.startswith('__')]
+
+
+def _load_mat_graph(path, relations, test_size=0.2, seed=48, dataset_name='dataset'):
+    """Load a CARE-GNN-style .mat: features, label, and named adjacency matrices."""
     if not os.path.isfile(path):
         raise FileNotFoundError(
-            "YelpChi file not found at {}. Unzip dataset/YelpChi.zip first "
-            "(Expand-Archive on Windows).".format(os.path.abspath(path)))
+            "{0} file not found at {1}. Unzip dataset/{0}.zip first "
+            "(Expand-Archive on Windows).".format(dataset_name, os.path.abspath(path)))
     data = sio.loadmat(path)
     truelabels = np.array(data['label']).reshape(-1).astype(int)
     features = data['features'].astype(float)
@@ -52,16 +59,52 @@ def load_data_yelpchi(path='../../dataset/YelpChi.mat', test_size=0.2, seed=48,
         features = np.asarray(features.todense())
     else:
         features = np.asarray(features)
-    if relation not in data:
-        raise KeyError("Relation '{}' not in YelpChi.mat; available keys: {}".format(
-            relation, list(data.keys())))
-    adj = data[relation]
-    if not sp.issparse(adj):
-        adj = sp.csr_matrix(adj)
+    available = _mat_user_keys(data)
+    adjs = []
+    for relation in relations:
+        if relation not in data:
+            raise KeyError("Relation '{}' not in {}; available keys: {}".format(
+                relation, os.path.basename(path), available))
+        adj = data[relation]
+        if not sp.issparse(adj):
+            adj = sp.csr_matrix(adj)
+        adjs.append(adj)
     n_classes = int(truelabels.max()) + 1
     y = np.eye(n_classes, dtype=float)[truelabels]
     X_train, X_test, y_train, y_test = _split_indices(y, test_size=test_size, seed=seed)
-    return [adj], features, X_train, y_train, X_test, y_test
+    return adjs, features, X_train, y_train, X_test, y_test
+
+
+def load_data_yelpchi(path='../../dataset/YelpChi.mat', test_size=0.2, seed=48,
+                      relation='net_rur'):
+    """Homogeneous YelpChi graph (review-user-review) for GCN models such as FdGars."""
+    return _load_mat_graph(path, [relation], test_size=test_size, seed=seed,
+                           dataset_name='YelpChi')
+
+
+def load_data_yelpchi_multi(path='../../dataset/YelpChi.mat', test_size=0.2, seed=48,
+                            relations=None):
+    """Multi-relation YelpChi (R-U-R, R-T-R, R-S-R)."""
+    if relations is None:
+        relations = list(YELPCHI_RELATIONS)
+    return _load_mat_graph(path, relations, test_size=test_size, seed=seed,
+                           dataset_name='YelpChi')
+
+
+def load_data_amazon(path='../../dataset/Amazon.mat', test_size=0.2, seed=48,
+                     relation='homo'):
+    """Homogeneous Amazon graph (union of relations) for GCN models such as FdGars."""
+    return _load_mat_graph(path, [relation], test_size=test_size, seed=seed,
+                           dataset_name='Amazon')
+
+
+def load_data_amazon_multi(path='../../dataset/Amazon.mat', test_size=0.2, seed=48,
+                           relations=None):
+    """Multi-relation Amazon (U-P-U, U-S-U, U-V-U) for GraphConsis-style models."""
+    if relations is None:
+        relations = list(AMAZON_RELATIONS)
+    return _load_mat_graph(path, relations, test_size=test_size, seed=seed,
+                           dataset_name='Amazon')
 
 
 def load_example_semi(test_size=0.2, seed=48):
