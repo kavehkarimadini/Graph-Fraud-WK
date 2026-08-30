@@ -4,6 +4,7 @@ from __future__ import print_function
 import argparse
 import os
 import shutil
+import subprocess
 import sys
 import zipfile
 from datetime import datetime
@@ -202,6 +203,73 @@ def extract_dataset_zip(zpath, dest):
     if not extracted:
         print('No known dataset files inside', zpath)
     return extracted
+
+
+def _looks_like_repo(path):
+    return (Path(path) / 'algorithms' / 'GraphConsis' / 'supervised_train.py').is_file()
+
+
+def find_repo_root(start):
+    start = Path(start)
+    if _looks_like_repo(start):
+        return start.resolve()
+    if start.is_dir():
+        for child in sorted(start.iterdir()):
+            if child.is_dir() and _looks_like_repo(child):
+                return child.resolve()
+        marker = 'algorithms/GraphConsis/supervised_train.py'
+        for hit in start.rglob('supervised_train.py'):
+            if hit.parent.name == 'GraphConsis':
+                root = hit.parents[2]
+                if _looks_like_repo(root):
+                    return root.resolve()
+    return None
+
+
+def unpack_archive(zpath, dest):
+    """Unzip ``zpath`` into ``dest`` (uses system unzip on Colab when available)."""
+    dest = Path(dest)
+    dest.mkdir(parents=True, exist_ok=True)
+    zpath = Path(zpath)
+    unzip_bin = shutil.which('unzip')
+    if unzip_bin:
+        print('Unzipping {} -> {} (this can take several minutes)'.format(zpath, dest))
+        subprocess.check_call([unzip_bin, '-o', '-q', str(zpath), '-d', str(dest)])
+        return dest
+    print('Unzipping {} -> {} with zipfile'.format(zpath, dest))
+    skip_parts = ('.venv/', '__pycache__/', '.git/')
+    with zipfile.ZipFile(zpath, 'r') as zf:
+        for info in zf.infolist():
+            name = info.filename.replace('\\', '/')
+            if any(part in name for part in skip_parts):
+                continue
+            zf.extract(info, dest)
+    return dest
+
+
+def unpack_repo_from_drive(drive_zip, dest=None):
+    """Unzip a full-repo archive from Drive onto local disk and return the repo root.
+
+    Zip the ``Graph-Fraud-WK`` folder (include ``dataset/``, exclude ``.venv``).
+    ``drive_zip`` is relative to MyDrive, e.g. ``Graph-Fraud-WK.zip``.
+    """
+    src = resolve_drive_path(drive_zip)
+    if not src.is_file():
+        raise FileNotFoundError('Repo zip is not a file: {}'.format(src))
+    dest = Path(dest) if dest else Path('/content') if in_colab() else (Path.cwd() / '_unpacked_repo')
+    dest.mkdir(parents=True, exist_ok=True)
+    print('Repo zip:', src)
+    unpack_archive(src, dest)
+    root = find_repo_root(dest)
+    if root is None:
+        raise FileNotFoundError(
+            'Unzipped {}, but did not find algorithms/GraphConsis/. '
+            'Zip the Graph-Fraud-WK folder itself (the one that contains algorithms/).'.format(src))
+    ddir = root / 'dataset'
+    if ddir.is_dir():
+        unzip_if_needed(ddir)
+    print('Repo root:', root)
+    return root
 
 
 def prepare_datasets_from_drive(drive_path, dest=None):
