@@ -16,7 +16,9 @@ dataset/YelpChi_hand.mat
 */__pycache__
 dataset/DBLP4057_GAT_with_idx_tra200_val_800.mat
 dataset/
+colab_graphconsis_bwgnn.zip
 results/
 notebook_runs/
 tmp/
 .venv/
+
