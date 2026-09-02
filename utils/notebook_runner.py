@@ -16,6 +16,9 @@ GRAPHCONSIS_FILES = {
     'amazon': 'Amazon.mat',
     'tfinance': 'tfinance',
     'tsocial': 'tsocial',
+    'elliptic': 'elliptic',
+    'elliptic_bitcoin': 'elliptic',
+    'elliptic_bitcoin_dataset': 'elliptic',
 }
 
 DATASET_ALIASES = {
@@ -28,6 +31,10 @@ DATASET_ALIASES = {
     'T-Finance': 'tfinance',
     'tsocial': 'tsocial',
     'T-Social': 'tsocial',
+    'elliptic': 'elliptic',
+    'Elliptic': 'elliptic',
+    'elliptic_bitcoin': 'elliptic',
+    'elliptic_bitcoin_dataset': 'elliptic',
 }
 
 NEEDED_FILES = {
@@ -308,7 +315,7 @@ def prepare_datasets_from_drive(drive_path, dest=None):
     if missing:
         print('Still missing under dataset/:', missing)
     else:
-        print('All four dataset files are in', dest.resolve())
+        print('All required dataset files are in', dest.resolve())
     return missing
 
 
@@ -382,7 +389,7 @@ def _graphconsis_defaults(dataset, root):
         test_size=test_size,
         no_save=False,
         run_tag=None,
-        dataset_str=os.path.splitext(file_name)[0],
+        dataset_str='elliptic' if ds == 'elliptic' else os.path.splitext(file_name)[0],
     )
 
 

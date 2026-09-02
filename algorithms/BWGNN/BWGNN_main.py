@@ -17,7 +17,7 @@ import torch.nn.functional as F
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.BWGNN.BWGNN import BWGNN
 from utils.data_loader import (
-    load_data_amazon, load_data_yelpchi, load_tgraph_dgl, scipy_to_dgl,
+    load_data_amazon, load_data_yelpchi, load_elliptic_graph, load_tgraph_dgl, scipy_to_dgl,
 )
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import split_report, stratified_train_test_split
@@ -28,7 +28,7 @@ from utils.training import add_save_args, resolve_test_size
 def parse_args():
     parser = argparse.ArgumentParser(description='BWGNN')
     parser.add_argument('--dataset', type=str, default='tfinance',
-                        help="tfinance / tsocial / yelpchi / amazon")
+                        help="tfinance / tsocial / yelpchi / amazon / elliptic")
     parser.add_argument('--train_ratio', type=float, default=None,
                         help='Train fraction (overrides --test_size). Paper uses 0.4.')
     parser.add_argument('--hid_dim', type=int, default=64)
@@ -66,7 +66,10 @@ def load_bwgnn_graph(args):
         labels[train_idx] = y_train.argmax(axis=1)
         labels[test_idx] = y_test.argmax(axis=1)
         return scipy_to_dgl(adjs[0], features, labels)
-    raise ValueError("Unknown dataset '{}'. Use tfinance, tsocial, yelpchi, or amazon.".format(args.dataset))
+    if ds in ('elliptic', 'elliptic_bitcoin', 'elliptic_bitcoin_dataset'):
+        return load_elliptic_graph(prefix=prefix)
+    raise ValueError(
+        "Unknown dataset '{}'. Use tfinance, tsocial, yelpchi, amazon, or elliptic.".format(args.dataset))
 
 
 def split_graph_labels(labels, test_size, seed):

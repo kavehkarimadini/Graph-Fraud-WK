@@ -11,6 +11,7 @@ from torch_geometric.utils import from_scipy_sparse_matrix
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils.split import split_report, stratified_train_test_split
+from utils.data_loader import is_elliptic_name, load_elliptic_pyg
 
 
 def load_data_dblp(prefix='./example_data/', file_name='YelpChi.mat',
@@ -30,6 +31,10 @@ def load_data_dblp(prefix='./example_data/', file_name='YelpChi.mat',
 
 def load_mat_graph(prefix='../../dataset/', file_name='YelpChi.mat', normalize=True,
                    test_size=0.2, seed=48):
+    if is_elliptic_name(file_name):
+        x, edge_indices, y, train_idx, test_idx, split_info = load_elliptic_pyg(
+            prefix=prefix, test_size=test_size, seed=seed, normalize=normalize)
+        return x, edge_indices[0], y, train_idx, test_idx, split_info
     adjs, feats, truelabels, train_idx, test_idx = load_data_dblp(
         prefix, file_name, test_size=test_size, seed=seed)
     if normalize:

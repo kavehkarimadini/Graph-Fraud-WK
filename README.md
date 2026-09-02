@@ -192,6 +192,16 @@ cd ..
 
 Used by **BWGNN** and **GraphConsis** (`--file_name tfinance` or `tsocial`). T-Social is large (multi-GB); BWGNN uses a smaller hidden size (`--hid_dim 10 --order 5`).
 
+### Elliptic Bitcoin
+
+Kaggle / [Elliptic](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set) transaction graph. Place the three CSVs in `dataset/elliptic_bitcoin_dataset/`:
+
+- `elliptic_txs_classes.csv` — `txId`, `class` (`1` illicit, `2` licit, `unknown`)
+- `elliptic_txs_edgelist.csv` — payment edges `txId1` → `txId2`
+- `elliptic_txs_features.csv` — no header; 167 columns (`txId`, timestep, 165 features)
+
+Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), induce the subgraph, and map illicit→`1`, licit→`0`. Used by **GraphConsis** (`--file_name elliptic`), **BWGNN** (`--dataset elliptic`), and **GraphSAGE**.
+
 ---
 
 
@@ -235,8 +245,8 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | SemiGNN     | `python SemiGNN_main.py --batch_size 4 --gpu 0`                                                                                                  |
 | GeniePath   | `python GeniePath_main.py --gpu 0`                                                                                                               |
 | GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`               |
-| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`) |
-| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0`                                                                                                              |
+| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`, `elliptic`) |
+| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`)                                                                                                              |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
 
 
@@ -538,7 +548,7 @@ cd ../..
 
 #### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
-Uses Yelp relations (`net_rur`, `net_rtr`, `net_rsr`), Amazon relations (`net_upu`, `net_usu`, `net_uvu`), or a single T-Finance / T-Social adjacency.
+Uses Yelp relations (`net_rur`, `net_rtr`, `net_rsr`), Amazon relations (`net_upu`, `net_usu`, `net_uvu`), a single T-Finance / T-Social adjacency, or the labeled Elliptic payment graph.
 
 ```powershell
 cd algorithms/GraphConsis
@@ -557,6 +567,7 @@ python supervised_train.py `
 # T-Finance / T-Social (DGL binaries; unzip dataset/tfinance.zip and tsocial.zip first)
 python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --epochs 50 --gpu 0
 python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --epochs 20 --batch_size 256 --gpu 0
+python supervised_train.py --train_prefix ../../dataset/ --file_name elliptic --sigmoid --epochs 50 --gpu 0
 
 cd ../..
 ```
@@ -579,6 +590,7 @@ python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 
 # Homogeneous Amazon / YelpChi .mat
 python BWGNN_main.py --dataset amazon --gpu 0
 python BWGNN_main.py --dataset yelpchi --gpu 0
+python BWGNN_main.py --dataset elliptic --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
 
 cd ../..
 ```
@@ -894,7 +906,7 @@ Same as GraphSAGE, plus:
 
 | Argument          | Default    | Description                                         |
 | ----------------- | ---------- | --------------------------------------------------- |
-| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon`       |
+| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon` / `elliptic` |
 | `--train_ratio`   | `None`     | Train fraction (paper: `0.4`); else uses `--test_size` |
 | `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)         |
 | `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)             |
@@ -1122,3 +1134,18 @@ python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 
 ```
 
 T-Social is multi-GB; keep `--hid_dim 10`. BWGNN also takes `--dataset amazon` or `yelpchi`.
+----------------------------------------------
+
+Elliptic is wired in as a fifth dataset for GraphConsis, BWGNN, and GraphSAGE.
+
+The three CSVs in dataset/elliptic_bitcoin_dataset/ are loaded as a labeled-only payment graph: unknown txs are dropped, class 1 → illicit (1), class 2 → licit (0). That gives 46,564 nodes (4,545 illicit / 42,019 licit), 36,624 edges, and 166 features (timestep + 165 published features).
+
+GraphConsis
+
+cd algorithms\GraphConsis
+python supervised_train.py --train_prefix ../../dataset/ --file_name elliptic --sigmoid --epochs 50 --gpu 0
+BWGNN
+
+cd algorithms\BWGNN
+python BWGNN_main.py --dataset elliptic --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 50 --gpu 0
+The Colab notebook has matching GraphConsis and BWGNN Elliptic cells. Keep the folder name elliptic_bitcoin_dataset with those three CSV filenames.

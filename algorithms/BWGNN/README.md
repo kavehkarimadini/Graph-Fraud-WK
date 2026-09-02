@@ -23,6 +23,7 @@ From `algorithms/BWGNN/` after unzipping `dataset/tfinance.zip` / `dataset/tsoci
 ```powershell
 python BWGNN_main.py --dataset tfinance --hid_dim 64 --order 2 --epochs 100 --gpu 0
 python BWGNN_main.py --dataset tsocial --hid_dim 10 --order 5 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset elliptic --hid_dim 64 --order 2 --epochs 100 --gpu 0
 ```
 
 `--train_ratio 0.4` matches the paper (40% train). T-Social is large; keep `hid_dim` small.

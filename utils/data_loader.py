@@ -236,6 +236,135 @@ def scipy_to_dgl(adj, features, labels):
     return HomoGraph(coo.row, coo.col, np.asarray(features).shape[0], features, y.reshape(-1))
 
 
+ELLIPTIC_CSV_NAMES = (
+    'elliptic_txs_classes.csv',
+    'elliptic_txs_edgelist.csv',
+    'elliptic_txs_features.csv',
+)
+
+
+def is_elliptic_name(name):
+    key = os.path.basename(str(name)).lower().replace('.zip', '').replace('.mat', '')
+    return key in ('elliptic', 'elliptic_bitcoin', 'elliptic_bitcoin_dataset')
+
+
+def resolve_elliptic_dir(prefix=None):
+    """Locate ``dataset/elliptic_bitcoin_dataset`` (the folder with the three CSVs)."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = []
+    if prefix:
+        prefix = os.path.normpath(prefix)
+        candidates.extend([
+            prefix,
+            os.path.join(prefix, 'elliptic_bitcoin_dataset'),
+            os.path.join(prefix, 'elliptic'),
+        ])
+    candidates.extend([
+        os.path.join('dataset', 'elliptic_bitcoin_dataset'),
+        os.path.join(here, '..', 'dataset', 'elliptic_bitcoin_dataset'),
+        os.path.join(os.getcwd(), 'dataset', 'elliptic_bitcoin_dataset'),
+        os.path.join(os.getcwd(), '..', '..', 'dataset', 'elliptic_bitcoin_dataset'),
+    ])
+    for path in candidates:
+        path = os.path.normpath(path)
+        if os.path.isdir(path) and all(os.path.isfile(os.path.join(path, n)) for n in ELLIPTIC_CSV_NAMES):
+            return path
+    raise FileNotFoundError(
+        "Elliptic Bitcoin CSVs not found. Expected folder dataset/elliptic_bitcoin_dataset "
+        "with elliptic_txs_classes.csv, elliptic_txs_edgelist.csv, elliptic_txs_features.csv.")
+
+
+def load_elliptic_arrays(path=None, prefix=None, labeled_only=True):
+    """Load Elliptic Bitcoin (Weber et al., 2019) as numpy ``(features, labels, src, dst)``.
+
+    By default only **labeled** transactions are kept (class ``1`` illicit, ``2`` licit;
+    ``unknown`` is dropped) and the payment graph is induced on those nodes. Features
+    are timestep plus the 165 published local/aggregated descriptors (166-d).
+    Labels are binary: ``1`` illicit, ``0`` licit.
+    """
+    import csv
+
+    ddir = path if path and os.path.isdir(path) else resolve_elliptic_dir(prefix)
+    class_path = os.path.join(ddir, 'elliptic_txs_classes.csv')
+    edge_path = os.path.join(ddir, 'elliptic_txs_edgelist.csv')
+    feat_path = os.path.join(ddir, 'elliptic_txs_features.csv')
+
+    raw_label = {}
+    with open(class_path, 'r', newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            raw_label[int(row['txId'])] = str(row['class']).strip().lower()
+
+    feat = np.loadtxt(feat_path, delimiter=',')
+    feat_ids = feat[:, 0].astype(np.int64)
+    feat_x = feat[:, 1:].astype(np.float32, copy=False)
+    id_to_feat = {int(tid): i for i, tid in enumerate(feat_ids)}
+
+    if labeled_only:
+        keep = [tid for tid, c in raw_label.items() if c in ('1', '2') and tid in id_to_feat]
+    else:
+        keep = [tid for tid in feat_ids.tolist() if tid in raw_label]
+    keep = np.asarray(keep, dtype=np.int64)
+    n = int(keep.size)
+    feat_rows = np.fromiter((id_to_feat[int(tid)] for tid in keep), dtype=np.int64, count=n)
+    features = feat_x[feat_rows]
+    labels = np.empty(n, dtype=np.int64)
+    for i, tid in enumerate(keep):
+        labels[i] = 1 if raw_label[int(tid)] == '1' else 0
+    old_to_new = {int(tid): i for i, tid in enumerate(keep)}
+
+    src_list, dst_list = [], []
+    with open(edge_path, 'r', newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            a, b = int(row['txId1']), int(row['txId2'])
+            if a in old_to_new and b in old_to_new:
+                src_list.append(old_to_new[a])
+                dst_list.append(old_to_new[b])
+    src = np.asarray(src_list, dtype=np.int64)
+    dst = np.asarray(dst_list, dtype=np.int64)
+    n_illicit = int((labels == 1).sum())
+    print('Elliptic labeled-only={}, nodes={}, illicit={}, licit={}, edges={}, feat_dim={}'.format(
+        labeled_only, n, n_illicit, n - n_illicit, int(src.size), features.shape[1]))
+    return features, labels, src, dst
+
+
+def load_data_elliptic(path=None, prefix=None, test_size=0.4, seed=48, labeled_only=True):
+    """Homogeneous Elliptic graph for GCN-style models (one-hot labels)."""
+    features, truelabels, src, dst = load_elliptic_arrays(path=path, prefix=prefix, labeled_only=labeled_only)
+    n = features.shape[0]
+    adj = sp.coo_matrix((np.ones(len(src), dtype=np.float32), (src, dst)), shape=(n, n))
+    n_classes = int(truelabels.max()) + 1
+    y = np.eye(n_classes, dtype=float)[truelabels]
+    X_train, X_test, y_train, y_test = _split_indices(y, test_size=test_size, seed=seed)
+    return [adj], features, X_train, y_train, X_test, y_test
+
+
+def load_elliptic_pyg(prefix=None, test_size=0.4, seed=48, normalize=True, labeled_only=True):
+    """Elliptic Bitcoin as PyG tensors for GraphConsis (single relation)."""
+    import torch
+
+    feat, labels, src, dst = load_elliptic_arrays(prefix=prefix, labeled_only=labeled_only)
+    edge_index = torch.stack(
+        [torch.as_tensor(src, dtype=torch.long), torch.as_tensor(dst, dtype=torch.long)], dim=0)
+    if normalize:
+        feat = StandardScaler().fit_transform(feat)
+    x = torch.tensor(np.asarray(feat), dtype=torch.float32)
+    y = torch.tensor(labels, dtype=torch.long)
+    train_idx, test_idx = stratified_train_test_split(labels, test_size=test_size, seed=seed)
+    train_idx_t = torch.tensor(np.asarray(train_idx), dtype=torch.long)
+    test_idx_t = torch.tensor(np.asarray(test_idx), dtype=torch.long)
+    split_info = split_report(labels, train_idx, test_idx)
+    split_info.update({'test_fraction': float(test_size), 'seed': int(seed), 'stratified': True})
+    return x, [edge_index], y, train_idx_t, test_idx_t, split_info
+
+
+def load_elliptic_graph(prefix=None, labeled_only=True):
+    """Elliptic Bitcoin as a HomoGraph (BWGNN)."""
+    features, labels, src, dst = load_elliptic_arrays(prefix=prefix, labeled_only=labeled_only)
+    return HomoGraph(src, dst, features.shape[0], features, labels)
+
+
 def load_example_semi(test_size=0.2, seed=48):
     features = np.array([[1, 1, 0, 0, 0, 0, 0],
                          [0, 0, 1, 0, 0, 0, 0],
