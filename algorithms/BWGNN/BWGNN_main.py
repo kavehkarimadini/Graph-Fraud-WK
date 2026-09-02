@@ -123,7 +123,8 @@ def train(args=None):
         loss.backward()
         optimizer.step()
         print('Epoch {:d} loss: {:.4f}'.format(epoch, loss.item()))
-    print('train time=', '{:.5f}'.format(time.perf_counter() - t_start))
+    train_time = time.perf_counter() - t_start
+    print('train time=', '{:.5f}'.format(train_time))
 
     model.eval()
     with torch.no_grad():
@@ -154,6 +155,7 @@ def train(args=None):
             probabilities=prob[test_idx].cpu().numpy(),
             train_indices=train_idx.cpu().numpy(), test_indices=test_idx.cpu().numpy(),
             y_train=y_train, y_test=y_test,
+            train_time=train_time,
         )
     return test_metrics, out_dir
 

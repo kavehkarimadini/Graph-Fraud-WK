@@ -134,7 +134,8 @@ def main():
                 train_idx, args.batch_size)
         print('Epoch {:d} loss: {:.4f}'.format(epoch, avg_loss))
 
-    print('train time=', '{:.5f}'.format(time.perf_counter() - t_start))
+    train_time = time.perf_counter() - t_start
+    print('train time=', '{:.5f}'.format(train_time))
     model.eval()
     train_metrics, _, _ = predict_split(model, data, train_idx, args.sigmoid)
     test_metrics, y_true, y_pred = predict_split(model, data, test_idx, args.sigmoid)
@@ -151,6 +152,7 @@ def main():
             predictions=y_pred, probabilities=y_pred,
             train_indices=train_idx.cpu().numpy(), test_indices=test_idx.cpu().numpy(),
             y_train=data.y[train_idx].cpu().numpy(), y_test=y_true,
+            train_time=train_time,
         )
 
 

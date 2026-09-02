@@ -13,6 +13,7 @@ if _REPO_ROOT not in sys.path:
 import numpy as np
 import torch
 import scipy.sparse as sp
+import time
 
 from parse import parse_args
 from get_data import Data
@@ -88,6 +89,7 @@ if __name__ == '__main__':
     X_test_t = torch.tensor(X_test, dtype=torch.long, device=device)
 
     print('without pretraining.')
+    t_start = time.perf_counter()
     for epoch in range(args.epoch):
         loss, ce_loss, reg_loss = 0., 0., 0.
         n_batch = (data_generator.n_train - 1) // args.batch_size + 1
@@ -111,6 +113,9 @@ if __name__ == '__main__':
             epoch, loss, ce_loss, reg_loss,
             test_metrics_epoch['f1_micro'], test_metrics_epoch['f1_macro'], test_metrics_epoch['accuracy']))
 
+    train_time = time.perf_counter() - t_start
+    print('train time=', '{:.5f}'.format(train_time))
+
     _, train_pred, train_prob, train_metrics = eval_split(model, X_train_t, y_train_t)
     _, test_pred, test_prob, test_metrics = eval_split(model, X_test_t, y_test_t)
     print('Train metrics:', train_metrics)
@@ -128,4 +133,5 @@ if __name__ == '__main__':
             predictions=test_pred, probabilities=test_prob,
             train_indices=X_train, test_indices=X_test,
             y_train=y_train, y_test=y_test,
+            train_time=train_time,
         )

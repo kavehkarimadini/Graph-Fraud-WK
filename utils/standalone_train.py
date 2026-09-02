@@ -27,8 +27,11 @@ def run_epochs(net, optimizer, args, paras_train_size, train_data, train_label, 
             count += 1
         print("epoch{:d} : train_loss: {:.4f}, train_acc: {:.4f}".format(
             epoch, train_loss / max(count, 1), train_acc / max(count, 1)))
-    print("train time=", "{:.5f}".format(time.perf_counter() - t_start))
+    elapsed = time.perf_counter() - t_start
+    print("train time=", "{:.5f}".format(elapsed))
     print("Train end!")
+    args.train_time_sec = elapsed
+    return elapsed
 
 
 def full_labels_from_split(n_nodes, train_data, train_label, test_data, test_label):
@@ -40,14 +43,18 @@ def full_labels_from_split(n_nodes, train_data, train_label, test_data, test_lab
 
 def finish(net, args, model_name, _features_or_none, _adj_data,
            train_data, train_label, test_data, test_label, n_nodes,
-           train_eval_fn, test_eval_fn, sigmoid=True, extra_config=None):
+           train_eval_fn, test_eval_fn, sigmoid=True, extra_config=None,
+           train_time=None):
     split_info = get_split_info(
         full_labels_from_split(n_nodes, train_data, train_label, test_data, test_label),
         train_data, test_data,
         resolve_test_size(args, model_name), args.seed,
     )
+    if train_time is None:
+        train_time = getattr(args, 'train_time_sec', None)
     return finalize_run(
         args, model_name, net, split_info,
         train_data, train_label, test_data, test_label,
         train_eval_fn, test_eval_fn, sigmoid=sigmoid, extra_config=extra_config,
+        train_time=train_time,
     )

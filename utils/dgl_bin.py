@@ -139,12 +139,36 @@ def _is_float_dtype(dt):
     return np.issubdtype(dt, np.floating)
 
 
+def _same_meta(a, b):
+    return a is not None and b is not None and a[2] == b[2] and a[0] == b[0]
+
+
+def _int_minmax(path, data_off, length, dt):
+    arr = np.memmap(path, dtype=dt, mode='r', offset=data_off, shape=(int(length),))
+    try:
+        return int(arr.min()), int(arr.max())
+    finally:
+        del arr
+
+
+def _is_feature_matrix(shape, dt):
+    """Node features: 2-D float, or 2-D int that is not a 1/2-col one-hot."""
+    if len(shape) != 2:
+        return False
+    cols = int(shape[1])
+    if cols < 1 or cols > 512:
+        return False
+    if _is_float_dtype(dt):
+        return True
+    return _is_integer_dtype(dt) and cols > 2
+
+
 def load_dgl_v2_homo_arrays(path):
     """Parse a homogeneous DGL v2 graph into numpy ``(features, labels, src, dst)``.
 
-    Features are the largest 2-D float array. Labels are a 1-D/2-D integer array
-    with the same number of rows (2-D is argmax'd). Edges are the two longest
-    1-D integer arrays of equal length whose values index ``[0, n)``.
+    Features are the largest 2-D float matrix, or a 2-D int matrix (T-Social).
+    Labels are a 1-D/2-D integer array with the same number of rows (2-D is
+    argmax'd). Edges are COO src/dst, or CSR indptr + indices.
     """
     path = os.path.abspath(path)
     metas = list(iter_dgl_ndarrays(path))
@@ -153,49 +177,85 @@ def load_dgl_v2_homo_arrays(path):
 
     feat_meta = None
     for shape, dt, data_off, nbytes in metas:
-        if len(shape) == 2 and _is_float_dtype(dt):
-            if feat_meta is None or int(np.prod(shape)) > int(np.prod(feat_meta[0])):
-                feat_meta = (shape, dt, data_off, nbytes)
+        if not _is_feature_matrix(shape, dt):
+            continue
+        # Prefer float (T-Finance); otherwise take the largest 2-D block (T-Social).
+        better = feat_meta is None or int(np.prod(shape)) > int(np.prod(feat_meta[0]))
+        if feat_meta is not None and _is_float_dtype(feat_meta[1]) and not _is_float_dtype(dt):
+            better = False
+        if _is_float_dtype(dt) and feat_meta is not None and not _is_float_dtype(feat_meta[1]):
+            better = True
+        if better:
+            feat_meta = (shape, dt, data_off, nbytes)
     if feat_meta is None:
-        raise ValueError('No 2-D float feature matrix in {}'.format(path))
+        raise ValueError('No 2-D feature matrix in {}'.format(path))
     features = _read_ndarray(path, *feat_meta)
     n = int(features.shape[0])
 
-    lab2, lab1 = None, None
+    lab2, lab1_cands = None, []
     for shape, dt, data_off, nbytes in metas:
+        if _same_meta((shape, dt, data_off, nbytes), feat_meta):
+            continue
         if not _is_integer_dtype(dt) or not shape or int(shape[0]) != n:
             continue
-        if len(shape) == 2 and 1 <= int(shape[1]) <= 32:
+        if len(shape) == 2 and 1 <= int(shape[1]) <= 2:
             if lab2 is None or int(shape[1]) < int(lab2[0][1]):
                 lab2 = (shape, dt, data_off, nbytes)
         elif len(shape) == 1:
-            lab1 = (shape, dt, data_off, nbytes)
+            lab1_cands.append((shape, dt, data_off, nbytes))
     if lab2 is not None:
         raw = _read_ndarray(path, *lab2)
         labels = np.argmax(raw, axis=1).astype(np.int64) if raw.shape[1] > 1 else raw.reshape(-1).astype(np.int64)
-    elif lab1 is not None:
-        labels = _read_ndarray(path, *lab1).reshape(-1).astype(np.int64)
+    elif lab1_cands:
+        # Prefer a class-id vector (few distinct values) over node ids / arange.
+        best, best_nunique = None, None
+        for meta in lab1_cands:
+            arr = _read_ndarray(path, *meta).reshape(-1)
+            nunique = int(np.unique(arr).size)
+            if nunique < 2:
+                continue
+            if best is None or nunique < best_nunique:
+                best, best_nunique = arr, nunique
+        if best is None:
+            best = _read_ndarray(path, *lab1_cands[0]).reshape(-1)
+        labels = best.astype(np.int64)
     else:
         raise ValueError('No label array with {} rows in {}'.format(n, path))
 
-    by_len = {}
+    node_index_arrs = []
+    indptr_meta = None
     for shape, dt, data_off, nbytes in metas:
         if len(shape) != 1 or not _is_integer_dtype(dt):
             continue
         length = int(shape[0])
+        if length == n + 1:
+            indptr_meta = (shape, dt, data_off, nbytes)
+            continue
         if length <= n:
             continue
-        by_len.setdefault(length, []).append((shape, dt, data_off, nbytes))
-    pair = None
+        mn, mx = _int_minmax(path, data_off, length, dt)
+        if mn >= 0 and mx < n:
+            node_index_arrs.append((length, shape, dt, data_off, nbytes))
+
+    src = dst = None
+    by_len = {}
+    for rec in node_index_arrs:
+        by_len.setdefault(rec[0], []).append(rec[1:])
     for length in sorted(by_len, reverse=True):
         if len(by_len[length]) >= 2:
-            pair = by_len[length][:2]
+            a, b = by_len[length][0], by_len[length][1]
+            src = _read_ndarray(path, *a).astype(np.int64, copy=False)
+            dst = _read_ndarray(path, *b).astype(np.int64, copy=False)
             break
-    if pair is None:
+    if src is None and indptr_meta is not None and node_index_arrs:
+        indices_meta = max(node_index_arrs, key=lambda r: r[0])[1:]
+        indptr = _read_ndarray(path, *indptr_meta).astype(np.int64, copy=False)
+        dst = _read_ndarray(path, *indices_meta).astype(np.int64, copy=False)
+        if int(indptr[-1]) == dst.size and indptr.size == n + 1:
+            src = np.repeat(np.arange(n, dtype=np.int64), np.diff(indptr))
+    if src is None or dst is None:
         raise ValueError('Could not find COO src/dst arrays in {}'.format(path))
-    src = _read_ndarray(path, *pair[0]).astype(np.int64, copy=False)
-    dst = _read_ndarray(path, *pair[1]).astype(np.int64, copy=False)
-    if int(src.min()) < 0 or int(dst.min()) < 0 or int(src.max()) >= n or int(dst.max()) >= n:
+    if src.size != dst.size or int(src.min()) < 0 or int(dst.min()) < 0 or int(src.max()) >= n or int(dst.max()) >= n:
         raise ValueError('COO indices out of range for {} nodes in {}'.format(n, path))
 
     features = np.ascontiguousarray(features, dtype=np.float32)

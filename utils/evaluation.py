@@ -83,6 +83,18 @@ def compute_classification_metrics(y_true, y_pred, y_prob=None, sigmoid=False):
     return out
 
 
+def count_model_parameters(model):
+    """Return ``(total, trainable)`` parameter counts."""
+    total = 0
+    trainable = 0
+    for param in model.parameters():
+        n = int(param.numel())
+        total += n
+        if param.requires_grad:
+            trainable += n
+    return total, trainable
+
+
 def run_output_dir(save_dir, model_name, dataset_name=None, seed=None, run_tag=None):
     parts = [save_dir, model_name]
     if dataset_name:
@@ -111,6 +123,7 @@ def save_run_outputs(
     train_indices=None,
     y_test=None,
     y_train=None,
+    train_time=None,
 ):
     """
     Unified artifact layout under save_dir:
@@ -123,6 +136,18 @@ def save_run_outputs(
     """
     os.makedirs(save_dir, exist_ok=True)
 
+    complexity = {}
+    if train_time is not None:
+        complexity['train_time_sec'] = float(train_time)
+    if model is not None and hasattr(model, 'parameters'):
+        n_all, n_train = count_model_parameters(model)
+        complexity['num_parameters'] = n_all
+        complexity['num_trainable_parameters'] = n_train
+    if complexity:
+        config = dict(config)
+        config.update(complexity)
+        print('complexity:', complexity)
+
     config_path = os.path.join(save_dir, 'config.json')
     with open(config_path, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2, default=str)
@@ -134,6 +159,8 @@ def save_run_outputs(
     }
     if train_metrics is not None:
         metrics_payload['train'] = train_metrics
+    if complexity:
+        metrics_payload['complexity'] = complexity
 
     metrics_path = os.path.join(save_dir, 'metrics.json')
     with open(metrics_path, 'w', encoding='utf-8') as f:

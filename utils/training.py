@@ -54,6 +54,7 @@ def finalize_run(
     test_eval_fn,
     sigmoid=False,
     extra_config=None,
+    train_time=None,
 ):
     """
     Evaluate train/test splits and persist unified artifacts.
@@ -77,6 +78,9 @@ def finalize_run(
     if extra_config:
         config.update(extra_config)
 
+    if train_time is None:
+        train_time = config.get('train_time_sec', getattr(args, 'train_time_sec', None))
+
     dataset_name = config.get('dataset_str', config.get('dataset', 'unknown'))
     seed = config.get('seed', 123)
     out_dir = run_output_dir(args.save_dir, model_name, dataset_name, seed)
@@ -95,5 +99,6 @@ def finalize_run(
         test_indices=test_data,
         y_train=train_label,
         y_test=test_label,
+        train_time=train_time,
     )
     return test_metrics

@@ -642,7 +642,7 @@ Every training entry point (`main.py`, `*_main.py`, GraphSAGE/GraphConsis `super
 ```
 results/<Model>/<dataset>/seed<seed>/
   config.json       # full CLI / hyperparameter snapshot
-  metrics.json      # train + test metrics + split class counts
+  metrics.json      # train + test metrics, split counts, train time, parameter count
   split.npz         # train_idx, test_idx, y_train, y_test
   predictions.npz   # test predictions + probabilities
   checkpoint.pt     # {state_dict, config, model_name}
@@ -652,7 +652,7 @@ results/<Model>/<dataset>/seed<seed>/
 | File              | Contents                                                                                                                |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `config.json`     | All training arguments (model, seed, test_size, lr, …)                                                                  |
-| `metrics.json`    | `train` / `test` metrics (accuracy, F1 micro/macro/weighted, precision, recall, AUROC, AUPRC, G-Mean) plus `split` report |
+| `metrics.json`    | `train` / `test` metrics, `split` report, and `complexity` (`train_time_sec`, `num_parameters`, `num_trainable_parameters`) |
 | `split.npz`       | Stratified indices and labels for reproducible re-evaluation                                                            |
 | `predictions.npz` | Held-out test predictions and probabilities                                                                             |
 | `checkpoint.pt`   | PyTorch checkpoint for loading the trained model                                                                        |

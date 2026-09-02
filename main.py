@@ -218,7 +218,8 @@ def train(args, adj_list, features, train_data, train_label, test_data, test_lab
         print("epoch{:d} : train_loss: {:.4f}, train_acc: {:.4f}".format(
             epoch, train_loss / count, train_acc / count))
 
-    print("train time=", "{:.5f}".format(time.perf_counter() - t_start))
+    train_time = time.perf_counter() - t_start
+    print("train time=", "{:.5f}".format(train_time))
     print("Train end!")
 
     if args.model == 'SemiGNN':
@@ -234,6 +235,7 @@ def train(args, adj_list, features, train_data, train_label, test_data, test_lab
         args, args.model, net, split_info,
         train_data, train_label, test_data, test_label,
         train_eval, test_eval, sigmoid=True,
+        train_time=train_time,
     )
 
 
