@@ -1444,3 +1444,8 @@ python BSL_main.py --dataset comp --gpu 0
 python BSL_main.py --dataset yelpchi --paper_split --gpu 0
 ```
 --------------------------------------------------------
+Early stopping is now **on by default** for GraphConsis and BWGNN.
+
+`--early_stop` defaults to **25**: training stops if valid AUC does not improve for 25 epochs. The best valid-AUC checkpoint is still restored before test metrics.
+
+Pass `--early_stop 0` if you want to run every epoch. SplitGNN / DGA-GNN / GLHN / BSL keep their own per-dataset patience values.
