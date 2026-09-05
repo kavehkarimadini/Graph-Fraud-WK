@@ -26,6 +26,7 @@ From `algorithms/SplitGNN/` after placing `dataset/comp.dgl` (and optionally unz
 python SplitGNN_main.py --dataset comp --gpu 0
 python SplitGNN_main.py --dataset yelpchi --gpu 0
 python SplitGNN_main.py --dataset amazon --gpu 0
+python SplitGNN_main.py --dataset elliptic --gpu 0
 ```
 
 Defaults match the paper table (FDCompCN: `lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). `comp.dgl` train/valid/test masks are used unless you pass `--ignore_file_masks`.

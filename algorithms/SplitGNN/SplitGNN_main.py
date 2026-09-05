@@ -5,6 +5,7 @@ Usage (from algorithms/SplitGNN):
   python SplitGNN_main.py --dataset comp --gpu 0
   python SplitGNN_main.py --dataset yelpchi --gpu 0
   python SplitGNN_main.py --dataset amazon --gpu 0
+  python SplitGNN_main.py --dataset elliptic --gpu 0
 '''
 from __future__ import print_function
 
@@ -37,13 +38,19 @@ DATASET_DEFAULTS = {
                  dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
     'amazon': dict(learning_rate=0.1, C=2, K=1, gamma=0.4, intra_dim=8,
                    dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
+    'elliptic': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
+                     dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
+    'tfinance': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
+                     dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
+    'tsocial': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
+                    dropout=0.1, weight_decay=5e-5, epochs=200, early_stop=50),
 }
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='SplitGNN')
     parser.add_argument('--dataset', type=str, default='comp',
-                        help='comp / yelpchi / amazon')
+                        help='comp / yelpchi / amazon / elliptic / tfinance / tsocial')
     parser.add_argument('--train_ratio', type=float, default=0.4,
                         help='Train fraction when not using file masks (paper: 0.4).')
     parser.add_argument('--ignore_file_masks', action='store_true',
@@ -70,11 +77,18 @@ def apply_dataset_defaults(args):
     ds = args.dataset.lower().replace('.dgl', '').replace('.mat', '')
     if ds == 'fdcompcn':
         ds = 'comp'
+    if ds in ('elliptic_bitcoin', 'elliptic_bitcoin_dataset'):
+        ds = 'elliptic'
     defaults = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['comp'])
     for key, value in defaults.items():
         if getattr(args, key, None) is None:
             setattr(args, key, value)
-    args.dataset_str = 'comp' if ds in ('comp', 'fdcompcn') else ds
+    if ds in ('comp', 'fdcompcn'):
+        args.dataset_str = 'comp'
+    elif ds in ('elliptic', 'elliptic_bitcoin', 'elliptic_bitcoin_dataset'):
+        args.dataset_str = 'elliptic'
+    else:
+        args.dataset_str = ds
     return args
 
 

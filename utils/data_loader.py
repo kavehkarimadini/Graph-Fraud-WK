@@ -593,10 +593,13 @@ def _load_mat_relations(path, homo_key, rel_map):
 
 def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
                         use_file_masks=True, amazon_drop_col19=True):
-    """Heterograph for SplitGNN: FDCompCN ``.dgl``, or YelpChi / Amazon ``.mat``.
+    """Heterograph for SplitGNN: FDCompCN ``.dgl``, YelpChi / Amazon ``.mat``,
+    or a homogeneous graph (Elliptic / T-Finance / T-Social).
 
     Features are row-normalized. Amazon drops feature column 19 (label leakage)
     and splits only labeled nodes (index >= 3305), matching the official code.
+    Homogeneous datasets expose the same edges as ``homo`` (hinge loss) and ``r``
+    (the PolyConv relation SplitGNN requires besides ``homo``).
     """
     ds = os.path.basename(str(name)).lower().replace('.zip', '').replace('.mat', '').replace('.dgl', '')
     drop_col19 = False
@@ -616,9 +619,22 @@ def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
             path, 'homo', (('p', 'net_upu'), ('s', 'net_usu'), ('v', 'net_uvu')))
         drop_col19 = bool(amazon_drop_col19)
         labeled_from = 3305
+    elif is_elliptic_name(name) or ds in ('elliptic', 'elliptic_bitcoin', 'elliptic_bitcoin_dataset'):
+        features, labels, src, dst = load_elliptic_arrays(prefix=prefix)
+        relations = [
+            ('homo', src, dst),
+            ('r', src, dst),
+        ]
+    elif ds in ('tfinance', 'tsocial'):
+        features, labels, src, dst = load_tgraph_arrays(ds, prefix=prefix)
+        relations = [
+            ('homo', src, dst),
+            ('r', src, dst),
+        ]
     else:
         raise ValueError(
-            "Unknown SplitGNN dataset '{}'. Use comp, yelpchi, or amazon.".format(name))
+            "Unknown SplitGNN dataset '{}'. Use comp, yelpchi, amazon, elliptic, "
+            "tfinance, or tsocial.".format(name))
 
     if drop_col19 and features.shape[1] > 19:
         features = np.delete(features, 19, axis=1)

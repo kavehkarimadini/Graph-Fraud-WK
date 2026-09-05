@@ -253,7 +253,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`               |
 | GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`, `elliptic`, `comp`) |
 | BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`, `comp`)                                                                                                              |
-| SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`)                                                                                                          |
+| SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`, `elliptic`)                                                                                              |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
 
 
@@ -615,6 +615,7 @@ cd algorithms/SplitGNN
 python SplitGNN_main.py --dataset comp --gpu 0
 python SplitGNN_main.py --dataset yelpchi --gpu 0
 python SplitGNN_main.py --dataset amazon --gpu 0
+python SplitGNN_main.py --dataset elliptic --gpu 0
 cd ../..
 ```
 
@@ -945,7 +946,7 @@ Same as GraphSAGE, plus:
 
 | Argument          | Default     | Description                                              |
 | ----------------- | ----------- | -------------------------------------------------------- |
-| `--dataset`       | `comp`      | `comp` / `yelpchi` / `amazon`                            |
+| `--dataset`       | `comp`      | `comp` / `yelpchi` / `amazon` / `elliptic`               |
 | `--train_ratio`   | `0.4`       | Train fraction if file masks are ignored                 |
 | `--intra_dim`     | paper table | Hidden size (`8`)                                        |
 | `--C` / `--K`     | paper table | Wavelet order / positive-band cutoff (`3` / `2` on comp) |
@@ -1219,13 +1220,15 @@ cd algorithms\GraphConsis
 python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --epochs 50 --gpu 0
 
 cd algorithms\BWGNN
-python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 50 --gpu 0
 
 cd algorithms\SplitGNN
 python SplitGNN_main.py --dataset comp --gpu 0
 python SplitGNN_main.py --dataset yelpchi --gpu 0
 python SplitGNN_main.py --dataset amazon --gpu 0
-python SplitGNN_main.py --dataset elliptic --gpu 0
+python SplitGNN_main.py --dataset elliptic --gpu 0 --epochs 50
+python SplitGNN_main.py --dataset tsocial --gpu 0 --epochs 50
+python SplitGNN_main.py --dataset tfinance --gpu 0 --epochs 50
 ```
 
 SplitGNN defaults follow the paper table for FDCompCN (`lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). Pass `--ignore_file_masks` to use a fresh 40/20/40 split instead of the masks in `comp.dgl`. Amazon still drops feature column 19 and trains only on labeled nodes (`index >= 3305`).
