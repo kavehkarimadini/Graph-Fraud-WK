@@ -136,3 +136,46 @@ def protocol_split(labels, train_ratio=0.4, valid_ratio=VALID_RATIO, test_ratio=
         len(test_idx), int(n), len(test_idx) / n,
         len(discarded_idx)))
     return train_idx, valid_idx, test_idx, discarded_idx, info
+
+
+def barely_split(labels, label_ratio=0.01, unlabeled_ratio=0.10, seed=48, indices=None):
+    """Paper BSL split: small labeled set, unlabeled aux set, remainder test.
+
+    No validation split (the paper selects by training loss). Ratios are
+    fractions of ``indices`` (or all nodes).
+    """
+    strat = labels_to_stratify(labels)
+    if indices is None:
+        indices = np.arange(strat.size)
+    indices = np.asarray(indices, dtype=np.int64)
+    n = float(indices.size)
+    if n < 3:
+        raise ValueError('Need at least 3 nodes for a barely-supervised split')
+    lab = float(label_ratio)
+    unlab = float(unlabeled_ratio)
+    if lab <= 0 or unlab <= 0 or lab + unlab >= 1.0:
+        raise ValueError('Need 0 < label_ratio, unlabeled_ratio and label+unlabeled < 1')
+
+    labeled_idx, rest_idx = stratified_train_test_split(
+        strat, test_size=1.0 - lab, seed=seed, indices=indices)
+    unlab_of_rest = unlab / max(1.0 - lab, 1e-8)
+    unlabeled_idx, test_idx = stratified_train_test_split(
+        strat, test_size=1.0 - unlab_of_rest, seed=seed, indices=rest_idx)
+    valid_idx = np.asarray([], dtype=np.int64)
+    discarded_idx = unlabeled_idx
+    info = split_report(strat, labeled_idx, test_idx, valid_idx=valid_idx,
+                        discarded_idx=discarded_idx)
+    info.update({
+        'train_ratio': float(lab),
+        'valid_ratio': 0.0,
+        'test_ratio': float(len(test_idx) / n),
+        'unlabeled_ratio': float(len(unlabeled_idx) / n),
+        'seed': int(seed),
+        'stratified': True,
+        'protocol': 'barely_supervised',
+    })
+    print('BSL paper split: labeled={}/{} ({:.2%}) unlabeled={}/{} ({:.2%}) test={}/{} ({:.2%})'.format(
+        len(labeled_idx), int(n), len(labeled_idx) / n,
+        len(unlabeled_idx), int(n), len(unlabeled_idx) / n,
+        len(test_idx), int(n), len(test_idx) / n))
+    return labeled_idx, valid_idx, test_idx, unlabeled_idx, info
