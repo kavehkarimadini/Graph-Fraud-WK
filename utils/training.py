@@ -13,12 +13,13 @@ def add_save_args(parser):
                         help='Skip writing unified evaluation artifacts.')
 
 
-def add_protocol_split_args(parser, train_ratio=0.4, early_stop=0):
+def add_protocol_split_args(parser, train_ratio=0.4, early_stop=25):
     parser.add_argument('--train_ratio', type=float, default=train_ratio,
                         help='Train fraction of all labeled nodes (max 0.4). '
                              'Valid is fixed at 20%% and test at 40%%; unused train-pool nodes are discarded.')
     parser.add_argument('--early_stop', type=int, default=early_stop,
-                        help='Patience on valid AUC (0 trains all epochs; best valid checkpoint is still kept).')
+                        help='Patience on valid AUC (default 25; 0 trains all epochs; '
+                             'best valid checkpoint is still kept).')
 
 
 def default_test_size(model_name, dataset_str):

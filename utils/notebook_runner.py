@@ -395,7 +395,7 @@ def _graphconsis_defaults(dataset, root):
         save_dir=str(notebook_runs_dir(root)),
         test_size=test_size,
         train_ratio=0.4,
-        early_stop=0,
+        early_stop=25,
         no_save=False,
         run_tag=None,
         dataset_str='elliptic' if ds == 'elliptic' else os.path.splitext(file_name)[0],
@@ -410,7 +410,7 @@ def _bwgnn_defaults(dataset, root):
     return dict(
         dataset=ds,
         train_ratio=0.4,
-        early_stop=0,
+        early_stop=25,
         hid_dim=hid_dim,
         order=order,
         epochs=epochs,

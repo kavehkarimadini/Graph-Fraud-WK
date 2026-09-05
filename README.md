@@ -218,7 +218,7 @@ All three models use the same stratified split of **labeled** nodes:
 | Valid | **0.20** (fixed) | Checkpoint selection / hyperparameter tuning |
 | Test | **0.40** (fixed) | Final metrics only |
 
-If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUC checkpoint before reporting test metrics.
+If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUC checkpoint before reporting test metrics. `--early_stop` defaults to **25** (pass `0` to train every epoch).
 
 ---
 
@@ -986,6 +986,7 @@ Same as GraphSAGE, plus:
 | --------------- | --------------------------- | -------------------------------------- |
 | `--context_dim` | `0`                         | Context embedding dim (`0` disables)   |
 | `--train_perc`  | `1.`                        | Fraction of the 80% train split to use |
+| `--early_stop`  | `25`                        | Valid-AUC patience (`0` trains all epochs) |
 | `--save_dir`    | `../../results/GraphConsis` | Eval output directory                  |
 | `--no_save`     | flag                        | Skip writing eval outputs              |
 
@@ -1002,6 +1003,7 @@ Same as GraphSAGE, plus:
 | `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)         |
 | `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)             |
 | `--epochs`        | `100`      | Epochs                                              |
+| `--early_stop`    | `25`       | Valid-AUC patience (`0` trains all epochs)          |
 | `--learning_rate` | `0.01`     | Learning rate                                       |
 | `--gpu`           | `0`        | Device                                              |
 
@@ -1382,7 +1384,7 @@ GraphConsis, BWGNN, and SplitGNN now share one stratified split of **labeled** n
 
 If you set `--train_ratio 0.2`, valid and test stay 20/40. The unused half of the 40% train pool is **discarded**, not moved into valid or test. Same seed → same valid and test nodes.
 
-After training, each model reloads the **best valid-AUC** checkpoint, then reports train / valid / test. `--early_stop N` stops if valid AUC does not improve for N epochs (`0` trains all epochs).
+After training, each model reloads the **best valid-AUC** checkpoint, then reports train / valid / test. `--early_stop` defaults to **25** (stop if valid AUC does not improve for 25 epochs). Pass `--early_stop 0` to train all epochs.
 
 ```powershell
 # default 40 / 20 / 40
