@@ -108,27 +108,53 @@ def load_data_amazon_multi(path='../../dataset/Amazon.mat', test_size=0.2, seed=
                            dataset_name='Amazon')
 
 
+_DGL_NAME_ALIASES = {
+    'fdcompcn': 'comp.dgl',
+    'fdcompcn.dgl': 'comp.dgl',
+    'comp': 'comp.dgl',
+    'comp.dgl': 'comp.dgl',
+}
+
+
+def is_comp_name(name):
+    key = os.path.basename(str(name)).lower().replace('.zip', '').replace('.bin', '')
+    return key in ('comp', 'comp.dgl', 'fdcompcn', 'fdcompcn.dgl')
+
+
 def resolve_tgraph_path(name, prefix=None):
-    """Locate a DGL binary such as dataset/tfinance or dataset/tsocial (no extension)."""
-    name = os.path.basename(str(name)).replace('.zip', '').replace('.bin', '')
+    """Locate a DGL binary: ``tfinance`` / ``tsocial`` (no ext) or ``comp.dgl``."""
+    raw = os.path.basename(str(name)).replace('.zip', '').replace('.bin', '')
+    raw = _DGL_NAME_ALIASES.get(raw.lower(), raw)
+    stems = [raw]
+    if raw.lower().endswith('.dgl'):
+        stems.append(raw[:-4])
+    else:
+        stems.append(raw + '.dgl')
+    seen = set()
+    ordered = []
+    for stem in stems:
+        if stem not in seen:
+            seen.add(stem)
+            ordered.append(stem)
     candidates = []
-    if prefix:
-        candidates.append(os.path.join(prefix, name))
     here = os.path.dirname(os.path.abspath(__file__))
-    candidates.extend([
-        os.path.join('dataset', name),
-        os.path.join(here, '..', 'dataset', name),
-        os.path.join(os.getcwd(), 'dataset', name),
-        os.path.join(os.getcwd(), '..', '..', 'dataset', name),
-        name,
-    ])
+    for stem in ordered:
+        if prefix:
+            candidates.append(os.path.join(prefix, stem))
+        candidates.extend([
+            os.path.join('dataset', stem),
+            os.path.join(here, '..', 'dataset', stem),
+            os.path.join(os.getcwd(), 'dataset', stem),
+            os.path.join(os.getcwd(), '..', '..', 'dataset', stem),
+            stem,
+        ])
     for path in candidates:
         path = os.path.normpath(path)
         if os.path.isfile(path):
             return path
     raise FileNotFoundError(
-        "DGL graph '{}' not found. Unzip dataset/{}.zip into dataset/ "
-        "(the extracted file has no extension).".format(name, name))
+        "DGL graph '{}' not found. Expected dataset/{} (T-Finance / T-Social have "
+        "no extension; FDCompCN is dataset/comp.dgl).".format(name, ordered[0]))
 
 
 def load_tgraph_arrays(name, prefix=None):
@@ -178,6 +204,58 @@ class HomoGraph(object):
         self._dst = self._dst.to(device)
         self._in_deg = self._in_deg.to(device)
         self._adj = None
+        return self
+
+
+class HeteroGraph(object):
+    """Minimal multi-relation graph for SplitGNN (ndata, edata, edges(etype))."""
+
+    def __init__(self, n, features, labels, relations,
+                 homo_edge_label=None, homo_edge_train_mask=None,
+                 train_mask=None, valid_mask=None, test_mask=None):
+        import torch
+        n = int(n)
+        self._n = n
+        self.ndata = {
+            'feature': torch.as_tensor(np.asarray(features), dtype=torch.float32),
+            'label': torch.as_tensor(np.asarray(labels), dtype=torch.long).view(-1),
+        }
+        if train_mask is not None:
+            self.ndata['train_mask'] = torch.as_tensor(np.asarray(train_mask), dtype=torch.uint8).view(-1)
+        if valid_mask is not None:
+            self.ndata['valid_mask'] = torch.as_tensor(np.asarray(valid_mask), dtype=torch.uint8).view(-1)
+        if test_mask is not None:
+            self.ndata['test_mask'] = torch.as_tensor(np.asarray(test_mask), dtype=torch.uint8).view(-1)
+        self.etypes = []
+        self._edges = {}
+        for name, src, dst in relations:
+            self.etypes.append(name)
+            self._edges[name] = (
+                torch.as_tensor(np.asarray(src), dtype=torch.long),
+                torch.as_tensor(np.asarray(dst), dtype=torch.long),
+            )
+        self.edata = {}
+        if 'homo' in self._edges and homo_edge_label is not None:
+            mask = homo_edge_train_mask
+            if mask is None:
+                mask = np.ones(len(homo_edge_label), dtype=np.uint8)
+            self.edata['homo'] = {
+                'label': torch.as_tensor(np.asarray(homo_edge_label), dtype=torch.long).view(-1),
+                'train_mask': torch.as_tensor(np.asarray(mask), dtype=torch.uint8).view(-1),
+            }
+
+    def num_nodes(self):
+        return self._n
+
+    def edges(self, etype):
+        return self._edges[etype]
+
+    def to(self, device):
+        self.ndata = {k: v.to(device) for k, v in self.ndata.items()}
+        self._edges = {k: (s.to(device), d.to(device)) for k, (s, d) in self._edges.items()}
+        self.edata = {
+            et: {k: v.to(device) for k, v in ed.items()} for et, ed in self.edata.items()
+        }
         return self
 
 
@@ -363,6 +441,234 @@ def load_elliptic_graph(prefix=None, labeled_only=True):
     """Elliptic Bitcoin as a HomoGraph (BWGNN)."""
     features, labels, src, dst = load_elliptic_arrays(prefix=prefix, labeled_only=labeled_only)
     return HomoGraph(src, dst, features.shape[0], features, labels)
+
+
+def load_comp_arrays(name='comp', prefix=None):
+    """Load FDCompCN (``dataset/comp.dgl``) without DGL."""
+    from utils.dgl_bin import load_dgl_v2_hetero_arrays
+    path = resolve_tgraph_path(name, prefix=prefix)
+    data = load_dgl_v2_hetero_arrays(path)
+    rel_summary = ', '.join('{}={}'.format(n, int(s.size)) for n, s, _d in data['relations'])
+    print('FDCompCN nodes={}, fraud={}, feat_dim={}, relations: {}'.format(
+        data['features'].shape[0], int((data['labels'] == 1).sum()),
+        data['features'].shape[1], rel_summary))
+    return data
+
+
+def load_comp_pyg(name='comp', prefix=None, test_size=0.4, seed=48, normalize=True,
+                  include_homo=False):
+    """FDCompCN as PyG tensors for GraphConsis (C-I-C / C-S-C / C-P-C)."""
+    import torch
+
+    data = load_comp_arrays(name, prefix=prefix)
+    feat, labels = data['features'], data['labels']
+    if normalize:
+        feat = StandardScaler().fit_transform(feat)
+    edge_indices = []
+    for rel_name, src, dst in data['relations']:
+        if rel_name == 'homo' and not include_homo:
+            continue
+        edge_indices.append(torch.stack(
+            [torch.as_tensor(src, dtype=torch.long), torch.as_tensor(dst, dtype=torch.long)], dim=0))
+    if not edge_indices:
+        raise ValueError('FDCompCN has no non-homo relations for GraphConsis')
+    x = torch.tensor(np.asarray(feat), dtype=torch.float32)
+    y = torch.tensor(labels, dtype=torch.long)
+    train_idx, test_idx = stratified_train_test_split(labels, test_size=test_size, seed=seed)
+    train_idx_t = torch.tensor(np.asarray(train_idx), dtype=torch.long)
+    test_idx_t = torch.tensor(np.asarray(test_idx), dtype=torch.long)
+    split_info = split_report(labels, train_idx, test_idx)
+    split_info.update({'test_fraction': float(test_size), 'seed': int(seed), 'stratified': True})
+    return x, edge_indices, y, train_idx_t, test_idx_t, split_info
+
+
+def load_comp_graph(name='comp', prefix=None):
+    """FDCompCN homogeneous union as a HomoGraph (BWGNN)."""
+    data = load_comp_arrays(name, prefix=prefix)
+    for rel_name, src, dst in data['relations']:
+        if rel_name == 'homo':
+            return HomoGraph(src, dst, data['features'].shape[0], data['features'], data['labels'])
+    rel_name, src, dst = data['relations'][0]
+    return HomoGraph(src, dst, data['features'].shape[0], data['features'], data['labels'])
+
+
+def generate_homo_edge_labels(src, dst, labels, train_idx):
+    """+1 if endpoints share a class, -1 otherwise; train if both ends are train nodes."""
+    src = np.asarray(src, dtype=np.int64)
+    dst = np.asarray(dst, dtype=np.int64)
+    labels = np.asarray(labels).reshape(-1)
+    edge_label = np.where(labels[src] == labels[dst], 1, -1).astype(np.int64)
+    in_train = np.zeros(labels.size, dtype=bool)
+    in_train[np.asarray(train_idx, dtype=np.int64)] = True
+    edge_train = (in_train[src] & in_train[dst]).astype(np.uint8)
+    return edge_label, edge_train
+
+
+def row_normalize_features(features):
+    """Row-normalize like official SplitGNN (GraphSAGE-style + 0.01)."""
+    mx = np.asarray(features, dtype=np.float64)
+    rowsum = np.asarray(mx.sum(1)) + 0.01
+    r_inv = np.power(rowsum, -1).flatten()
+    r_inv[np.isinf(r_inv)] = 0.
+    return np.ascontiguousarray(mx * r_inv[:, None], dtype=np.float32)
+
+
+def _symmetrize_coo(adj):
+    if not sp.issparse(adj):
+        adj = sp.csr_matrix(adj)
+    adj = adj.tocsr()
+    adj = adj + adj.transpose()
+    return adj.tocoo()
+
+
+def split_train_valid_test(y, train_ratio=0.4, test_of_rest=0.67, seed=2, index=None):
+    """Official SplitGNN 40% / ~20% / ~40% stratified split."""
+    y = np.asarray(y).reshape(-1)
+    if index is None:
+        index = np.arange(y.size)
+    index = np.asarray(index, dtype=np.int64)
+    y_sub = y[index]
+    train_idx, rest_idx, _train_y, rest_y = train_test_split(
+        index, y_sub, stratify=y_sub, train_size=train_ratio, random_state=seed, shuffle=True)
+    valid_idx, test_idx, _vy, _ty = train_test_split(
+        rest_idx, rest_y, stratify=rest_y, test_size=test_of_rest, random_state=seed, shuffle=True)
+    return (np.asarray(train_idx, dtype=np.int64),
+            np.asarray(valid_idx, dtype=np.int64),
+            np.asarray(test_idx, dtype=np.int64))
+
+
+def _masks_from_indices(n, train_idx, valid_idx=None, test_idx=None):
+    train_mask = np.zeros(n, dtype=np.uint8)
+    train_mask[np.asarray(train_idx, dtype=np.int64)] = 1
+    valid_mask = test_mask = None
+    if valid_idx is not None:
+        valid_mask = np.zeros(n, dtype=np.uint8)
+        valid_mask[np.asarray(valid_idx, dtype=np.int64)] = 1
+    if test_idx is not None:
+        test_mask = np.zeros(n, dtype=np.uint8)
+        test_mask[np.asarray(test_idx, dtype=np.int64)] = 1
+    return train_mask, valid_mask, test_mask
+
+
+def _indices_from_mask(mask):
+    return np.where(np.asarray(mask).reshape(-1) > 0)[0].astype(np.int64)
+
+
+def _resolve_mat_path(filename, prefix=None):
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = []
+    if prefix:
+        candidates.append(os.path.join(prefix, filename))
+    candidates.extend([
+        os.path.join('dataset', filename),
+        os.path.join(here, '..', 'dataset', filename),
+        os.path.join(os.getcwd(), 'dataset', filename),
+        os.path.join(os.getcwd(), '..', '..', 'dataset', filename),
+    ])
+    for path in candidates:
+        path = os.path.normpath(path)
+        if os.path.isfile(path):
+            return path
+    raise FileNotFoundError('{} not found. Unzip dataset/{}.zip first.'.format(
+        filename, os.path.splitext(filename)[0]))
+
+
+def _load_mat_relations(path, homo_key, rel_map):
+    data = sio.loadmat(path)
+    features = data['features']
+    if sp.issparse(features):
+        features = np.asarray(features.todense())
+    else:
+        features = np.asarray(features)
+    labels = np.array(data['label']).reshape(-1).astype(np.int64)
+    homo = _symmetrize_coo(data[homo_key])
+    relations = [('homo', homo.row.astype(np.int64), homo.col.astype(np.int64))]
+    for etype, key in rel_map:
+        if key not in data:
+            raise KeyError("Relation '{}' not in {}".format(key, path))
+        coo = _symmetrize_coo(data[key])
+        relations.append((etype, coo.row.astype(np.int64), coo.col.astype(np.int64)))
+    return features.astype(np.float32, copy=False), labels, relations
+
+
+def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
+                        use_file_masks=True, amazon_drop_col19=True):
+    """Heterograph for SplitGNN: FDCompCN ``.dgl``, or YelpChi / Amazon ``.mat``.
+
+    Features are row-normalized. Amazon drops feature column 19 (label leakage)
+    and splits only labeled nodes (index >= 3305), matching the official code.
+    """
+    ds = os.path.basename(str(name)).lower().replace('.zip', '').replace('.mat', '').replace('.dgl', '')
+    drop_col19 = False
+    labeled_from = None
+    file_data = None
+
+    if is_comp_name(name) or ds in ('comp', 'fdcompcn'):
+        file_data = load_comp_arrays(name if is_comp_name(name) else 'comp', prefix=prefix)
+        features, labels, relations = file_data['features'], file_data['labels'], file_data['relations']
+    elif ds in ('yelp', 'yelpchi'):
+        path = _resolve_mat_path('YelpChi.mat', prefix=prefix)
+        features, labels, relations = _load_mat_relations(
+            path, 'homo', (('u', 'net_rur'), ('t', 'net_rtr'), ('s', 'net_rsr')))
+    elif ds == 'amazon':
+        path = _resolve_mat_path('Amazon.mat', prefix=prefix)
+        features, labels, relations = _load_mat_relations(
+            path, 'homo', (('p', 'net_upu'), ('s', 'net_usu'), ('v', 'net_uvu')))
+        drop_col19 = bool(amazon_drop_col19)
+        labeled_from = 3305
+    else:
+        raise ValueError(
+            "Unknown SplitGNN dataset '{}'. Use comp, yelpchi, or amazon.".format(name))
+
+    if drop_col19 and features.shape[1] > 19:
+        features = np.delete(features, 19, axis=1)
+    features = row_normalize_features(features)
+    n = int(features.shape[0])
+
+    train_idx = valid_idx = test_idx = None
+    homo_edge_label = homo_edge_train_mask = None
+    used_file_masks = False
+    if (file_data is not None and use_file_masks
+            and file_data.get('train_mask') is not None
+            and file_data.get('test_mask') is not None):
+        train_idx = _indices_from_mask(file_data['train_mask'])
+        valid_idx = (_indices_from_mask(file_data['valid_mask'])
+                     if file_data.get('valid_mask') is not None else None)
+        test_idx = _indices_from_mask(file_data['test_mask'])
+        homo_edge_label = file_data.get('homo_edge_label')
+        homo_edge_train_mask = file_data.get('homo_edge_train_mask')
+        used_file_masks = True
+
+    if train_idx is None:
+        index = np.arange(labeled_from, n, dtype=np.int64) if labeled_from is not None else None
+        train_idx, valid_idx, test_idx = split_train_valid_test(
+            labels, train_ratio=train_ratio, seed=seed, index=index)
+
+    homo_src = homo_dst = None
+    for rel_name, src, dst in relations:
+        if rel_name == 'homo':
+            homo_src, homo_dst = src, dst
+            break
+    if homo_src is None:
+        raise ValueError('SplitGNN graph has no homo relation')
+    if homo_edge_label is None:
+        homo_edge_label, homo_edge_train_mask = generate_homo_edge_labels(
+            homo_src, homo_dst, labels, train_idx)
+
+    train_mask, valid_mask, test_mask = _masks_from_indices(n, train_idx, valid_idx, test_idx)
+    graph = HeteroGraph(
+        n, features, labels, relations,
+        homo_edge_label=homo_edge_label, homo_edge_train_mask=homo_edge_train_mask,
+        train_mask=train_mask, valid_mask=valid_mask, test_mask=test_mask)
+    split_info = split_report(labels, train_idx, test_idx)
+    split_info.update({
+        'train_ratio': float(train_ratio),
+        'seed': int(seed),
+        'stratified': True,
+        'used_file_masks': used_file_masks,
+        'n_valid': int(valid_idx.size) if valid_idx is not None else 0,
+    })
+    return graph, train_idx, valid_idx, test_idx, split_info
 
 
 def load_example_semi(test_size=0.2, seed=48):

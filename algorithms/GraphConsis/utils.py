@@ -11,7 +11,10 @@ from torch_geometric.utils import from_scipy_sparse_matrix
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils.split import split_report, stratified_train_test_split
-from utils.data_loader import AMAZON_RELATIONS, YELPCHI_RELATIONS, is_elliptic_name, load_elliptic_pyg, load_tgraph_pyg
+from utils.data_loader import (
+    AMAZON_RELATIONS, YELPCHI_RELATIONS, is_comp_name, is_elliptic_name,
+    load_comp_pyg, load_elliptic_pyg, load_tgraph_pyg,
+)
 
 
 def _is_tgraph(file_name):
@@ -55,6 +58,9 @@ def load_data(prefix='../../dataset/', file_name='YelpChi.mat', relations=None,
               normalize=True, test_size=0.2, seed=48):
     if _is_tgraph(file_name):
         return load_tgraph_pyg(
+            file_name, prefix=prefix, test_size=test_size, seed=seed, normalize=normalize)
+    if is_comp_name(file_name):
+        return load_comp_pyg(
             file_name, prefix=prefix, test_size=test_size, seed=seed, normalize=normalize)
     if is_elliptic_name(file_name):
         return load_elliptic_pyg(

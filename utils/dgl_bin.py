@@ -263,3 +263,127 @@ def load_dgl_v2_homo_arrays(path):
     src = np.ascontiguousarray(src, dtype=np.int64)
     dst = np.ascontiguousarray(dst, dtype=np.int64)
     return features, labels, src, dst
+
+
+# FDCompCN / SplitGNN: C-I-C, C-S-C, C-P-C after the homogeneous union.
+_HETERO_REL_NAMES = ('cic', 'csc', 'cpc')
+
+
+def load_dgl_v2_hetero_arrays(path):
+    """Parse a multi-relation DGL v2 heterograph (e.g. ``dataset/comp.dgl``).
+
+    Returns a dict with:
+
+    - ``features`` ``(N, F)`` float32
+    - ``labels`` ``(N,)`` int64 (class ids; uint8 train/valid/test masks are not used)
+    - ``relations`` list of ``(name, src, dst)`` — largest COO pair is ``homo``
+    - optional ``train_mask`` / ``valid_mask`` / ``test_mask`` uint8 ``(N,)``
+    - optional ``homo_edge_label`` int64 in ``{-1, 1}`` and ``homo_edge_train_mask``
+    """
+    path = os.path.abspath(path)
+    metas = list(iter_dgl_ndarrays(path))
+    if not metas:
+        raise ValueError('No NDArray blobs found in {}'.format(path))
+
+    feat_meta = None
+    for shape, dt, data_off, nbytes in metas:
+        if not _is_feature_matrix(shape, dt):
+            continue
+        better = feat_meta is None or int(np.prod(shape)) > int(np.prod(feat_meta[0]))
+        if feat_meta is not None and _is_float_dtype(feat_meta[1]) and not _is_float_dtype(dt):
+            better = False
+        if _is_float_dtype(dt) and feat_meta is not None and not _is_float_dtype(feat_meta[1]):
+            better = True
+        if better:
+            feat_meta = (shape, dt, data_off, nbytes)
+    if feat_meta is None:
+        raise ValueError('No 2-D feature matrix in {}'.format(path))
+    features = np.ascontiguousarray(_read_ndarray(path, *feat_meta), dtype=np.float32)
+    n = int(features.shape[0])
+
+    labels = None
+    labels_nunique = None
+    mask_metas = []
+    for shape, dt, data_off, nbytes in metas:
+        if _same_meta((shape, dt, data_off, nbytes), feat_meta):
+            continue
+        if len(shape) != 1 or int(shape[0]) != n or not _is_integer_dtype(dt):
+            continue
+        if np.dtype(dt) == np.uint8:
+            mask_metas.append((shape, dt, data_off, nbytes))
+            continue
+        arr = _read_ndarray(path, shape, dt, data_off, nbytes).reshape(-1)
+        nunique = int(np.unique(arr).size)
+        if nunique < 2:
+            continue
+        if labels is None or nunique < labels_nunique:
+            labels, labels_nunique = arr.astype(np.int64, copy=False), nunique
+    if labels is None:
+        raise ValueError('No 1-D integer label array with {} rows in {}'.format(n, path))
+    labels = np.ascontiguousarray(labels, dtype=np.int64)
+
+    train_mask = valid_mask = test_mask = None
+    if len(mask_metas) >= 3:
+        train_mask = np.ascontiguousarray(_read_ndarray(path, *mask_metas[0]), dtype=np.uint8)
+        valid_mask = np.ascontiguousarray(_read_ndarray(path, *mask_metas[1]), dtype=np.uint8)
+        test_mask = np.ascontiguousarray(_read_ndarray(path, *mask_metas[2]), dtype=np.uint8)
+    elif len(mask_metas) == 1:
+        train_mask = np.ascontiguousarray(_read_ndarray(path, *mask_metas[0]), dtype=np.uint8)
+
+    pairs = []
+    i = 0
+    while i < len(metas) - 1:
+        s1, dt1, off1, nb1 = metas[i]
+        s2, dt2, off2, nb2 = metas[i + 1]
+        if (len(s1) == 1 and len(s2) == 1 and int(s1[0]) == int(s2[0])
+                and int(s1[0]) >= 32 and int(s1[0]) != n
+                and _is_integer_dtype(dt1) and _is_integer_dtype(dt2)
+                and np.dtype(dt1) == np.dtype(dt2) and np.dtype(dt1) != np.uint8):
+            mn1, mx1 = _int_minmax(path, off1, s1[0], dt1)
+            mn2, mx2 = _int_minmax(path, off2, s2[0], dt2)
+            if mn1 >= 0 and mn2 >= 0 and mx1 < n and mx2 < n:
+                src = np.ascontiguousarray(_read_ndarray(path, s1, dt1, off1, nb1), dtype=np.int64)
+                dst = np.ascontiguousarray(_read_ndarray(path, s2, dt2, off2, nb2), dtype=np.int64)
+                pairs.append((src, dst))
+                i += 2
+                continue
+        i += 1
+    if not pairs:
+        raise ValueError('No COO relation pairs found in {}'.format(path))
+
+    sizes = [p[0].size for p in pairs]
+    homo_i = int(np.argmax(sizes))
+    relations = [('homo', pairs[homo_i][0], pairs[homo_i][1])]
+    extra_i = 0
+    for idx, (src, dst) in enumerate(pairs):
+        if idx == homo_i:
+            continue
+        name = _HETERO_REL_NAMES[extra_i] if extra_i < len(_HETERO_REL_NAMES) else 'rel{}'.format(extra_i)
+        relations.append((name, src, dst))
+        extra_i += 1
+
+    homo_e = int(relations[0][1].size)
+    homo_edge_label = None
+    homo_edge_train_mask = None
+    for shape, dt, data_off, nbytes in metas:
+        if len(shape) != 1 or int(shape[0]) != homo_e:
+            continue
+        if _is_integer_dtype(dt) and np.dtype(dt) != np.uint8:
+            arr = _read_ndarray(path, shape, dt, data_off, nbytes).reshape(-1)
+            uniq = set(int(v) for v in np.unique(arr))
+            if uniq <= {-1, 0, 1} and -1 in uniq:
+                homo_edge_label = np.ascontiguousarray(arr, dtype=np.int64)
+        elif np.dtype(dt) == np.uint8:
+            homo_edge_train_mask = np.ascontiguousarray(
+                _read_ndarray(path, shape, dt, data_off, nbytes), dtype=np.uint8)
+
+    return {
+        'features': features,
+        'labels': labels,
+        'relations': relations,
+        'train_mask': train_mask,
+        'valid_mask': valid_mask,
+        'test_mask': test_mask,
+        'homo_edge_label': homo_edge_label,
+        'homo_edge_train_mask': homo_edge_train_mask,
+    }

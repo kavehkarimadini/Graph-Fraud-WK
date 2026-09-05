@@ -19,6 +19,9 @@ GRAPHCONSIS_FILES = {
     'elliptic': 'elliptic',
     'elliptic_bitcoin': 'elliptic',
     'elliptic_bitcoin_dataset': 'elliptic',
+    'comp': 'comp',
+    'comp.dgl': 'comp',
+    'fdcompcn': 'comp',
 }
 
 DATASET_ALIASES = {
@@ -35,6 +38,10 @@ DATASET_ALIASES = {
     'Elliptic': 'elliptic',
     'elliptic_bitcoin': 'elliptic',
     'elliptic_bitcoin_dataset': 'elliptic',
+    'comp': 'comp',
+    'comp.dgl': 'comp',
+    'fdcompcn': 'comp',
+    'FDCompCN': 'comp',
 }
 
 NEEDED_FILES = {
@@ -452,6 +459,55 @@ def run_bwgnn(dataset='tfinance', download=True, **overrides):
             epochs=params['epochs'], learning_rate=params['learning_rate'],
             hid_dim=params['hid_dim'], order=params['order'])
     print('BWGNN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _splitgnn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    from algorithms.SplitGNN.SplitGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['comp'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        ignore_file_masks=False,
+        intra_dim=paper['intra_dim'],
+        C=paper['C'],
+        K=paper['K'],
+        gamma=paper['gamma'],
+        dropout=paper['dropout'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=paper['learning_rate'],
+        weight_decay=paper['weight_decay'],
+        gpu='0',
+        seed=30,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_splitgnn(dataset='comp', download=True, **overrides):
+    """Train SplitGNN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.SplitGNN.SplitGNN_main import train
+
+    params = _splitgnn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'])
+    print('SplitGNN', params['dataset'], '->', params['save_dir'])
     metrics, out_dir = train(argparse.Namespace(**params))
     zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}

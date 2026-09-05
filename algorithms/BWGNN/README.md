@@ -24,6 +24,7 @@ From `algorithms/BWGNN/` after unzipping `dataset/tfinance.zip` / `dataset/tsoci
 python BWGNN_main.py --dataset tfinance --hid_dim 64 --order 2 --epochs 100 --gpu 0
 python BWGNN_main.py --dataset tsocial --hid_dim 10 --order 5 --epochs 100 --gpu 0
 python BWGNN_main.py --dataset elliptic --hid_dim 64 --order 2 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset comp --hid_dim 64 --order 2 --epochs 100 --gpu 0
 ```
 
 `--train_ratio 0.4` matches the paper (40% train). T-Social is large; keep `hid_dim` small.
@@ -31,4 +32,4 @@ python BWGNN_main.py --dataset elliptic --hid_dim 64 --order 2 --epochs 100 --gp
 ## Note
 
 - Requires `sympy`. T-Finance / T-Social DGL v2 binaries are read without importing DGL.
-- Files are named `dataset/tfinance` and `dataset/tsocial` (no file extension).
+- Files are named `dataset/tfinance` and `dataset/tsocial` (no file extension). FDCompCN is `dataset/comp.dgl`.

@@ -38,4 +38,5 @@ For more information about the arguments, please refer to `supervised_train.py`.
 - GraphSAGE and GraphConsis now use PyTorch Geometric `SAGEConv` (and relation-level attention for GraphConsis).
 
 - Before running the code, please remember unzip the given dataset.
-- T-Finance / T-Social: `python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --gpu 0` 
+- T-Finance / T-Social: `python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --gpu 0`
+- FDCompCN: `python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --gpu 0` 

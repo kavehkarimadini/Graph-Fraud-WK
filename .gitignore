@@ -21,4 +21,5 @@ results/
 notebook_runs/
 tmp/
 .venv/
+reference/
 

@@ -73,7 +73,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 - `torch` (CUDA build for GPU)
 - `torch-geometric`
 - `numpy`, `scipy`, `scikit-learn`
-- **BWGNN:** `sympy` (see uv step 4). T-Finance / T-Social binaries are read without DGL.
+- **BWGNN / SplitGNN:** `sympy` (see uv step 4). T-Finance / T-Social / FDCompCN binaries are read without DGL.
 
 
 
@@ -202,6 +202,12 @@ Kaggle / [Elliptic](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set
 
 Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), induce the subgraph, and map illicit→`1`, licit→`0`. Used by **GraphConsis** (`--file_name elliptic`), **BWGNN** (`--dataset elliptic`), and **GraphSAGE**.
 
+### FDCompCN (`comp.dgl`)
+
+Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
+
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), and **SplitGNN** (`--dataset comp`, all relations + signed homo edges). Loaded without importing DGL.
+
 ---
 
 
@@ -245,8 +251,9 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | SemiGNN     | `python SemiGNN_main.py --batch_size 4 --gpu 0`                                                                                                  |
 | GeniePath   | `python GeniePath_main.py --gpu 0`                                                                                                               |
 | GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`               |
-| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`, `elliptic`) |
-| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`)                                                                                                              |
+| GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`, `elliptic`, `comp`) |
+| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`, `comp`)                                                                                                              |
+| SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`)                                                                                                          |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
 
 
@@ -568,6 +575,7 @@ python supervised_train.py `
 python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --epochs 50 --gpu 0
 python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --epochs 20 --batch_size 256 --gpu 0
 python supervised_train.py --train_prefix ../../dataset/ --file_name elliptic --sigmoid --epochs 50 --gpu 0
+python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --epochs 50 --gpu 0
 
 cd ../..
 ```
@@ -591,7 +599,22 @@ python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 
 python BWGNN_main.py --dataset amazon --gpu 0
 python BWGNN_main.py --dataset yelpchi --gpu 0
 python BWGNN_main.py --dataset elliptic --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
 
+cd ../..
+```
+
+
+
+#### SplitGNN (`algorithms/SplitGNN/SplitGNN_main.py`)
+
+Requires sympy and `dataset/comp.dgl` (YelpChi / Amazon `.mat` also work). Defaults follow the paper table.
+
+```powershell
+cd algorithms/SplitGNN
+python SplitGNN_main.py --dataset comp --gpu 0
+python SplitGNN_main.py --dataset yelpchi --gpu 0
+python SplitGNN_main.py --dataset amazon --gpu 0
 cd ../..
 ```
 
@@ -906,7 +929,7 @@ Same as GraphSAGE, plus:
 
 | Argument          | Default    | Description                                         |
 | ----------------- | ---------- | --------------------------------------------------- |
-| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon` / `elliptic` |
+| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon` / `elliptic` / `comp` |
 | `--train_ratio`   | `None`     | Train fraction (paper: `0.4`); else uses `--test_size` |
 | `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)         |
 | `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)             |
@@ -915,6 +938,22 @@ Same as GraphSAGE, plus:
 | `--gpu`           | `0`        | Device                                              |
 
 
+
+
+### SplitGNN (`algorithms/SplitGNN/SplitGNN_main.py`)
+
+
+| Argument          | Default     | Description                                              |
+| ----------------- | ----------- | -------------------------------------------------------- |
+| `--dataset`       | `comp`      | `comp` / `yelpchi` / `amazon`                            |
+| `--train_ratio`   | `0.4`       | Train fraction if file masks are ignored                 |
+| `--intra_dim`     | paper table | Hidden size (`8`)                                        |
+| `--C` / `--K`     | paper table | Wavelet order / positive-band cutoff (`3` / `2` on comp) |
+| `--gamma`         | paper table | Homo-edge hinge weight (`0.8` on comp)                   |
+| `--epochs`        | `1000`      | Max epochs (early stop on valid AUC)                     |
+| `--early_stop`    | paper table | Patience (`100` on comp; `0` disables)                   |
+| `--learning_rate` | paper table | `0.001` (comp), `0.01` (yelpchi), `0.1` (amazon)         |
+| `--gpu`           | `0`         | Device                                                   |
 
 
 ### HACUD (`algorithms/HACUD/main.py`)
@@ -953,6 +992,7 @@ Same as GraphSAGE, plus:
 | **GraphConsis** | [Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection](https://arxiv.org/pdf/2005.00625.pdf)                                                        | SIGIR 2020 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphconsis.txt) |
 | **HACUD**       | [Cash-Out User Detection Based on Attributed Heterogeneous Information Network with a Hierarchical Attention Mechanism](https://aaai.org/ojs/index.php/AAAI/article/view/3884)           | AAAI 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/hacud.txt)       |
 | **BWGNN**       | [Rethinking Graph Neural Networks for Anomaly Detection](https://proceedings.mlr.press/v162/tang22b.html)                                                                                | ICML 2022  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bwgnn.txt)       |
+| **SplitGNN**    | [SplitGNN: Spectral Graph Neural Network for Fraud Detection against Heterophily](https://dl.acm.org/doi/10.1145/3583780.3615067)                                                         | CIKM 2023  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/splitgnn.txt)    |
 
 
 
@@ -963,6 +1003,7 @@ Same as GraphSAGE, plus:
 - **GeniePath:** GAT breadth (`GATConv`) + LSTM depth
 - **GraphSAGE / GraphConsis:** `SAGEConv` (GraphConsis adds multi-relation attention)
 - **BWGNN:** beta-wavelet polynomial filters (`PolyConv`) with `torch.sparse`
+- **SplitGNN:** signed multi-relation beta-wavelet filters (`PolyConv` + `RelationAware`) with `torch.sparse`
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -984,6 +1025,7 @@ Same as GraphSAGE, plus:
 | **GraphConsis** | Opinion Fraud   | Heterogeneous | GraphSAGE           |
 | **HACUD**       | Financial Fraud | Heterogeneous | GAT                 |
 | **BWGNN**       | Graph Anomaly   | Homogeneous   | Beta wavelet GNN    |
+| **SplitGNN**    | Financial Fraud | Heterogeneous | Split beta wavelet  |
 
 
 ---
@@ -1149,3 +1191,43 @@ BWGNN
 cd algorithms\BWGNN
 python BWGNN_main.py --dataset elliptic --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 50 --gpu 0
 The Colab notebook has matching GraphConsis and BWGNN Elliptic cells. Keep the folder name elliptic_bitcoin_dataset with those three CSV filenames.
+
+FDCompCN (`dataset/comp.dgl`) is wired in for GraphConsis, BWGNN, and SplitGNN.
+
+```powershell
+cd algorithms\GraphConsis
+python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --epochs 50 --gpu 0
+
+cd algorithms\BWGNN
+python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
+
+cd algorithms\SplitGNN
+python SplitGNN_main.py --dataset comp --gpu 0
+```
+--------------------------------------------------
+FDCompCN (`dataset/comp.dgl`) is now a first-class dataset for GraphConsis and BWGNN, and **SplitGNN** is in the toolbox as a DGL-free port of `reference/SplitGNN-master`.
+
+**What `comp.dgl` contains:** 5,317 nodes, 57-d features, 559 fraud labels, four directed relations (`homo` 10,059 / `cic` 8,505 / `csc` 5,944 / `cpc` 6,244), plus the official train/valid/test masks.
+
+**How each model uses it**
+- **GraphConsis** — the three non-homo relations (C-I-C / C-S-C / C-P-C), toolbox stratified split
+- **BWGNN** — homogeneous union only
+- **SplitGNN** — all relations; signed homo edges + hinge loss; official file masks by default
+
+```powershell
+cd algorithms\GraphConsis
+python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --epochs 50 --gpu 0
+
+cd algorithms\BWGNN
+python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
+
+cd algorithms\SplitGNN
+python SplitGNN_main.py --dataset comp --gpu 0
+python SplitGNN_main.py --dataset yelpchi --gpu 0
+python SplitGNN_main.py --dataset amazon --gpu 0
+python SplitGNN_main.py --dataset elliptic --gpu 0
+```
+
+SplitGNN defaults follow the paper table for FDCompCN (`lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). Pass `--ignore_file_masks` to use a fresh 40/20/40 split instead of the masks in `comp.dgl`. Amazon still drops feature column 19 and trains only on labeled nodes (`index >= 3305`).
+
+A 2-epoch smoke run on `comp` completed (forward, backward, and the train loop). Still no DGL import — the `.dgl` file is read by `utils/dgl_bin.py`.

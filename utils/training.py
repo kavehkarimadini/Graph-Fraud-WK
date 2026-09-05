@@ -17,7 +17,8 @@ def default_test_size(model_name, dataset_str):
     ds = (dataset_str or '').lower()
     if ds in ('yelp', 'yelpchi'):
         return 0.2
-    if ds in ('tfinance', 'tsocial', 'amazon', 'elliptic', 'elliptic_bitcoin'):
+    if ds in ('tfinance', 'tsocial', 'amazon', 'elliptic', 'elliptic_bitcoin',
+              'comp', 'comp.dgl', 'fdcompcn'):
         return 0.4
     if ds == 'dblp':
         return 0.4
