@@ -208,7 +208,7 @@ Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/
 
 Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), and **SplitGNN** (`--dataset comp`, all relations + signed homo edges). Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -266,6 +266,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`, `elliptic`, `comp`) |
 | BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`, `comp`)                                                                                                              |
 | SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`, `elliptic`)                                                                                              |
+| DGA-GNN     | `cd algorithms/DGAGNN` then `python DGAGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                           |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
 
 
@@ -633,6 +634,23 @@ cd ../..
 
 
 
+#### DGA-GNN (`algorithms/DGAGNN/DGAGNN_main.py`)
+
+Decision-tree binning + dynamic grouping aggregation (AAAI 2024). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/DGAGNN
+python DGAGNN_main.py --dataset yelpchi --gpu 0
+python DGAGNN_main.py --dataset amazon --gpu 0
+python DGAGNN_main.py --dataset elliptic --gpu 0
+python DGAGNN_main.py --dataset tfinance --gpu 0
+python DGAGNN_main.py --dataset tsocial --gpu 0
+python DGAGNN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -969,6 +987,22 @@ Same as GraphSAGE, plus:
 | `--gpu`           | `0`         | Device                                                   |
 
 
+### DGA-GNN (`algorithms/DGAGNN/DGAGNN_main.py`)
+
+
+| Argument          | Default     | Description                                              |
+| ----------------- | ----------- | -------------------------------------------------------- |
+| `--dataset`       | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40) |
+| `--n_hidden`      | paper yaml  | Hidden size                                              |
+| `--n_head`        | paper yaml  | Attention heads                                          |
+| `--n_bins`        | paper yaml  | Decision-tree bins per feature (`k`)                     |
+| `--z`             | paper yaml  | Grouping threshold                                       |
+| `--epochs`        | `200`       | Max epochs (early stop on valid AUC)                     |
+| `--learning_rate` | `0.001`     | Learning rate                                            |
+| `--gpu`           | `0`         | Device                                                   |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1006,6 +1040,7 @@ Same as GraphSAGE, plus:
 | **HACUD**       | [Cash-Out User Detection Based on Attributed Heterogeneous Information Network with a Hierarchical Attention Mechanism](https://aaai.org/ojs/index.php/AAAI/article/view/3884)           | AAAI 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/hacud.txt)       |
 | **BWGNN**       | [Rethinking Graph Neural Networks for Anomaly Detection](https://proceedings.mlr.press/v162/tang22b.html)                                                                                | ICML 2022  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bwgnn.txt)       |
 | **SplitGNN**    | [SplitGNN: Spectral Graph Neural Network for Fraud Detection against Heterophily](https://dl.acm.org/doi/10.1145/3583780.3615067)                                                         | CIKM 2023  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/splitgnn.txt)    |
+| **DGA-GNN**     | [DGA-GNN: Dynamic Grouping Aggregation GNN for Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29067)                                                                   | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/dgagnn.txt)      |
 
 
 
@@ -1017,6 +1052,7 @@ Same as GraphSAGE, plus:
 - **GraphSAGE / GraphConsis:** `SAGEConv` (GraphConsis adds multi-relation attention)
 - **BWGNN:** beta-wavelet polynomial filters (`PolyConv`) with `torch.sparse`
 - **SplitGNN:** signed multi-relation beta-wavelet filters (`PolyConv` + `RelationAware`) with `torch.sparse`
+- **DGA-GNN:** decision-tree binning + grouped mean aggregation + attention (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1039,6 +1075,7 @@ Same as GraphSAGE, plus:
 | **HACUD**       | Financial Fraud | Heterogeneous | GAT                 |
 | **BWGNN**       | Graph Anomaly   | Homogeneous   | Beta wavelet GNN    |
 | **SplitGNN**    | Financial Fraud | Heterogeneous | Split beta wavelet  |
+| **DGA-GNN**     | Financial Fraud | Heterogeneous | Grouped GraphSAGE   |
 
 
 ---
@@ -1216,6 +1253,9 @@ python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --e
 
 cd algorithms\SplitGNN
 python SplitGNN_main.py --dataset comp --gpu 0
+
+cd algorithms\DGAGNN
+python DGAGNN_main.py --dataset comp --gpu 0
 ```
 --------------------------------------------------
 FDCompCN (`dataset/comp.dgl`) is now a first-class dataset for GraphConsis and BWGNN, and **SplitGNN** is in the toolbox as a DGL-free port of `reference/SplitGNN-master`.
@@ -1270,3 +1310,21 @@ python SplitGNN_main.py --dataset comp --train_ratio 0.4 --gpu 0
 ```
 
 `comp.dgl` file masks are no longer used unless you pass `--use_file_masks` on SplitGNN. Amazon still splits only labeled nodes (`index >= 3305`); the 40/20/40 ratios apply to that labeled set.
+------------------------------------------
+
+**DGA-GNN** (Duan et al., AAAI 2024) is in the toolbox as a DGL-free port of `reference/DGA-GNN-main`.
+
+It follows the official pieces: decision-tree binning of attributes, mean aggregation on the full neighborhood plus two feedback groups, then attention fusion. Training uses this repo’s 40/20/40 split, valid-AUC checkpointing, and the same `metrics.json` / `checkpoint.pt` artifacts. No DGL, Lightning, Hydra, wandb, or `toad` (binning is scikit-learn).
+
+A 2-epoch run on FDCompCN completed (57-d features → 265 after binning).
+
+```powershell
+cd algorithms\DGAGNN
+python DGAGNN_main.py --dataset yelpchi --gpu 0
+python DGAGNN_main.py --dataset amazon --gpu 0
+python DGAGNN_main.py --dataset elliptic --gpu 0
+python DGAGNN_main.py --dataset tfinance --gpu 0
+python DGAGNN_main.py --dataset comp --gpu 0
+```
+
+Hyperparameters default to the official yaml per dataset (`n_hidden`, heads, bins `k`, grouping threshold `z`). `--train_ratio` still only shrinks the 40% train pool. `--no_bin_encoding` skips DT binning. T-Social uses a smaller hidden size than the paper yaml because that graph is large.

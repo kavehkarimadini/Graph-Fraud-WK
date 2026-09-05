@@ -8,7 +8,7 @@ def add_save_args(parser):
     parser.add_argument('--save_dir', type=str, default='results',
                         help='Root directory for checkpoints and evaluation outputs.')
     parser.add_argument('--test_size', type=float, default=None,
-                        help='Held-out test fraction (unused by GraphConsis/BWGNN/SplitGNN).')
+                        help='Held-out test fraction (unused by GraphConsis/BWGNN/SplitGNN/DGA-GNN).')
     parser.add_argument('--no_save', action='store_true',
                         help='Skip writing unified evaluation artifacts.')
 

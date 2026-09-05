@@ -701,6 +701,47 @@ def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
     return graph, train_idx, valid_idx, test_idx, split_info
 
 
+def load_dga_arrays(name='yelpchi', prefix=None):
+    """Features, labels, and relation COO lists for DGA-GNN (no split).
+
+    YelpChi / Amazon use the official multi-relation graphs (not homo).
+    Homogeneous datasets expose a single relation ``r``. Comp uses C-I-C /
+    C-S-C / C-P-C. Amazon labeled nodes start at index 3305.
+    """
+    ds = os.path.basename(str(name)).lower().replace('.zip', '').replace('.mat', '').replace('.dgl', '')
+    labeled_from = None
+    if ds in ('yelp', 'yelpchi'):
+        path = _resolve_mat_path('YelpChi.mat', prefix=prefix)
+        features, labels, relations = _load_mat_relations(
+            path, 'homo', (('rur', 'net_rur'), ('rtr', 'net_rtr'), ('rsr', 'net_rsr')))
+        relations = [r for r in relations if r[0] != 'homo']
+    elif ds == 'amazon':
+        path = _resolve_mat_path('Amazon.mat', prefix=prefix)
+        features, labels, relations = _load_mat_relations(
+            path, 'homo', (('upu', 'net_upu'), ('usu', 'net_usu'), ('uvu', 'net_uvu')))
+        relations = [r for r in relations if r[0] != 'homo']
+        labeled_from = 3305
+    elif is_comp_name(name) or ds in ('comp', 'fdcompcn'):
+        data = load_comp_arrays(name if is_comp_name(name) else 'comp', prefix=prefix)
+        features, labels = data['features'], data['labels']
+        relations = [(n, s, d) for n, s, d in data['relations'] if n != 'homo']
+        if not relations:
+            relations = [(n, s, d) for n, s, d in data['relations']]
+    elif is_elliptic_name(name) or ds in ('elliptic', 'elliptic_bitcoin', 'elliptic_bitcoin_dataset'):
+        features, labels, src, dst = load_elliptic_arrays(prefix=prefix)
+        relations = [('r', src, dst)]
+    elif ds in ('tfinance', 'tsocial'):
+        features, labels, src, dst = load_tgraph_arrays(ds, prefix=prefix)
+        relations = [('r', src, dst)]
+    else:
+        raise ValueError(
+            "Unknown DGA-GNN dataset '{}'. Use yelpchi, amazon, elliptic, "
+            "tfinance, tsocial, or comp.".format(name))
+    features = np.ascontiguousarray(features, dtype=np.float32)
+    labels = np.ascontiguousarray(labels, dtype=np.int64)
+    return features, labels, relations, labeled_from
+
+
 def load_example_semi(test_size=0.2, seed=48):
     features = np.array([[1, 1, 0, 0, 0, 0, 0],
                          [0, 0, 1, 0, 0, 0, 0],
