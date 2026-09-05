@@ -702,7 +702,7 @@ def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
 
 
 def load_dga_arrays(name='yelpchi', prefix=None):
-    """Features, labels, and relation COO lists for DGA-GNN (no split).
+    """Features, labels, and relation COO lists for DGA-GNN / GLHN (no split).
 
     YelpChi / Amazon use the official multi-relation graphs (not homo).
     Homogeneous datasets expose a single relation ``r``. Comp uses C-I-C /

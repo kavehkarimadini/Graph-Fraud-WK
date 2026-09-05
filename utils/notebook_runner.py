@@ -565,6 +565,59 @@ def run_dgagnn(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _glhn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.GLHN.GLHN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        hid_dim=paper['hid_dim'],
+        n_layers=paper['n_layers'],
+        tau=0.1,
+        gamma1=paper['gamma1'],
+        gamma2=paper['gamma2'],
+        graph_type=paper['graph_type'],
+        filter_pair='laplacian',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=0.01,
+        weight_decay=1e-5,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_glhn(dataset='yelpchi', download=True, **overrides):
+    """Train GLHN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.GLHN.GLHN_main import train
+
+    params = _glhn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hid_dim'])
+    print('GLHN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)

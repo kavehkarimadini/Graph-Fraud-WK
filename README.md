@@ -206,9 +206,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), and **SplitGNN** (`--dataset comp`, all relations + signed homo edges). Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, and **GLHN**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -267,6 +267,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`, `comp`)                                                                                                              |
 | SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`, `elliptic`)                                                                                              |
 | DGA-GNN     | `cd algorithms/DGAGNN` then `python DGAGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                           |
+| GLHN        | `cd algorithms/GLHN` then `python GLHN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                               |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
 
 
@@ -651,6 +652,23 @@ cd ../..
 
 
 
+#### GLHN (`algorithms/GLHN/GLHN_main.py`)
+
+Local-homophily-guided low/high-pass fusion (CIKM 2024; paper name GLHAD). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/GLHN
+python GLHN_main.py --dataset yelpchi --gpu 0
+python GLHN_main.py --dataset amazon --gpu 0
+python GLHN_main.py --dataset elliptic --gpu 0
+python GLHN_main.py --dataset tfinance --gpu 0
+python GLHN_main.py --dataset tsocial --gpu 0
+python GLHN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -1003,6 +1021,23 @@ Same as GraphSAGE, plus:
 | `--gpu`           | `0`         | Device                                                   |
 
 
+### GLHN (`algorithms/GLHN/GLHN_main.py`)
+
+
+| Argument          | Default     | Description                                              |
+| ----------------- | ----------- | -------------------------------------------------------- |
+| `--dataset`       | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40) |
+| `--hid_dim`       | `32`        | Hidden size (`10` on T-Social)                           |
+| `--n_layers`      | `2`         | GLHN layers                                              |
+| `--tau`           | `0.1`       | InfoNCE temperature                                      |
+| `--gamma1` / `--gamma2` | paper | Weights of `L_k` / `L_u` (0.8/1.0 on YelpChi)      |
+| `--graph_type`    | dataset     | `hetero` (mean-pool relations) or `homo`                 |
+| `--epochs`        | `100`       | Max epochs (early stop on valid AUC)                     |
+| `--learning_rate` | `0.01`      | Learning rate                                            |
+| `--gpu`           | `0`         | Device                                                   |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1041,6 +1076,7 @@ Same as GraphSAGE, plus:
 | **BWGNN**       | [Rethinking Graph Neural Networks for Anomaly Detection](https://proceedings.mlr.press/v162/tang22b.html)                                                                                | ICML 2022  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bwgnn.txt)       |
 | **SplitGNN**    | [SplitGNN: Spectral Graph Neural Network for Fraud Detection against Heterophily](https://dl.acm.org/doi/10.1145/3583780.3615067)                                                         | CIKM 2023  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/splitgnn.txt)    |
 | **DGA-GNN**     | [DGA-GNN: Dynamic Grouping Aggregation GNN for Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29067)                                                                   | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/dgagnn.txt)      |
+| **GLHN**        | [Graph Local Homophily Network for Anomaly Detection](https://doi.org/10.1145/3627673.3679785)                                                                                             | CIKM 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/glhn.txt)        |
 
 
 
@@ -1053,6 +1089,7 @@ Same as GraphSAGE, plus:
 - **BWGNN:** beta-wavelet polynomial filters (`PolyConv`) with `torch.sparse`
 - **SplitGNN:** signed multi-relation beta-wavelet filters (`PolyConv` + `RelationAware`) with `torch.sparse`
 - **DGA-GNN:** decision-tree binning + grouped mean aggregation + attention (no DGL)
+- **GLHN:** local-homophily prediction + `I-L` / `L` mix + InfoNCE (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1076,6 +1113,7 @@ Same as GraphSAGE, plus:
 | **BWGNN**       | Graph Anomaly   | Homogeneous   | Beta wavelet GNN    |
 | **SplitGNN**    | Financial Fraud | Heterogeneous | Split beta wavelet  |
 | **DGA-GNN**     | Financial Fraud | Heterogeneous | Grouped GraphSAGE   |
+| **GLHN**        | Graph Anomaly   | Heterogeneous | Homophily mix GNN   |
 
 
 ---
@@ -1256,6 +1294,9 @@ python SplitGNN_main.py --dataset comp --gpu 0
 
 cd algorithms\DGAGNN
 python DGAGNN_main.py --dataset comp --gpu 0
+
+cd algorithms\GLHN
+python GLHN_main.py --dataset comp --gpu 0
 ```
 --------------------------------------------------
 FDCompCN (`dataset/comp.dgl`) is now a first-class dataset for GraphConsis and BWGNN, and **SplitGNN** is in the toolbox as a DGL-free port of `reference/SplitGNN-master`.
@@ -1266,6 +1307,7 @@ FDCompCN (`dataset/comp.dgl`) is now a first-class dataset for GraphConsis and B
 - **GraphConsis** — the three non-homo relations (C-I-C / C-S-C / C-P-C), toolbox stratified split
 - **BWGNN** — homogeneous union only
 - **SplitGNN** — all relations; signed homo edges + hinge loss; official file masks by default
+- **DGA-GNN / GLHN** — the three non-homo relations; toolbox 40/20/40 split
 
 ```powershell
 cd algorithms\GraphConsis
@@ -1328,3 +1370,19 @@ python DGAGNN_main.py --dataset comp --gpu 0
 ```
 
 Hyperparameters default to the official yaml per dataset (`n_hidden`, heads, bins `k`, grouping threshold `z`). `--train_ratio` still only shrinks the 40% train pool. `--no_bin_encoding` skips DT binning. T-Social uses a smaller hidden size than the paper yaml because that graph is large.
+
+**GLHN** (Guo et al., CIKM 2024; paper name GLHAD) is in the toolbox as a DGL-free port of `reference/GLHN/GLHN.md`.
+
+It predicts node-level local homophily, mixes low-pass (`I-L`) and high-pass (`L`) signals with that weight, and adds the two camouflage-resistant InfoNCE losses. Training uses this repo’s 40/20/40 split, valid-AUC checkpointing, and the same `metrics.json` / `checkpoint.pt` artifacts. No DGL.
+
+```powershell
+cd algorithms\GLHN
+python GLHN_main.py --dataset yelpchi --gpu 0
+python GLHN_main.py --dataset amazon --gpu 0
+python GLHN_main.py --dataset elliptic --gpu 0
+python GLHN_main.py --dataset tfinance --gpu 0
+python GLHN_main.py --dataset comp --gpu 0
+```
+
+Paper defaults: hidden 32 (10 on T-Social), 2 layers, `τ=0.1`, Adam `lr=0.01`. `--graph_type hetero` mean-pools per-relation filters on YelpChi / Amazon / FDCompCN. `--train_ratio` still only shrinks the 40% train pool. T-Social is full-graph, so memory is higher than the paper's mini-batch setup.
+--------------------------------------------------------
