@@ -52,9 +52,9 @@ def parse_args():
     parser.add_argument('--dataset', type=str, default='comp',
                         help='comp / yelpchi / amazon / elliptic / tfinance / tsocial')
     parser.add_argument('--train_ratio', type=float, default=0.4,
-                        help='Train fraction when not using file masks (paper: 0.4).')
-    parser.add_argument('--ignore_file_masks', action='store_true',
-                        help='Ignore train/valid/test masks stored in comp.dgl.')
+                        help='Train fraction of labeled nodes (max 0.4). Valid=20%% and test=40%% are fixed.')
+    parser.add_argument('--use_file_masks', action='store_true',
+                        help='Use train/valid/test masks stored in comp.dgl instead of the 40/20/40 protocol.')
     parser.add_argument('--intra_dim', type=int, default=None)
     parser.add_argument('--C', type=int, default=None, help='Beta wavelet order')
     parser.add_argument('--K', type=int, default=None, help='Positive-band cutoff')
@@ -112,7 +112,7 @@ def train(args=None):
 
     graph, train_idx, valid_idx, test_idx, split_info = load_splitgnn_graph(
         args.dataset, prefix=args.data_prefix, train_ratio=args.train_ratio,
-        seed=args.seed, use_file_masks=not getattr(args, 'ignore_file_masks', False))
+        seed=args.seed, use_file_masks=getattr(args, 'use_file_masks', False))
     graph = graph.to(device)
     labels = graph.ndata['label']
     train_idx_t = torch.as_tensor(train_idx, dtype=torch.long, device=device)

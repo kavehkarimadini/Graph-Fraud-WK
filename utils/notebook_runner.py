@@ -394,6 +394,8 @@ def _graphconsis_defaults(dataset, root):
         samples_2=10,
         save_dir=str(notebook_runs_dir(root)),
         test_size=test_size,
+        train_ratio=0.4,
+        early_stop=0,
         no_save=False,
         run_tag=None,
         dataset_str='elliptic' if ds == 'elliptic' else os.path.splitext(file_name)[0],
@@ -407,7 +409,8 @@ def _bwgnn_defaults(dataset, root):
     test_size = 0.2 if ds == 'yelpchi' else 0.4
     return dict(
         dataset=ds,
-        train_ratio=None,
+        train_ratio=0.4,
+        early_stop=0,
         hid_dim=hid_dim,
         order=order,
         epochs=epochs,
@@ -452,8 +455,6 @@ def run_bwgnn(dataset='tfinance', download=True, **overrides):
 
     params = _bwgnn_defaults(dataset, root)
     params.update(overrides)
-    if params.get('train_ratio') is not None:
-        params['test_size'] = 1.0 - float(params['train_ratio'])
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
             epochs=params['epochs'], learning_rate=params['learning_rate'],
@@ -474,7 +475,7 @@ def _splitgnn_defaults(dataset, root):
     return dict(
         dataset=ds,
         train_ratio=0.4,
-        ignore_file_masks=False,
+        use_file_masks=False,
         intra_dim=paper['intra_dim'],
         C=paper['C'],
         K=paper['K'],

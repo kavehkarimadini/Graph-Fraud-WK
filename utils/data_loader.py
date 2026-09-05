@@ -7,7 +7,7 @@ import zipfile
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from utils.split import split_report, stratified_train_test_split
+from utils.split import protocol_split, split_report, stratified_train_test_split
 from utils.utils import pad_adjlist
 
 
@@ -286,7 +286,7 @@ def _load_tgraph_numpy(path, test_size=0.4, seed=48):
     return [adj], features, X_train, y_train, X_test, y_test
 
 
-def load_tgraph_pyg(name, prefix=None, test_size=0.2, seed=48, normalize=True):
+def load_tgraph_pyg(name, prefix=None, test_size=0.2, seed=48, normalize=True, split=True):
     """T-Finance / T-Social as PyG tensors for GraphConsis (single relation)."""
     import torch
 
@@ -297,6 +297,8 @@ def load_tgraph_pyg(name, prefix=None, test_size=0.2, seed=48, normalize=True):
         feat = StandardScaler().fit_transform(feat)
     x = torch.tensor(np.asarray(feat), dtype=torch.float32)
     y = torch.tensor(labels, dtype=torch.long)
+    if not split:
+        return x, [edge_index], y
     train_idx, test_idx = stratified_train_test_split(labels, test_size=test_size, seed=seed)
     train_idx_t = torch.tensor(np.asarray(train_idx), dtype=torch.long)
     test_idx_t = torch.tensor(np.asarray(test_idx), dtype=torch.long)
@@ -312,6 +314,22 @@ def scipy_to_dgl(adj, features, labels):
     if y.ndim == 2 and y.shape[1] > 1:
         y = y.argmax(axis=1)
     return HomoGraph(coo.row, coo.col, np.asarray(features).shape[0], features, y.reshape(-1))
+
+
+def load_mat_homo_graph(path, relation):
+    """Full-label homogeneous graph from a CARE-GNN-style .mat (no split)."""
+    if not os.path.isfile(path):
+        raise FileNotFoundError(path)
+    data = sio.loadmat(path)
+    features = data['features']
+    if sp.issparse(features):
+        features = np.asarray(features.todense())
+    else:
+        features = np.asarray(features)
+    labels = np.array(data['label']).reshape(-1).astype(np.int64)
+    if relation not in data:
+        raise KeyError("Relation '{}' not in {}".format(relation, path))
+    return scipy_to_dgl(data[relation], features, labels)
 
 
 ELLIPTIC_CSV_NAMES = (
@@ -418,7 +436,8 @@ def load_data_elliptic(path=None, prefix=None, test_size=0.4, seed=48, labeled_o
     return [adj], features, X_train, y_train, X_test, y_test
 
 
-def load_elliptic_pyg(prefix=None, test_size=0.4, seed=48, normalize=True, labeled_only=True):
+def load_elliptic_pyg(prefix=None, test_size=0.4, seed=48, normalize=True, labeled_only=True,
+                     split=True):
     """Elliptic Bitcoin as PyG tensors for GraphConsis (single relation)."""
     import torch
 
@@ -429,6 +448,8 @@ def load_elliptic_pyg(prefix=None, test_size=0.4, seed=48, normalize=True, label
         feat = StandardScaler().fit_transform(feat)
     x = torch.tensor(np.asarray(feat), dtype=torch.float32)
     y = torch.tensor(labels, dtype=torch.long)
+    if not split:
+        return x, [edge_index], y
     train_idx, test_idx = stratified_train_test_split(labels, test_size=test_size, seed=seed)
     train_idx_t = torch.tensor(np.asarray(train_idx), dtype=torch.long)
     test_idx_t = torch.tensor(np.asarray(test_idx), dtype=torch.long)
@@ -456,7 +477,7 @@ def load_comp_arrays(name='comp', prefix=None):
 
 
 def load_comp_pyg(name='comp', prefix=None, test_size=0.4, seed=48, normalize=True,
-                  include_homo=False):
+                  include_homo=False, split=True):
     """FDCompCN as PyG tensors for GraphConsis (C-I-C / C-S-C / C-P-C)."""
     import torch
 
@@ -474,6 +495,8 @@ def load_comp_pyg(name='comp', prefix=None, test_size=0.4, seed=48, normalize=Tr
         raise ValueError('FDCompCN has no non-homo relations for GraphConsis')
     x = torch.tensor(np.asarray(feat), dtype=torch.float32)
     y = torch.tensor(labels, dtype=torch.long)
+    if not split:
+        return x, edge_indices, y
     train_idx, test_idx = stratified_train_test_split(labels, test_size=test_size, seed=seed)
     train_idx_t = torch.tensor(np.asarray(train_idx), dtype=torch.long)
     test_idx_t = torch.tensor(np.asarray(test_idx), dtype=torch.long)
@@ -522,19 +545,11 @@ def _symmetrize_coo(adj):
 
 
 def split_train_valid_test(y, train_ratio=0.4, test_of_rest=0.67, seed=2, index=None):
-    """Official SplitGNN 40% / ~20% / ~40% stratified split."""
-    y = np.asarray(y).reshape(-1)
-    if index is None:
-        index = np.arange(y.size)
-    index = np.asarray(index, dtype=np.int64)
-    y_sub = y[index]
-    train_idx, rest_idx, _train_y, rest_y = train_test_split(
-        index, y_sub, stratify=y_sub, train_size=train_ratio, random_state=seed, shuffle=True)
-    valid_idx, test_idx, _vy, _ty = train_test_split(
-        rest_idx, rest_y, stratify=rest_y, test_size=test_of_rest, random_state=seed, shuffle=True)
-    return (np.asarray(train_idx, dtype=np.int64),
-            np.asarray(valid_idx, dtype=np.int64),
-            np.asarray(test_idx, dtype=np.int64))
+    """Fixed 20% valid / 40% test; ``train_ratio`` slices the 40% train pool."""
+    del test_of_rest
+    train_idx, valid_idx, test_idx, _discarded, _info = protocol_split(
+        y, train_ratio=train_ratio, seed=seed, indices=index)
+    return train_idx, valid_idx, test_idx
 
 
 def _masks_from_indices(n, train_idx, valid_idx=None, test_idx=None):
@@ -592,7 +607,7 @@ def _load_mat_relations(path, homo_key, rel_map):
 
 
 def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
-                        use_file_masks=True, amazon_drop_col19=True):
+                        use_file_masks=False, amazon_drop_col19=True):
     """Heterograph for SplitGNN: FDCompCN ``.dgl``, YelpChi / Amazon ``.mat``,
     or a homogeneous graph (Elliptic / T-Finance / T-Social).
 
@@ -641,9 +656,10 @@ def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
     features = row_normalize_features(features)
     n = int(features.shape[0])
 
-    train_idx = valid_idx = test_idx = None
+    train_idx = valid_idx = test_idx = discarded_idx = None
     homo_edge_label = homo_edge_train_mask = None
     used_file_masks = False
+    split_info = None
     if (file_data is not None and use_file_masks
             and file_data.get('train_mask') is not None
             and file_data.get('test_mask') is not None):
@@ -651,14 +667,18 @@ def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
         valid_idx = (_indices_from_mask(file_data['valid_mask'])
                      if file_data.get('valid_mask') is not None else None)
         test_idx = _indices_from_mask(file_data['test_mask'])
+        discarded_idx = np.asarray([], dtype=np.int64)
         homo_edge_label = file_data.get('homo_edge_label')
         homo_edge_train_mask = file_data.get('homo_edge_train_mask')
         used_file_masks = True
+        split_info = split_report(labels, train_idx, test_idx, valid_idx=valid_idx)
+        split_info.update({'used_file_masks': True, 'seed': int(seed), 'stratified': True})
 
     if train_idx is None:
         index = np.arange(labeled_from, n, dtype=np.int64) if labeled_from is not None else None
-        train_idx, valid_idx, test_idx = split_train_valid_test(
-            labels, train_ratio=train_ratio, seed=seed, index=index)
+        train_idx, valid_idx, test_idx, discarded_idx, split_info = protocol_split(
+            labels, train_ratio=train_ratio, seed=seed, indices=index)
+        split_info['used_file_masks'] = False
 
     homo_src = homo_dst = None
     for rel_name, src, dst in relations:
@@ -676,14 +696,8 @@ def load_splitgnn_graph(name='comp', prefix=None, train_ratio=0.4, seed=2,
         n, features, labels, relations,
         homo_edge_label=homo_edge_label, homo_edge_train_mask=homo_edge_train_mask,
         train_mask=train_mask, valid_mask=valid_mask, test_mask=test_mask)
-    split_info = split_report(labels, train_idx, test_idx)
-    split_info.update({
-        'train_ratio': float(train_ratio),
-        'seed': int(seed),
-        'stratified': True,
-        'used_file_masks': used_file_masks,
-        'n_valid': int(valid_idx.size) if valid_idx is not None else 0,
-    })
+    split_info = split_info or {}
+    split_info['discarded_size'] = int(len(discarded_idx)) if discarded_idx is not None else 0
     return graph, train_idx, valid_idx, test_idx, split_info
 
 

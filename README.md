@@ -208,6 +208,18 @@ Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/
 
 Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), and **SplitGNN** (`--dataset comp`, all relations + signed homo edges). Loaded without importing DGL.
 
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN)
+
+All three models use the same stratified split of **labeled** nodes:
+
+| Split | Fraction of labeled nodes | Role |
+| ----- | ------------------------- | ---- |
+| Train | `--train_ratio` (default **0.4**, max 0.4) | Fit the model |
+| Valid | **0.20** (fixed) | Checkpoint selection / hyperparameter tuning |
+| Test | **0.40** (fixed) | Final metrics only |
+
+If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUC checkpoint before reporting test metrics.
+
 ---
 
 
@@ -931,7 +943,7 @@ Same as GraphSAGE, plus:
 | Argument          | Default    | Description                                         |
 | ----------------- | ---------- | --------------------------------------------------- |
 | `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon` / `elliptic` / `comp` |
-| `--train_ratio`   | `None`     | Train fraction (paper: `0.4`); else uses `--test_size` |
+| `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (max `0.4`; valid/test fixed at 20/40) |
 | `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)         |
 | `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)             |
 | `--epochs`        | `100`      | Epochs                                              |
@@ -947,7 +959,7 @@ Same as GraphSAGE, plus:
 | Argument          | Default     | Description                                              |
 | ----------------- | ----------- | -------------------------------------------------------- |
 | `--dataset`       | `comp`      | `comp` / `yelpchi` / `amazon` / `elliptic`               |
-| `--train_ratio`   | `0.4`       | Train fraction if file masks are ignored                 |
+| `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (max `0.4`; valid/test fixed at 20/40) |
 | `--intra_dim`     | paper table | Hidden size (`8`)                                        |
 | `--C` / `--K`     | paper table | Wavelet order / positive-band cutoff (`3` / `2` on comp) |
 | `--gamma`         | paper table | Homo-edge hinge weight (`0.8` on comp)                   |
@@ -1234,3 +1246,27 @@ python SplitGNN_main.py --dataset tfinance --gpu 0 --epochs 50
 SplitGNN defaults follow the paper table for FDCompCN (`lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). Pass `--ignore_file_masks` to use a fresh 40/20/40 split instead of the masks in `comp.dgl`. Amazon still drops feature column 19 and trains only on labeled nodes (`index >= 3305`).
 
 A 2-epoch smoke run on `comp` completed (forward, backward, and the train loop). Still no DGL import — the `.dgl` file is read by `utils/dgl_bin.py`.
+----------------------------------
+
+GraphConsis, BWGNN, and SplitGNN now share one stratified split of **labeled** nodes:
+
+| Split | Fraction | Role |
+| ----- | -------- | ---- |
+| **Train** | `--train_ratio` (default **40%**, max 40%) | Fit the model |
+| **Valid** | **20%** (fixed) | Pick the checkpoint / tune |
+| **Test** | **40%** (fixed) | Final metrics only |
+
+If you set `--train_ratio 0.2`, valid and test stay 20/40. The unused half of the 40% train pool is **discarded**, not moved into valid or test. Same seed → same valid and test nodes.
+
+After training, each model reloads the **best valid-AUC** checkpoint, then reports train / valid / test. `--early_stop N` stops if valid AUC does not improve for N epochs (`0` trains all epochs).
+
+```powershell
+# default 40 / 20 / 40
+python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --epochs 50 --gpu 0
+
+# 20% train; valid/test unchanged
+python BWGNN_main.py --dataset elliptic --train_ratio 0.2 --gpu 0
+python SplitGNN_main.py --dataset comp --train_ratio 0.4 --gpu 0
+```
+
+`comp.dgl` file masks are no longer used unless you pass `--use_file_masks` on SplitGNN. Amazon still splits only labeled nodes (`index >= 3305`); the 40/20/40 ratios apply to that labeled set.

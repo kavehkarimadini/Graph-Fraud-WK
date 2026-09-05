@@ -8,9 +8,17 @@ def add_save_args(parser):
     parser.add_argument('--save_dir', type=str, default='results',
                         help='Root directory for checkpoints and evaluation outputs.')
     parser.add_argument('--test_size', type=float, default=None,
-                        help='Held-out test fraction (model-specific default if omitted).')
+                        help='Held-out test fraction (unused by GraphConsis/BWGNN/SplitGNN).')
     parser.add_argument('--no_save', action='store_true',
                         help='Skip writing unified evaluation artifacts.')
+
+
+def add_protocol_split_args(parser, train_ratio=0.4, early_stop=0):
+    parser.add_argument('--train_ratio', type=float, default=train_ratio,
+                        help='Train fraction of all labeled nodes (max 0.4). '
+                             'Valid is fixed at 20%% and test at 40%%; unused train-pool nodes are discarded.')
+    parser.add_argument('--early_stop', type=int, default=early_stop,
+                        help='Patience on valid AUC (0 trains all epochs; best valid checkpoint is still kept).')
 
 
 def default_test_size(model_name, dataset_str):

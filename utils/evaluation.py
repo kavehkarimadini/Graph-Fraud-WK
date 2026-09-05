@@ -121,6 +121,8 @@ def save_run_outputs(
     probabilities=None,
     test_indices=None,
     train_indices=None,
+    valid_indices=None,
+    discarded_indices=None,
     y_test=None,
     y_train=None,
     train_time=None,
@@ -169,8 +171,12 @@ def save_run_outputs(
     split_arrays = {}
     if train_indices is not None:
         split_arrays['train_idx'] = np.asarray(train_indices)
+    if valid_indices is not None:
+        split_arrays['valid_idx'] = np.asarray(valid_indices)
     if test_indices is not None:
         split_arrays['test_idx'] = np.asarray(test_indices)
+    if discarded_indices is not None:
+        split_arrays['discarded_idx'] = np.asarray(discarded_indices)
     if y_train is not None:
         split_arrays['y_train'] = np.asarray(y_train)
     if y_test is not None:
