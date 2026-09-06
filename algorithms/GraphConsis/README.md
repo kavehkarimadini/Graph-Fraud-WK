@@ -15,28 +15,31 @@ The GraphConsis model is proposed by the [paper](https://arxiv.org/abs/2005.0062
 
 ## Brief Introduction
 
-It is revised based on the [GraphSage](https://github.com/williamleif/GraphSAGE/tree/master/graphsage) model. We support multiple relations and distance sampling as mentioned in [our paper](https://arxiv.org/pdf/2005.00625.pdf).
+Paper GraphConsis (SIGIR 2020): trainable context embeddings concatenated with node features, consistency-score neighbor sampling (Eq. 3–4), and relation attention over the Q samples (Eq. 5–6). Two layers use hidden sizes 200 then 100 and sample 10 then 5 neighbors. Training is minibatch and DGL-free.
+
+Toolbox knobs that stay at script defaults (not paper): `--train_ratio 0.4`, `--epochs 10`, `--batch_size 512`, Adam `--learning_rate 0.01`.
 
 
 ## Run the code
 Go to `algorithms/GraphConsis/`, and run the following command in the terminal:
 
-`python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --model graphsage_mean --sigmoid --epochs 3 --samples_1 10 --samples_2 5 --context_dim 128 --train_perc 1. --gpu 0`
+`python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0`
 
 or run `supervised_train.py` in your IDEs.
 
 
 ## Meaning of the arguments
 ```
---samples_1 -samples_2: the number of samples using at difference layers
---context_dim: the dimension of context embeddings
---train_perc: the percentage of training data used to train the model, 1. represents using 80% training and 20% testing, 0.5 will use 40% as training and the same 20% as testing
+--samples_1 --samples_2: neighbors sampled at each layer (paper: 10 then 5)
+--dim_1 --dim_2: hidden sizes (paper: 200 then 100)
+--context_dim: trainable context embedding size (paper / official code: 128; 0 disables)
+--consis_eps: consistency threshold ε (default 0 keeps all scored neighbors)
+--max_neighbors: cap on neighbors scored per node (high-degree relations)
+--train_ratio: fraction of labeled nodes used for train (max 0.4; valid/test stay 20/40)
 ```
 For more information about the arguments, please refer to `supervised_train.py`.
 
 ## Note
-- GraphSAGE and GraphConsis now use PyTorch Geometric `SAGEConv` (and relation-level attention for GraphConsis).
-
 - Before running the code, please remember unzip the given dataset.
 - T-Finance / T-Social: `python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --gpu 0`
-- FDCompCN: `python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --gpu 0` 
+- FDCompCN: `python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --gpu 0`

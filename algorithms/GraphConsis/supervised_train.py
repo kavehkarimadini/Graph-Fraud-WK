@@ -1,5 +1,5 @@
 '''
-GraphConsis training with PyTorch Geometric.
+GraphConsis training (Liu et al., SIGIR 2020).
 Usage:
   python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3
 '''
@@ -12,7 +12,6 @@ import os
 import sys
 import time
 
-import numpy as np
 import torch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -32,14 +31,19 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--dropout', type=float, default=0.0)
     parser.add_argument('--weight_decay', type=float, default=0.0)
-    parser.add_argument('--dim_1', type=int, default=128)
+    parser.add_argument('--dim_1', type=int, default=200)
+    parser.add_argument('--dim_2', type=int, default=100)
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--sigmoid', action='store_true')
-    parser.add_argument('--context_dim', type=int, default=0)
+    parser.add_argument('--context_dim', type=int, default=128)
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--seed', type=int, default=123)
-    parser.add_argument('--samples_1', type=int, default=25)
-    parser.add_argument('--samples_2', type=int, default=10)
+    parser.add_argument('--samples_1', type=int, default=10)
+    parser.add_argument('--samples_2', type=int, default=5)
+    parser.add_argument('--consis_eps', type=float, default=0.0,
+                        help='Consistency threshold ε (paper Eq. 4). 0 keeps all candidates.')
+    parser.add_argument('--max_neighbors', type=int, default=256,
+                        help='Cap on neighbors scored per node (high-degree relations).')
     parser.add_argument('--run_tag', type=str, default=None,
                         help='Optional suffix on the output folder (e.g. a timestamp).')
     add_save_args(parser)
@@ -47,12 +51,15 @@ def parse_args():
     return parser.parse_args()
 
 
-def predict_split(model, x, edge_indices, y, idx, sigmoid):
+def predict_split(model, x, y, idx, sigmoid, batch_size):
+    preds = []
     with torch.no_grad():
-        logits = model(x, edge_indices)
-        preds = model.predict(logits)
-        y_true = y[idx].cpu().numpy()
-        y_pred = preds[idx].cpu().numpy()
+        for start in range(0, idx.size(0), batch_size):
+            batch = idx[start:start + batch_size]
+            logits = model.forward_nodes(x, batch)
+            preds.append(model.predict(logits))
+    y_pred = torch.cat(preds, dim=0).cpu().numpy()
+    y_true = y[idx].cpu().numpy()
     metrics = compute_classification_metrics(y_true, y_pred, y_pred, sigmoid=sigmoid)
     return metrics, y_true, y_pred
 
@@ -87,7 +94,13 @@ def train(args=None):
         dropout=args.dropout,
         sigmoid_loss=args.sigmoid,
         num_nodes=x.size(0),
+        dim_2=getattr(args, 'dim_2', 100),
+        samples_1=args.samples_1,
+        samples_2=args.samples_2,
+        consis_eps=getattr(args, 'consis_eps', 0.0),
+        max_candidates=getattr(args, 'max_neighbors', 256),
     ).to(device)
+    model.set_graph(edge_indices, x.size(0))
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     early_stop = int(getattr(args, 'early_stop', 0) or 0)
 
@@ -103,7 +116,7 @@ def train(args=None):
         for start in range(0, permutation.size(0), args.batch_size):
             batch = permutation[start:start + args.batch_size]
             optimizer.zero_grad()
-            loss = model.loss(model(x, edge_indices)[batch], y[batch])
+            loss = model.loss(model.forward_nodes(x, batch), y[batch])
             loss.backward()
             torch.nn.utils.clip_grad_value_(model.parameters(), 5.0)
             optimizer.step()
@@ -111,7 +124,8 @@ def train(args=None):
             steps += 1
 
         model.eval()
-        valid_metrics, _, _ = predict_split(model, x, edge_indices, y, valid_idx, args.sigmoid)
+        valid_metrics, _, _ = predict_split(
+            model, x, y, valid_idx, args.sigmoid, args.batch_size)
         auc = valid_metrics.get('auroc')
         if auc is None:
             auc = -1.0
@@ -133,9 +147,12 @@ def train(args=None):
     if best_state is not None:
         model.load_state_dict(best_state)
     model.eval()
-    train_metrics, _, _ = predict_split(model, x, edge_indices, y, train_idx, args.sigmoid)
-    valid_metrics, _, _ = predict_split(model, x, edge_indices, y, valid_idx, args.sigmoid)
-    test_metrics, y_true, y_pred = predict_split(model, x, edge_indices, y, test_idx, args.sigmoid)
+    train_metrics, _, _ = predict_split(
+        model, x, y, train_idx, args.sigmoid, args.batch_size)
+    valid_metrics, _, _ = predict_split(
+        model, x, y, valid_idx, args.sigmoid, args.batch_size)
+    test_metrics, y_true, y_pred = predict_split(
+        model, x, y, test_idx, args.sigmoid, args.batch_size)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
     print('Train metrics:', train_metrics)

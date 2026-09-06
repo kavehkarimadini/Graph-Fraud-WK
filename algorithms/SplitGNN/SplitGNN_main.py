@@ -28,15 +28,15 @@ from utils.training import add_save_args
 
 # Paper table (README "Reproduce Results"), not the placeholder yaml values.
 DATASET_DEFAULTS = {
-    'comp': dict(learning_rate=0.001, C=3, K=2, gamma=0.8, intra_dim=8,
+    'comp': dict(learning_rate=0.01, C=3, K=2, gamma=0.8, intra_dim=8,
                  dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
-    'fdcompcn': dict(learning_rate=0.001, C=3, K=2, gamma=0.8, intra_dim=8,
+    'fdcompcn': dict(learning_rate=0.01, C=3, K=2, gamma=0.8, intra_dim=8,
                      dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
     'yelpchi': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
                     dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
     'yelp': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
                  dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
-    'amazon': dict(learning_rate=0.1, C=2, K=1, gamma=0.4, intra_dim=8,
+    'amazon': dict(learning_rate=0.01, C=2, K=1, gamma=0.4, intra_dim=8,
                    dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
     'elliptic': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
                      dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
@@ -63,7 +63,7 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=None)
     parser.add_argument('--early_stop', type=int, default=None,
                         help='Patience on valid AUC (0 disables).')
-    parser.add_argument('--learning_rate', type=float, default=None)
+    parser.add_argument('--learning_rate', type=float, default=0.01)
     parser.add_argument('--weight_decay', type=float, default=None)
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--seed', type=int, default=30)

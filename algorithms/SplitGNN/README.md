@@ -29,7 +29,7 @@ python SplitGNN_main.py --dataset amazon --gpu 0
 python SplitGNN_main.py --dataset elliptic --gpu 0
 ```
 
-Defaults match the paper table (FDCompCN: `lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). `comp.dgl` train/valid/test masks are used unless you pass `--ignore_file_masks`.
+Defaults match the paper table for architecture (`gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100 on FDCompCN). Learning rate defaults to Adam `0.01` on every dataset. `comp.dgl` train/valid/test masks are used unless you pass `--ignore_file_masks`.
 
 ## Note
 

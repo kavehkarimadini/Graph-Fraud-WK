@@ -34,7 +34,7 @@ def parse_args():
                         help='Output sizes of every layer')
 
 
-    parser.add_argument('--lr', type=float, default=0.001,
+    parser.add_argument('--lr', type=float, default=0.01,
                         help='Learning rate.')
     parser.add_argument('--reg', type=float, default=1e-3,
                         help='Regularization ratio.')     

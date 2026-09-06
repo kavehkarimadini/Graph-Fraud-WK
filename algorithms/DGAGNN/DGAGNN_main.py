@@ -62,7 +62,7 @@ def parse_args():
     parser.add_argument('--z', type=float, default=None, help='Grouping threshold (unclear_up/down)')
     parser.add_argument('--dropout', type=float, default=None)
     parser.add_argument('--epochs', type=int, default=None)
-    parser.add_argument('--learning_rate', type=float, default=1e-3)
+    parser.add_argument('--learning_rate', type=float, default=0.01)
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     parser.add_argument('--no_bin_encoding', action='store_true',
                         help='Skip decision-tree binning; use standardized features only.')

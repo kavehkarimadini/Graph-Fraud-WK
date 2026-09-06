@@ -29,7 +29,7 @@ def arg_parser():
     parser.add_argument('--epoch_num', type=int, default=30, help='Number of epochs to train.')
     parser.add_argument('--batch_size', type=int, default=1000)
     parser.add_argument('--momentum', type=int, default=0.9)
-    parser.add_argument('--learning_rate', type=float, default=0.001)
+    parser.add_argument('--learning_rate', type=float, default=0.01)
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--hidden1', type=int, default=16)
     parser.add_argument('--hidden2', type=int, default=16)

@@ -586,7 +586,7 @@ python supervised_train.py `
   --epochs 3 `
   --context_dim 128 `
   --samples_1 10 --samples_2 5 `
-  --dim_1 128 --batch_size 512 `
+  --dim_1 200 --dim_2 100 --batch_size 512 `
   --gpu 0
 
 # T-Finance / T-Social (DGL binaries; unzip dataset/tfinance.zip and tsocial.zip first)
@@ -884,7 +884,7 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--dataset_str`   | `example` or `dblp`                    | Dataset key (`example` / `dblp`)                |
 | `--epoch_num`     | `30`                                   | Training epochs                                 |
 | `--batch_size`    | `1000` (SemiGNN scripts often use `4`) | Batch size                                      |
-| `--learning_rate` | `0.001`                                | Adam learning rate                              |
+| `--learning_rate` | `0.01`                                 | Adam learning rate                              |
 | `--gpu`           | `0`                                    | CUDA device id (unavailable → CPU)              |
 | `--momentum`      | `0.9`                                  | Kept for API compatibility                      |
 | `--save_dir`      | `results`                              | Root folder for eval outputs (`main.py`)        |
@@ -982,16 +982,20 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 
 ### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
-Same as GraphSAGE, plus:
+Paper architecture (context embeddings, consistency sampling, relation attention) except the four toolbox knobs: `--train_ratio 0.4`, `--epochs 10`, `--batch_size 512`, Adam `--learning_rate 0.01`.
 
 
-| Argument        | Default                     | Description                                |
-| --------------- | --------------------------- | ------------------------------------------ |
-| `--context_dim` | `0`                         | Context embedding dim (`0` disables)       |
-| `--train_perc`  | `1.`                        | Fraction of the 80% train split to use     |
-| `--early_stop`  | `25`                        | Valid-AUC patience (`0` trains all epochs) |
-| `--save_dir`    | `../../results/GraphConsis` | Eval output directory                      |
-| `--no_save`     | flag                        | Skip writing eval outputs                  |
+| Argument                      | Default                     | Description                                |
+| ----------------------------- | --------------------------- | ------------------------------------------ |
+| `--dim_1` / `--dim_2`         | `200` / `100`               | Hidden sizes (paper §4.1.3)                |
+| `--samples_1` / `--samples_2` | `10` / `5`                  | Neighbors sampled per layer                |
+| `--context_dim`               | `128`                       | Context embedding dim (`0` disables)       |
+| `--consis_eps`                | `0.0`                       | Consistency threshold ε                    |
+| `--max_neighbors`             | `256`                       | Cap on neighbors scored per node           |
+| `--train_ratio`               | `0.4`                       | Train fraction of labeled nodes (max 0.4)  |
+| `--early_stop`                | `25`                        | Valid-AUC patience (`0` trains all epochs) |
+| `--save_dir`                  | `../../results/GraphConsis` | Eval output directory                      |
+| `--no_save`                   | flag                        | Skip writing eval outputs                  |
 
 
 
@@ -1025,7 +1029,7 @@ Same as GraphSAGE, plus:
 | `--gamma`         | paper table | Homo-edge hinge weight (`0.8` on comp)                                 |
 | `--epochs`        | `1000`      | Max epochs (early stop on valid AUC)                                   |
 | `--early_stop`    | paper table | Patience (`100` on comp; `0` disables)                                 |
-| `--learning_rate` | paper table | `0.001` (comp), `0.01` (yelpchi), `0.1` (amazon)                       |
+| `--learning_rate` | `0.01`      | Adam learning rate (same default on every dataset)                     |
 | `--gpu`           | `0`         | Device                                                                 |
 
 
@@ -1043,7 +1047,7 @@ Same as GraphSAGE, plus:
 | `--n_bins`        | paper yaml | Decision-tree bins per feature (`k`)                                |
 | `--z`             | paper yaml | Grouping threshold                                                  |
 | `--epochs`        | `200`      | Max epochs (early stop on valid AUC)                                |
-| `--learning_rate` | `0.001`    | Learning rate                                                       |
+| `--learning_rate` | `0.01`     | Learning rate                                                       |
 | `--gpu`           | `0`        | Device                                                              |
 
 
@@ -1095,7 +1099,7 @@ Same as GraphSAGE, plus:
 | `--epoch`      | `500`         | Epochs                    |
 | `--embed_size` | `64`          | Node embedding size       |
 | `--batch_size` | `64`          | Batch size                |
-| `--lr`         | `0.001`       | Learning rate             |
+| `--lr`         | `0.01`        | Learning rate             |
 | `--reg`        | `1e-3`        | L2 regularization         |
 | `--n_fc`       | `4`           | Number of FC layers       |
 | `--fc`         | `[32,16,8,4]` | FC widths                 |
@@ -1134,7 +1138,7 @@ Same as GraphSAGE, plus:
 
 - **Player2Vec / FdGars:** multi-layer GCN (`GCNConv`) (+ meta-path attention for Player2Vec)
 - **GeniePath:** GAT breadth (`GATConv`) + LSTM depth
-- **GraphSAGE / GraphConsis:** `SAGEConv` (GraphConsis adds multi-relation attention)
+- **GraphSAGE / GraphConsis:** GraphSAGE uses `SAGEConv`; GraphConsis follows the paper (context embeddings, consistency sampling, relation attention)
 - **BWGNN:** beta-wavelet polynomial filters (`PolyConv`) with `torch.sparse`
 - **SplitGNN:** signed multi-relation beta-wavelet filters (`PolyConv` + `RelationAware`) with `torch.sparse`
 - **DGA-GNN:** decision-tree binning + grouped mean aggregation + attention (no DGL)
@@ -1227,14 +1231,14 @@ python supervised_train.py `
   --sigmoid `
   --epochs 50 `
   --learning_rate 0.01 `
-  --dim_1 128 `
+  --dim_1 200 `
+  --dim_2 100 `
   --batch_size 512 `
   --dropout 0.0 `
   --weight_decay 0.0 `
-  --context_dim 0 `
-  --samples_1 25 `
-  --samples_2 10 `
-  --test_size 0.2 `
+  --context_dim 128 `
+  --samples_1 10 `
+  --samples_2 5 `
   --seed 123 `
   --gpu 0
 ```
@@ -1248,14 +1252,14 @@ python supervised_train.py `
   --sigmoid `
   --epochs 50 `
   --learning_rate 0.01 `
-  --dim_1 128 `
+  --dim_1 200 `
+  --dim_2 100 `
   --batch_size 512 `
   --dropout 0.0 `
   --weight_decay 0.0 `
-  --context_dim 0 `
-  --samples_1 25 `
-  --samples_2 10 `
-  --test_size 0.2 `
+  --context_dim 128 `
+  --samples_1 10 `
+  --samples_2 5 `
   --seed 123 `
   --gpu 0
 ```
@@ -1287,14 +1291,14 @@ python supervised_train.py `
   --sigmoid `
   --epochs 50 `
   --learning_rate 0.01 `
-  --dim_1 128 `
+  --dim_1 200 `
+  --dim_2 100 `
   --batch_size 16 `
   --dropout 0.0 `
   --weight_decay 0.0 `
-  --context_dim 0 `
-  --samples_1 25 `
-  --samples_2 10 `
-  --test_size 0.6 `
+  --context_dim 128 `
+  --samples_1 10 `
+  --samples_2 5 `
   --seed 123 `
   --gpu 0
 
@@ -1379,7 +1383,7 @@ python SplitGNN_main.py --dataset tsocial --gpu 0 --epochs 50
 python SplitGNN_main.py --dataset tfinance --gpu 0 --epochs 50
 ```
 
-SplitGNN defaults follow the paper table for FDCompCN (`lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). Pass `--ignore_file_masks` to use a fresh 40/20/40 split instead of the masks in `comp.dgl`. Amazon still drops feature column 19 and trains only on labeled nodes (`index >= 3305`).
+SplitGNN defaults follow the paper table for FDCompCN architecture (`gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). Learning rate defaults to Adam `0.01`. Pass `--ignore_file_masks` to use a fresh 40/20/40 split instead of the masks in `comp.dgl`. Amazon still drops feature column 19 and trains only on labeled nodes (`index >= 3305`).
 
 ## A 2-epoch smoke run on `comp` completed (forward, backward, and the train loop). Still no DGL import — the `.dgl` file is read by `utils/dgl_bin.py`.
 
@@ -1486,16 +1490,16 @@ Work from the **repo root** with the venv activated and datasets already in `dat
 
 ### GraphConsis
 
-Uses `--file_name`, not `--dataset`. Keep `--sigmoid`. Default epochs in the script is `10` (short). Other knobs stay at script defaults (`dim_1=128`, `batch_size=512`, `samples_1=25`, `samples_2=10`).
+Uses `--file_name`, not `--dataset`. Keep `--sigmoid`. Default epochs in the script is `10` (short). Paper knobs are the script defaults (`dim_1=200`, `dim_2=100`, `samples_1=10`, `samples_2=5`, `context_dim=128`). Toolbox knobs stay `--train_ratio 0.4`, `--batch_size 512`, Adam `--learning_rate 0.01`.
 
 ```bash
 cd algorithms/GraphConsis
 
-python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
 python supervised_train.py --train_prefix ../../dataset/ --file_name Amazon.mat --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python supervised_train.py --train_prefix ../../dataset/ --file_name elliptic --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epoch 500
+python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 100000
 python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
@@ -1530,7 +1534,7 @@ cd ../..
 
 ### SplitGNN
 
-Per-dataset paper table fills `lr` unless you pass `--learning_rate`. Passing `$LR` overrides that table. Other defaults (`C`, `K`, `gamma`, `intra_dim`, `epochs`, `early_stop`) stay dataset-specific.
+Default learning rate is Adam `0.01` on every dataset. Other defaults (`C`, `K`, `gamma`, `intra_dim`, `epochs`, `early_stop`) stay dataset-specific.
 
 ```bash
 cd algorithms/SplitGNN
@@ -1551,7 +1555,7 @@ cd ../..
 
 ### DGA-GNN
 
-Hidden size, heads, bins `k`, `z`, dropout, epochs, and early-stop come from the official yaml per dataset. Script default LR is `0.001` if you omit `--learning_rate`.
+Hidden size, heads, bins `k`, `z`, dropout, epochs, and early-stop come from the official yaml per dataset. Script default LR is Adam `0.01` if you omit `--learning_rate`.
 
 ```bash
 cd algorithms/DGAGNN
