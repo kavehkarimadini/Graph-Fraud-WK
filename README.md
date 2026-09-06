@@ -79,29 +79,30 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 
 ### Setup with `uv` (recommended, GPU)
 
-From the repo root:
+`pyproject.toml` pins **CUDA PyTorch** (not the CPU wheel). From the repo root:
 
 ```powershell
-# 1) Create and activate a virtual environment
+# Windows / x86_64 Linux GPU (CUDA 12.8 wheels)
+uv sync --extra gpu
+
+# NVIDIA GB10 / DGX Spark / Vast ARM (linux aarch64, CUDA 13.0 wheels)
+uv sync --extra gb10
+```
+
+`uv sync` with no extra still picks **cu130** on `linux aarch64` and **cu128** on Windows / x86_64 Linux. Do not `uv pip install torch` from PyPI after this or you can overwrite the GPU build. Do not install DGL.
+
+Manual equivalent (if you are not using `uv sync`):
+
+```powershell
 uv venv
 .venv\Scripts\activate
 
-# 2) Install CUDA PyTorch FIRST (pick a CUDA index that matches your driver)
-#    Check driver CUDA with: nvidia-smi
-#    Example for driver reporting CUDA 12.8:
+# GPU (x86 / Windows): CUDA 12.8
 uv pip install torch --index-url https://download.pytorch.org/whl/cu128
+# GB10 (linux aarch64): CUDA 13.0
+# uv pip install torch --index-url https://download.pytorch.org/whl/cu130
 
-#    If cu128 has no wheel for your Python, try cu126:
-#    uv pip install torch --index-url https://download.pytorch.org/whl/cu126
-
-# 3) Install the remaining packages (do not reinstall torch from PyPI after this)
-uv pip install torch-geometric numpy scipy scikit-learn
-
-# 4) BWGNN extra (beta-wavelet coefficients)
-uv pip install sympy
-# Do not `uv pip install dgl` on Python 3.13 / recent Windows CUDA: PyPI ships
-# dgl==0.1.3 whose libdgl.dll fails to load. T-Finance/T-Social are loaded
-# from the DGL v2 binary without importing DGL.
+uv pip install torch-geometric numpy scipy scikit-learn sympy
 ```
 
 **Important:** Do not run a plain `uv pip install -r requirements.txt` after the CUDA install unless you keep the CUDA index. `requirements.txt` only pins `torch>=...`, and PyPI often installs the **CPU** wheel and overwrites the GPU build.
@@ -212,11 +213,13 @@ Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN*
 
 All three models use the same stratified split of **labeled** nodes:
 
-| Split | Fraction of labeled nodes | Role |
-| ----- | ------------------------- | ---- |
-| Train | `--train_ratio` (default **0.4**, max 0.4) | Fit the model |
-| Valid | **0.20** (fixed) | Checkpoint selection / hyperparameter tuning |
-| Test | **0.40** (fixed) | Final metrics only |
+
+| Split | Fraction of labeled nodes                  | Role                                         |
+| ----- | ------------------------------------------ | -------------------------------------------- |
+| Train | `--train_ratio` (default **0.4**, max 0.4) | Fit the model                                |
+| Valid | **0.20** (fixed)                           | Checkpoint selection / hyperparameter tuning |
+| Test  | **0.40** (fixed)                           | Final metrics only                           |
+
 
 If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUC checkpoint before reporting test metrics. `--early_stop` defaults to **25** (pass `0` to train every epoch).
 
@@ -254,22 +257,22 @@ Models available via `main.py`: `Player2Vec`, `FdGars`, `GEM`, `SemiGNN`, `GAS`,
 Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.py`):
 
 
-| Model       | Command                                                                                                                                          |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Player2Vec  | `cd algorithms/Player2Vec` then `python Player2Vec_main.py --gpu 0`                                                                              |
-| FdGars      | `python FdGars_main.py --gpu 0`                                                                                                                  |
-| GAS         | `python GAS_main.py --gpu 0`                                                                                                                     |
-| GEM         | `python GEM_main.py --dataset_str example --gpu 0`                                                                                               |
-| SemiGNN     | `python SemiGNN_main.py --batch_size 4 --gpu 0`                                                                                                  |
-| GeniePath   | `python GeniePath_main.py --gpu 0`                                                                                                               |
-| GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`               |
+| Model       | Command                                                                                                                                                                                                         |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Player2Vec  | `cd algorithms/Player2Vec` then `python Player2Vec_main.py --gpu 0`                                                                                                                                             |
+| FdGars      | `python FdGars_main.py --gpu 0`                                                                                                                                                                                 |
+| GAS         | `python GAS_main.py --gpu 0`                                                                                                                                                                                    |
+| GEM         | `python GEM_main.py --dataset_str example --gpu 0`                                                                                                                                                              |
+| SemiGNN     | `python SemiGNN_main.py --batch_size 4 --gpu 0`                                                                                                                                                                 |
+| GeniePath   | `python GeniePath_main.py --gpu 0`                                                                                                                                                                              |
+| GraphSAGE   | `cd algorithms/GraphSage` then `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`                                                                              |
 | GraphConsis | `cd algorithms/GraphConsis` then `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --epochs 3 --gpu 0` (also `Amazon.mat`, `tfinance`, `tsocial`, `elliptic`, `comp`) |
-| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`, `comp`)                                                                                                              |
-| SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`, `elliptic`)                                                                                              |
-| DGA-GNN     | `cd algorithms/DGAGNN` then `python DGAGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                           |
-| GLHN        | `cd algorithms/GLHN` then `python GLHN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                               |
-| BSL         | `cd algorithms/BSL` then `python BSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                                 |
-| HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                         |
+| BWGNN       | `cd algorithms/BWGNN` then `python BWGNN_main.py --dataset tfinance --gpu 0` (also `tsocial`, `yelpchi`, `amazon`, `elliptic`, `comp`)                                                                          |
+| SplitGNN    | `cd algorithms/SplitGNN` then `python SplitGNN_main.py --dataset comp --gpu 0` (also `yelpchi`, `amazon`, `elliptic`)                                                                                           |
+| DGA-GNN     | `cd algorithms/DGAGNN` then `python DGAGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
+| GLHN        | `cd algorithms/GLHN` then `python GLHN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
+| BSL         | `cd algorithms/BSL` then `python BSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
 
@@ -752,13 +755,13 @@ results/<Model>/<dataset>/seed<seed>/
 ```
 
 
-| File              | Contents                                                                                                                |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `config.json`     | All training arguments (model, seed, test_size, lr, …)                                                                  |
+| File              | Contents                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `config.json`     | All training arguments (model, seed, test_size, lr, …)                                                                      |
 | `metrics.json`    | `train` / `test` metrics, `split` report, and `complexity` (`train_time_sec`, `num_parameters`, `num_trainable_parameters`) |
-| `split.npz`       | Stratified indices and labels for reproducible re-evaluation                                                            |
-| `predictions.npz` | Held-out test predictions and probabilities                                                                             |
-| `checkpoint.pt`   | PyTorch checkpoint for loading the trained model                                                                        |
+| `split.npz`       | Stratified indices and labels for reproducible re-evaluation                                                                |
+| `predictions.npz` | Held-out test predictions and probabilities                                                                                 |
+| `checkpoint.pt`   | PyTorch checkpoint for loading the trained model                                                                            |
 
 
 Examples:
@@ -982,13 +985,13 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 Same as GraphSAGE, plus:
 
 
-| Argument        | Default                     | Description                            |
-| --------------- | --------------------------- | -------------------------------------- |
-| `--context_dim` | `0`                         | Context embedding dim (`0` disables)   |
-| `--train_perc`  | `1.`                        | Fraction of the 80% train split to use |
+| Argument        | Default                     | Description                                |
+| --------------- | --------------------------- | ------------------------------------------ |
+| `--context_dim` | `0`                         | Context embedding dim (`0` disables)       |
+| `--train_perc`  | `1.`                        | Fraction of the 80% train split to use     |
 | `--early_stop`  | `25`                        | Valid-AUC patience (`0` trains all epochs) |
-| `--save_dir`    | `../../results/GraphConsis` | Eval output directory                  |
-| `--no_save`     | flag                        | Skip writing eval outputs              |
+| `--save_dir`    | `../../results/GraphConsis` | Eval output directory                      |
+| `--no_save`     | flag                        | Skip writing eval outputs                  |
 
 
 
@@ -996,16 +999,16 @@ Same as GraphSAGE, plus:
 ### BWGNN (`algorithms/BWGNN/BWGNN_main.py`)
 
 
-| Argument          | Default    | Description                                         |
-| ----------------- | ---------- | --------------------------------------------------- |
-| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon` / `elliptic` / `comp` |
+| Argument          | Default    | Description                                                            |
+| ----------------- | ---------- | ---------------------------------------------------------------------- |
+| `--dataset`       | `tfinance` | `tfinance` / `tsocial` / `yelpchi` / `amazon` / `elliptic` / `comp`    |
 | `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (max `0.4`; valid/test fixed at 20/40) |
-| `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)         |
-| `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)             |
-| `--epochs`        | `100`      | Epochs                                              |
-| `--early_stop`    | `25`       | Valid-AUC patience (`0` trains all epochs)          |
-| `--learning_rate` | `0.01`     | Learning rate                                       |
-| `--gpu`           | `0`        | Device                                              |
+| `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)                            |
+| `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)                                |
+| `--epochs`        | `100`      | Epochs                                                                 |
+| `--early_stop`    | `25`       | Valid-AUC patience (`0` trains all epochs)                             |
+| `--learning_rate` | `0.01`     | Learning rate                                                          |
+| `--gpu`           | `0`        | Device                                                                 |
 
 
 
@@ -1013,66 +1016,74 @@ Same as GraphSAGE, plus:
 ### SplitGNN (`algorithms/SplitGNN/SplitGNN_main.py`)
 
 
-| Argument          | Default     | Description                                              |
-| ----------------- | ----------- | -------------------------------------------------------- |
-| `--dataset`       | `comp`      | `comp` / `yelpchi` / `amazon` / `elliptic`               |
+| Argument          | Default     | Description                                                            |
+| ----------------- | ----------- | ---------------------------------------------------------------------- |
+| `--dataset`       | `comp`      | `comp` / `yelpchi` / `amazon` / `elliptic`                             |
 | `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (max `0.4`; valid/test fixed at 20/40) |
-| `--intra_dim`     | paper table | Hidden size (`8`)                                        |
-| `--C` / `--K`     | paper table | Wavelet order / positive-band cutoff (`3` / `2` on comp) |
-| `--gamma`         | paper table | Homo-edge hinge weight (`0.8` on comp)                   |
-| `--epochs`        | `1000`      | Max epochs (early stop on valid AUC)                     |
-| `--early_stop`    | paper table | Patience (`100` on comp; `0` disables)                   |
-| `--learning_rate` | paper table | `0.001` (comp), `0.01` (yelpchi), `0.1` (amazon)         |
-| `--gpu`           | `0`         | Device                                                   |
+| `--intra_dim`     | paper table | Hidden size (`8`)                                                      |
+| `--C` / `--K`     | paper table | Wavelet order / positive-band cutoff (`3` / `2` on comp)               |
+| `--gamma`         | paper table | Homo-edge hinge weight (`0.8` on comp)                                 |
+| `--epochs`        | `1000`      | Max epochs (early stop on valid AUC)                                   |
+| `--early_stop`    | paper table | Patience (`100` on comp; `0` disables)                                 |
+| `--learning_rate` | paper table | `0.001` (comp), `0.01` (yelpchi), `0.1` (amazon)                       |
+| `--gpu`           | `0`         | Device                                                                 |
+
+
 
 
 ### DGA-GNN (`algorithms/DGAGNN/DGAGNN_main.py`)
 
 
-| Argument          | Default     | Description                                              |
-| ----------------- | ----------- | -------------------------------------------------------- |
-| `--dataset`       | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
-| `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40) |
-| `--n_hidden`      | paper yaml  | Hidden size                                              |
-| `--n_head`        | paper yaml  | Attention heads                                          |
-| `--n_bins`        | paper yaml  | Decision-tree bins per feature (`k`)                     |
-| `--z`             | paper yaml  | Grouping threshold                                       |
-| `--epochs`        | `200`       | Max epochs (early stop on valid AUC)                     |
-| `--learning_rate` | `0.001`     | Learning rate                                            |
-| `--gpu`           | `0`         | Device                                                   |
+| Argument          | Default    | Description                                                         |
+| ----------------- | ---------- | ------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi`  | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (valid/test fixed 20/40)            |
+| `--n_hidden`      | paper yaml | Hidden size                                                         |
+| `--n_head`        | paper yaml | Attention heads                                                     |
+| `--n_bins`        | paper yaml | Decision-tree bins per feature (`k`)                                |
+| `--z`             | paper yaml | Grouping threshold                                                  |
+| `--epochs`        | `200`      | Max epochs (early stop on valid AUC)                                |
+| `--learning_rate` | `0.001`    | Learning rate                                                       |
+| `--gpu`           | `0`        | Device                                                              |
+
+
 
 
 ### GLHN (`algorithms/GLHN/GLHN_main.py`)
 
 
-| Argument          | Default     | Description                                              |
-| ----------------- | ----------- | -------------------------------------------------------- |
-| `--dataset`       | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
-| `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40) |
-| `--hid_dim`       | `32`        | Hidden size (`10` on T-Social)                           |
-| `--n_layers`      | `2`         | GLHN layers                                              |
-| `--tau`           | `0.1`       | InfoNCE temperature                                      |
-| `--gamma1` / `--gamma2` | paper | Weights of `L_k` / `L_u` (0.8/1.0 on YelpChi)      |
-| `--graph_type`    | dataset     | `hetero` (mean-pool relations) or `homo`                 |
-| `--epochs`        | `100`       | Max epochs (early stop on valid AUC)                     |
-| `--learning_rate` | `0.01`      | Learning rate                                            |
-| `--gpu`           | `0`         | Device                                                   |
+| Argument                | Default   | Description                                                         |
+| ----------------------- | --------- | ------------------------------------------------------------------- |
+| `--dataset`             | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`         | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)            |
+| `--hid_dim`             | `32`      | Hidden size (`10` on T-Social)                                      |
+| `--n_layers`            | `2`       | GLHN layers                                                         |
+| `--tau`                 | `0.1`     | InfoNCE temperature                                                 |
+| `--gamma1` / `--gamma2` | paper     | Weights of `L_k` / `L_u` (0.8/1.0 on YelpChi)                       |
+| `--graph_type`          | dataset   | `hetero` (mean-pool relations) or `homo`                            |
+| `--epochs`              | `100`     | Max epochs (early stop on valid AUC)                                |
+| `--learning_rate`       | `0.01`    | Learning rate                                                       |
+| `--gpu`                 | `0`       | Device                                                              |
+
+
 
 
 ### BSL (`algorithms/BSL/BSL_main.py`)
 
 
-| Argument          | Default     | Description                                              |
-| ----------------- | ----------- | -------------------------------------------------------- |
-| `--dataset`       | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
-| `--train_ratio`   | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40) |
-| `--paper_split`   | off         | Paper 1%/10%/89% split (0.01%/0.1% on T-Social)          |
-| `--hid_dim`       | `96`        | Latent size, divisible by 3 (`48` on T-Social)           |
-| `--alpha` / `--beta` | `0.4` / `0.8` | Weights of `L_D` / `L_bsl`                         |
-| `--batch_size`    | `256`       | Unlabeled aux batch for `L_bsl`                          |
-| `--epochs`        | `100`       | Max epochs (early stop on valid AUC)                     |
-| `--learning_rate` | `0.01`      | Learning rate                                            |
-| `--gpu`           | `0`         | Device                                                   |
+| Argument             | Default       | Description                                                         |
+| -------------------- | ------------- | ------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi`     | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`      | `0.4`         | Train fraction of labeled nodes (valid/test fixed 20/40)            |
+| `--paper_split`      | off           | Paper 1%/10%/89% split (0.01%/0.1% on T-Social)                     |
+| `--hid_dim`          | `96`          | Latent size, divisible by 3 (`48` on T-Social)                      |
+| `--alpha` / `--beta` | `0.4` / `0.8` | Weights of `L_D` / `L_bsl`                                          |
+| `--batch_size`       | `256`         | Unlabeled aux batch for `L_bsl`                                     |
+| `--epochs`           | `100`         | Max epochs (early stop on valid AUC)                                |
+| `--learning_rate`    | `0.01`        | Learning rate                                                       |
+| `--gpu`              | `0`           | Device                                                              |
+
+
 
 
 ### HACUD (`algorithms/HACUD/main.py`)
@@ -1111,10 +1122,10 @@ Same as GraphSAGE, plus:
 | **GraphConsis** | [Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection](https://arxiv.org/pdf/2005.00625.pdf)                                                        | SIGIR 2020 | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/graphconsis.txt) |
 | **HACUD**       | [Cash-Out User Detection Based on Attributed Heterogeneous Information Network with a Hierarchical Attention Mechanism](https://aaai.org/ojs/index.php/AAAI/article/view/3884)           | AAAI 2019  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/hacud.txt)       |
 | **BWGNN**       | [Rethinking Graph Neural Networks for Anomaly Detection](https://proceedings.mlr.press/v162/tang22b.html)                                                                                | ICML 2022  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bwgnn.txt)       |
-| **SplitGNN**    | [SplitGNN: Spectral Graph Neural Network for Fraud Detection against Heterophily](https://dl.acm.org/doi/10.1145/3583780.3615067)                                                         | CIKM 2023  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/splitgnn.txt)    |
-| **DGA-GNN**     | [DGA-GNN: Dynamic Grouping Aggregation GNN for Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29067)                                                                   | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/dgagnn.txt)      |
-| **GLHN**        | [Graph Local Homophily Network for Anomaly Detection](https://doi.org/10.1145/3627673.3679785)                                                                                             | CIKM 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/glhn.txt)        |
-| **BSL**         | [Barely Supervised Learning for Graph-Based Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29593)                                                                       | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bsl.txt)         |
+| **SplitGNN**    | [SplitGNN: Spectral Graph Neural Network for Fraud Detection against Heterophily](https://dl.acm.org/doi/10.1145/3583780.3615067)                                                        | CIKM 2023  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/splitgnn.txt)    |
+| **DGA-GNN**     | [DGA-GNN: Dynamic Grouping Aggregation GNN for Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29067)                                                                  | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/dgagnn.txt)      |
+| **GLHN**        | [Graph Local Homophily Network for Anomaly Detection](https://doi.org/10.1145/3627673.3679785)                                                                                           | CIKM 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/glhn.txt)        |
+| **BSL**         | [Barely Supervised Learning for Graph-Based Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29593)                                                                     | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bsl.txt)         |
 
 
 
@@ -1184,30 +1195,24 @@ Same as GraphSAGE, plus:
 - Benchmarking SOTA models
 - Scalable implementation
 
-----------------------------------
+---
+
 cd algorithms/GraphSage
 
-python supervised_train.py `
-  --model graphsage_mean `
-  --learning_rate 0.01 `
-  --train_prefix ../../dataset/ `
-  --file_name YelpChi.mat `
-  --epochs 100 `
-  --dropout 0.0 `
-  --weight_decay 0.0 `
-  --dim_1 128 `
-  --batch_size 512 `
-  --sigmoid `
-  --gpu 0 `
-  --seed 123 `
-  --samples_1 25 `
-  --samples_2 10 `
-  --save_dir results `
+## python supervised_train.py   `--model graphsage_mean`
+
+  --learning_rate 0.01   `--train_prefix ../../dataset/`
+  --file_name YelpChi.mat   `--epochs 100`
+  --dropout 0.0   `--weight_decay 0.0`
+  --dim_1 128   `--batch_size 512`
+  --sigmoid   `--gpu 0`
+  --seed 123   `--samples_1 25`
+  --samples_2 10   `--save_dir results`
   --test_size 0.2
--------------------------------------
-cd algorithms/FdGars
+
+## cd algorithms/FdGars
+
 python FdGars_main.py --dataset_str yelpchi --epoch_num 100 --batch_size 512 --gpu 0 --seed 123
---------------------------------------------
 
 From `algorithms/GraphConsis`. GraphConsis now picks Yelp relations (`net_rur`, `net_rtr`, `net_rsr`) or Amazon relations (`net_upu`, `net_usu`, `net_uvu`) from the file name.
 
@@ -1257,7 +1262,8 @@ python supervised_train.py `
 
 Outputs: `algorithms/GraphConsis/results/GraphConsis/YelpChi/seed123/` and `.../Amazon/seed123/`. Amazon’s `net_usu` is dense, so the first epoch can take a while to load.
 
----------------------------------------
+---
+
 BWGNN is in `algorithms/BWGNN`, and T-Finance / T-Social loaders are in `utils/data_loader.py` (`load_tgraph_dgl`, `load_tgraph_pyg`, `load_data_tfinance`, `load_data_tsocial`) plus `utils/dgl_bin.py`. GraphConsis accepts `--file_name tfinance` or `tsocial`.
 
 **Install (after your CUDA torch step)** — also in the README uv section:
@@ -1303,8 +1309,9 @@ python BWGNN_main.py --dataset tfinance --train_ratio 0.4 --hid_dim 64 --order 2
 python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 --epochs 100 --gpu 0
 ```
 
-T-Social is multi-GB; keep `--hid_dim 10`. BWGNN also takes `--dataset amazon` or `yelpchi`.
-----------------------------------------------
+
+
+## T-Social is multi-GB; keep `--hid_dim 10`. BWGNN also takes `--dataset amazon` or `yelpchi`.
 
 Elliptic is wired in as a fifth dataset for GraphConsis, BWGNN, and GraphSAGE.
 
@@ -1341,12 +1348,15 @@ python GLHN_main.py --dataset comp --gpu 0
 cd algorithms\BSL
 python BSL_main.py --dataset comp --gpu 0
 ```
---------------------------------------------------
+
+---
+
 FDCompCN (`dataset/comp.dgl`) is now a first-class dataset for GraphConsis and BWGNN, and **SplitGNN** is in the toolbox as a DGL-free port of `reference/SplitGNN-master`.
 
-**What `comp.dgl` contains:** 5,317 nodes, 57-d features, 559 fraud labels, four directed relations (`homo` 10,059 / `cic` 8,505 / `csc` 5,944 / `cpc` 6,244), plus the official train/valid/test masks.
+**What** `comp.dgl` **contains:** 5,317 nodes, 57-d features, 559 fraud labels, four directed relations (`homo` 10,059 / `cic` 8,505 / `csc` 5,944 / `cpc` 6,244), plus the official train/valid/test masks.
 
 **How each model uses it**
+
 - **GraphConsis** — the three non-homo relations (C-I-C / C-S-C / C-P-C), toolbox stratified split
 - **BWGNN** — homogeneous union only
 - **SplitGNN** — all relations; signed homo edges + hinge loss; official file masks by default
@@ -1371,16 +1381,17 @@ python SplitGNN_main.py --dataset tfinance --gpu 0 --epochs 50
 
 SplitGNN defaults follow the paper table for FDCompCN (`lr=0.001`, `gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100). Pass `--ignore_file_masks` to use a fresh 40/20/40 split instead of the masks in `comp.dgl`. Amazon still drops feature column 19 and trains only on labeled nodes (`index >= 3305`).
 
-A 2-epoch smoke run on `comp` completed (forward, backward, and the train loop). Still no DGL import — the `.dgl` file is read by `utils/dgl_bin.py`.
-----------------------------------
+## A 2-epoch smoke run on `comp` completed (forward, backward, and the train loop). Still no DGL import — the `.dgl` file is read by `utils/dgl_bin.py`.
 
 GraphConsis, BWGNN, and SplitGNN now share one stratified split of **labeled** nodes:
 
-| Split | Fraction | Role |
-| ----- | -------- | ---- |
-| **Train** | `--train_ratio` (default **40%**, max 40%) | Fit the model |
-| **Valid** | **20%** (fixed) | Pick the checkpoint / tune |
-| **Test** | **40%** (fixed) | Final metrics only |
+
+| Split     | Fraction                                   | Role                       |
+| --------- | ------------------------------------------ | -------------------------- |
+| **Train** | `--train_ratio` (default **40%**, max 40%) | Fit the model              |
+| **Valid** | **20%** (fixed)                            | Pick the checkpoint / tune |
+| **Test**  | **40%** (fixed)                            | Final metrics only         |
+
 
 If you set `--train_ratio 0.2`, valid and test stay 20/40. The unused half of the 40% train pool is **discarded**, not moved into valid or test. Same seed → same valid and test nodes.
 
@@ -1395,8 +1406,9 @@ python BWGNN_main.py --dataset elliptic --train_ratio 0.2 --gpu 0
 python SplitGNN_main.py --dataset comp --train_ratio 0.4 --gpu 0
 ```
 
-`comp.dgl` file masks are no longer used unless you pass `--use_file_masks` on SplitGNN. Amazon still splits only labeled nodes (`index >= 3305`); the 40/20/40 ratios apply to that labeled set.
-------------------------------------------
+
+
+## `comp.dgl` file masks are no longer used unless you pass `--use_file_masks` on SplitGNN. Amazon still splits only labeled nodes (`index >= 3305`); the 40/20/40 ratios apply to that labeled set.
 
 **DGA-GNN** (Duan et al., AAAI 2024) is in the toolbox as a DGL-free port of `reference/DGA-GNN-main`.
 
@@ -1443,9 +1455,171 @@ python BSL_main.py --dataset tfinance --gpu 0
 python BSL_main.py --dataset comp --gpu 0
 python BSL_main.py --dataset yelpchi --paper_split --gpu 0
 ```
---------------------------------------------------------
+
+---
+
 Early stopping is now **on by default** for GraphConsis and BWGNN.
 
 `--early_stop` defaults to **25**: training stops if valid AUC does not improve for 25 epochs. The best valid-AUC checkpoint is still restored before test metrics.
 
 Pass `--early_stop 0` if you want to run every epoch. SplitGNN / DGA-GNN / GLHN / BSL keep their own per-dataset patience values.
+
+---
+
+---
+
+Fill these in once, then paste them into every command. **None of these six scripts expose an optimizer flag** — they all use **Adam**. You only set seed, learning rate, and train ratio.
+
+```bash
+SEED=        # e.g. 123
+LR=          # e.g. 0.01
+TRAIN_RATIO= # e.g. 0.4   (max 0.4; valid=0.20 and test=0.40 stay fixed)
+```
+
+Validation is already inside each run: train on train, checkpoint on **valid AUC** (`--early_stop` defaults on), then print and save **test** metrics under `results/` (or `--save_dir`). You do not run a separate validate job.
+
+Work from the **repo root** with the venv activated and datasets already in `dataset/` (`YelpChi.mat`, `Amazon.mat`, `tfinance`, `tsocial`, `elliptic` folder, `comp.dgl`).
+
+---
+
+
+
+### GraphConsis
+
+Uses `--file_name`, not `--dataset`. Keep `--sigmoid`. Default epochs in the script is `10` (short). Other knobs stay at script defaults (`dim_1=128`, `batch_size=512`, `samples_1=25`, `samples_2=10`).
+
+```bash
+cd algorithms/GraphConsis
+
+python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python supervised_train.py --train_prefix ../../dataset/ --file_name Amazon.mat --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python supervised_train.py --train_prefix ../../dataset/ --file_name elliptic --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epoch 500
+python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+On T-Social, add `--batch_size 256` if you hit memory issues (that is the usual toolbox default for that graph).
+
+---
+
+
+
+### BWGNN
+
+Dataset defaults: `hid_dim=64`, `order=2`, `epochs=100`. T-Social is the exception — use `hid_dim=10` and `order=5` or a 5.8M-node run with 64/2 will not fit.
+
+```bash
+cd algorithms/BWGNN
+
+python BWGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BWGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BWGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BWGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BWGNN_main.py --dataset tsocial --hid_dim 10 --order 5 --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BWGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+
+
+### SplitGNN
+
+Per-dataset paper table fills `lr` unless you pass `--learning_rate`. Passing `$LR` overrides that table. Other defaults (`C`, `K`, `gamma`, `intra_dim`, `epochs`, `early_stop`) stay dataset-specific.
+
+```bash
+cd algorithms/SplitGNN
+
+python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SplitGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SplitGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SplitGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SplitGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SplitGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+
+
+### DGA-GNN
+
+Hidden size, heads, bins `k`, `z`, dropout, epochs, and early-stop come from the official yaml per dataset. Script default LR is `0.001` if you omit `--learning_rate`.
+
+```bash
+cd algorithms/DGAGNN
+
+python DGAGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python DGAGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python DGAGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python DGAGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python DGAGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python DGAGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+
+
+### GLHN
+
+Per-dataset defaults: hidden 32 (10 on T-Social), 2 layers, `τ=0.1`, hetero on Yelp/Amazon/comp, homo on elliptic/tfinance/tsocial.
+
+```bash
+cd algorithms/GLHN
+
+python GLHN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GLHN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GLHN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GLHN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GLHN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GLHN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+
+
+### BSL
+
+Toolbox 40/20/40 protocol (not `--paper_split`). Hidden 96 (48 on T-Social), `α=0.4`, `β=0.8`.
+
+```bash
+cd algorithms/BSL
+
+python BSL_main.py --dataset yelpchi --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 40
+python BSL_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BSL_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BSL_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BSL_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python BSL_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+
+
+### How to read validation
+
+Each command prints train / valid / test metrics. Artifacts:
+
+`algorithms/<MODEL>/results/<MODEL>/<dataset>/seed<SEED>/`
+
+- `metrics.json` — test metrics plus `valid_auc`
+- `checkpoint.pt` — best valid-AUC weights
+- predictions / split indices
+
+On PowerShell, either `set SEED=123` and use `%SEED%`, or type the numbers in place of `$SEED`, `$LR`, `$TRAIN_RATIO`. Run T-Social last and one model at a time; it is the only graph that commonly OOMs.

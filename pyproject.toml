@@ -1,0 +1,63 @@
+[project]
+name = "graph-fraud-wk"
+version = "0.1.0"
+description = "PyTorch / PyTorch Geometric toolbox for graph-based fraud detection"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Graph-Fraud-WK" },
+]
+keywords = [
+  "fraud detection",
+  "anomaly detection",
+  "graph neural network",
+]
+dependencies = [
+  "numpy>=1.20",
+  "scipy>=1.7",
+  "scikit-learn>=1.0",
+  "sympy>=1.10",
+  "torch>=2.7",
+  "torch-geometric>=2.3",
+]
+
+[project.optional-dependencies]
+# Same CUDA 12.8 wheels as the default Windows / x86_64 Linux resolve.
+gpu = ["torch>=2.7"]
+# Same CUDA 13.0 wheels as the default linux aarch64 (GB10) resolve.
+gb10 = ["torch>=2.9"]
+
+[project.urls]
+Repository = "https://github.com/safe-graph/DGFraud"
+
+[tool.uv]
+package = false
+conflicts = [
+  [
+    { extra = "gpu" },
+    { extra = "gb10" },
+  ],
+]
+
+# Official PyTorch CUDA indexes. explicit=true so other packages stay on PyPI.
+# Do not install DGL from PyPI. Binaries are read by utils/dgl_bin.py.
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+# One index per platform — extras must not add a second torch index
+# (that is what broke `uv lock` on linux aarch64).
+#   linux aarch64 (GB10 / DGX Spark / Vast ARM) → cu130
+#   Windows / linux x86_64 GPU                 → cu128
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
+  { index = "pytorch-cu128", marker = "sys_platform == 'win32' or (sys_platform == 'linux' and platform_machine == 'x86_64')" },
+]
