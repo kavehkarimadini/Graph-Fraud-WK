@@ -9,9 +9,14 @@ import time
 import dgl
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from dgl.dataloading import DataLoader, MultiLayerFullNeighborSampler
 from sklearn.metrics import roc_auc_score
+
+# ---------------------------------------------------------------------
+# Project imports
+# ---------------------------------------------------------------------
 
 PROJECT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
@@ -21,52 +26,161 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from algorithms.PMP.LASAGE_S import LASAGE_S
-from utils.evaluation import compute_classification_metrics, save_run_outputs
+from utils.evaluation import (
+    compute_classification_metrics,
+    save_run_outputs,
+)
 
+
+# ---------------------------------------------------------------------
+# Benchmark constants
+# ---------------------------------------------------------------------
 
 MODEL_NAME = "PMP"
 DATASET_NAME = "amazon"
 
+ALLOWED_SEEDS = [
+    123,
+    1234,
+    12345,
+    123456,
+    1234567,
+]
+
+ALLOWED_TRAIN_RATIOS = [
+    0.4,
+    0.3,
+    0.2,
+    0.1,
+]
+
+# Unified benchmark protocol
 MAX_EPOCHS = 500
 EARLY_STOP = 25
 LEARNING_RATE = 0.01
+WEIGHT_DECAY = 0.0
 
-# PMP paper settings for Amazon.
+# PMP Amazon hyperparameters
+# Paper values take priority over repository config where they differ.
 HIDDEN_DIM = 128
 DROPOUT = 0.6
 NUM_LAYERS = 1
 BATCH_SIZE = 128
-WEIGHT_DECAY = 0.0
 
+# Other settings from official PMP implementation/config
+NUM_TRANS = 1
+AGGREGATION = "mean"
+RELATION_AGGREGATION = "cat"
+PROJECTION = True
+
+# Official Amazon config uses ELU for the adaptive MLP.
+MLP_ACTIVATION = nn.ELU(inplace=True)
+
+
+# ---------------------------------------------------------------------
+# Reproducibility
+# ---------------------------------------------------------------------
 
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
+
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
     dgl.seed(seed)
 
+    # Improve reproducibility where supported.
+    try:
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    except Exception:
+        pass
+
+
+# ---------------------------------------------------------------------
+# Feature normalization
+# ---------------------------------------------------------------------
+
+def row_normalize_features(features):
+    """
+    Reproduce PMP's row-normalization behaviour.
+
+    Official PMP uses:
+        rowsum = sum(row) + 0.01
+        feature = feature / rowsum
+    """
+    features = features.float()
+
+    row_sum = features.sum(dim=1, keepdim=True) + 0.01
+
+    row_sum = torch.where(
+        torch.isfinite(row_sum),
+        row_sum,
+        torch.ones_like(row_sum),
+    )
+
+    return features / row_sum
+
+
+# ---------------------------------------------------------------------
+# Dataset
+# ---------------------------------------------------------------------
 
 def load_amazon():
     from dgl.data import FraudDataset
 
-    dataset_path = os.path.join(PROJECT_ROOT, "dataset")
+    dataset_dir = os.path.join(
+        PROJECT_ROOT,
+        "dataset",
+    )
 
-    ds = FraudDataset(
+    dataset = FraudDataset(
         name="amazon",
-        raw_dir=dataset_path,
+        raw_dir=dataset_dir,
+
+        # These built-in masks are NOT used by our benchmark.
+        # They only allow DGL to load the cached dataset.
         train_size=0.4,
         val_size=0.2,
         random_seed=717,
+
         force_reload=False,
     )
 
-    graph = ds[0]
+    graph = dataset[0]
 
-    features = graph.ndata["feature"].float()
-    labels = graph.ndata["label"].long()
+    # Preserve the multi-relation Amazon graph.
+    relations = list(graph.etypes)
 
-    return graph, features, labels
+    features = row_normalize_features(
+        graph.ndata["feature"]
+    )
+
+    labels = graph.ndata["label"].long().squeeze()
+
+    # Keep normalized features in graph node data.
+    graph.ndata["feature"] = features
+
+    return graph, features, labels, relations
+
+
+# ---------------------------------------------------------------------
+# Benchmark split loading
+# ---------------------------------------------------------------------
+
+def ratio_to_key(train_ratio):
+    mapping = {
+        0.4: "train_40",
+        0.3: "train_30",
+        0.2: "train_20",
+        0.1: "train_10",
+    }
+
+    return mapping[float(train_ratio)]
 
 
 def load_split(seed, train_ratio):
@@ -79,53 +193,170 @@ def load_split(seed, train_ratio):
 
     if not os.path.exists(split_path):
         raise FileNotFoundError(
-            f"Split file not found: {split_path}"
+            f"Amazon benchmark split not found:\n{split_path}"
         )
 
-    data = np.load(split_path)
+    split_data = np.load(split_path)
 
-    ratio_key = {
-        0.4: "train_40",
-        0.3: "train_30",
-        0.2: "train_20",
-        0.1: "train_10",
-    }[train_ratio]
+    train_key = ratio_to_key(train_ratio)
 
-    train_idx = data[ratio_key].astype(np.int64)
-    valid_idx = data["val"].astype(np.int64)
-    test_idx = data["test"].astype(np.int64)
+    train_idx = split_data[train_key].astype(np.int64)
+    valid_idx = split_data["val"].astype(np.int64)
+    test_idx = split_data["test"].astype(np.int64)
 
-    return train_idx, valid_idx, test_idx
+    train40_idx = split_data["train_40"].astype(np.int64)
+
+    # Anything from the 40% train pool not used by this
+    # training-ratio experiment is discarded.
+    discarded_idx = np.setdiff1d(
+        train40_idx,
+        train_idx,
+        assume_unique=False,
+    ).astype(np.int64)
+
+    return (
+        train_idx,
+        valid_idx,
+        test_idx,
+        discarded_idx,
+        split_path,
+    )
 
 
-def build_model(graph, features, device):
-    relations = list(graph.etypes)
+# ---------------------------------------------------------------------
+# Split validation
+# ---------------------------------------------------------------------
+
+def validate_split(
+    train_idx,
+    valid_idx,
+    test_idx,
+):
+    train_set = set(train_idx.tolist())
+    valid_set = set(valid_idx.tolist())
+    test_set = set(test_idx.tolist())
+
+    if train_set & valid_set:
+        raise RuntimeError(
+            "Split error: train and validation overlap."
+        )
+
+    if train_set & test_set:
+        raise RuntimeError(
+            "Split error: train and test overlap."
+        )
+
+    if valid_set & test_set:
+        raise RuntimeError(
+            "Split error: validation and test overlap."
+        )
+
+
+# ---------------------------------------------------------------------
+# PMP label-status construction
+# ---------------------------------------------------------------------
+
+def configure_pmp_labels(
+    graph,
+    labels,
+    train_idx,
+):
+    """
+    PMP partitions neighbor messages according to known label status.
+
+    0 = known benign training node
+    1 = known fraud training node
+    2 = unlabeled/unknown node
+
+    Critically, validation and test labels are never exposed to PMP.
+    """
+
+    label_unk = torch.full(
+        (graph.num_nodes(),),
+        fill_value=2,
+        dtype=torch.long,
+    )
+
+    train_tensor = torch.as_tensor(
+        train_idx,
+        dtype=torch.long,
+    )
+
+    label_unk[train_tensor] = labels[train_tensor]
+
+    graph.ndata["label_unk"] = label_unk
+
+    return graph
+
+
+# ---------------------------------------------------------------------
+# PMP model
+# ---------------------------------------------------------------------
+
+def build_model(
+    features,
+    relations,
+    device,
+):
+    """
+    Match the structure used by PMP's official prepare_model().
+
+    With projection enabled:
+      internal output dimension = hidden dimension
+      projection output dimension = number of classes (2)
+    """
 
     model = LASAGE_S(
-        in_dim=features.shape[1],
-        hid_dim=HIDDEN_DIM,
-        out_dim=2,
-        n_layer=NUM_LAYERS,
-        relations=relations,
+        in_size=features.shape[1],
+        hid_size=HIDDEN_DIM,
+
+        # Official PMP behaviour when proj=True
+        out_size=HIDDEN_DIM,
+
+        num_layers=NUM_LAYERS,
         dropout=DROPOUT,
-        agg="mean",
-        relation_agg="cat",
-        proj=True,
-        num_trans=1,
-        resi=0.2,
+        proj=PROJECTION,
+
+        num_relations=len(relations),
+        batch_size=BATCH_SIZE,
+        num_trans=NUM_TRANS,
+
+        mlp_activation=MLP_ACTIVATION,
+
+        # Binary fraud classification
+        out_proj_size=2,
+
+        agg=AGGREGATION,
+        relation_agg=RELATION_AGGREGATION,
     )
 
     return model.to(device)
 
 
-def make_loader(graph, node_indices, shuffle):
-    sampler = MultiLayerFullNeighborSampler(NUM_LAYERS)
+# ---------------------------------------------------------------------
+# DGL loader
+# ---------------------------------------------------------------------
+
+def make_loader(
+    graph,
+    node_indices,
+    batch_size,
+    shuffle,
+):
+    sampler = MultiLayerFullNeighborSampler(
+        num_layers=NUM_LAYERS
+    )
+
+    node_tensor = torch.as_tensor(
+        node_indices,
+        dtype=torch.long,
+    )
 
     loader = DataLoader(
         graph,
-        torch.tensor(node_indices, dtype=torch.long),
+        node_tensor,
         sampler,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         shuffle=shuffle,
         drop_last=False,
         num_workers=0,
@@ -134,61 +365,248 @@ def make_loader(graph, node_indices, shuffle):
     return loader
 
 
-def run_inference(model, graph, features, labels, node_indices, device):
+# ---------------------------------------------------------------------
+# Forward helper
+# ---------------------------------------------------------------------
+
+def forward_batch(
+    model,
+    blocks,
+    relations,
+    features,
+    input_nodes,
+    device,
+):
+    blocks = [
+        block.to(device)
+        for block in blocks
+    ]
+
+    # Use input-node ordering generated by the sampler.
+    batch_features = features[input_nodes].to(device)
+
+    # Correct PMP signature:
+    # model(blocks, relations, feats)
+    logits = model(
+        blocks,
+        relations,
+        batch_features,
+    )
+
+    return logits
+
+
+# ---------------------------------------------------------------------
+# Evaluation
+# ---------------------------------------------------------------------
+
+def evaluate_nodes(
+    model,
+    graph,
+    features,
+    labels,
+    relations,
+    node_indices,
+    device,
+):
     model.eval()
 
-    loader = make_loader(graph, node_indices, shuffle=False)
+    # Larger evaluation batch is safe and reduces overhead.
+    eval_batch_size = 4096
 
-    all_logits = []
-    all_labels = []
+    loader = make_loader(
+        graph=graph,
+        node_indices=node_indices,
+        batch_size=eval_batch_size,
+        shuffle=False,
+    )
+
     all_indices = []
+    all_labels = []
+    all_logits = []
 
     with torch.no_grad():
-        for input_nodes, output_nodes, blocks in loader:
-            blocks = [b.to(device) for b in blocks]
+        for (
+            input_nodes,
+            output_nodes,
+            blocks,
+        ) in loader:
 
-            batch_features = features[input_nodes].to(device)
-
-            logits = model(
-                blocks,
-                batch_features,
+            logits = forward_batch(
+                model=model,
+                blocks=blocks,
+                relations=relations,
+                features=features,
+                input_nodes=input_nodes,
+                device=device,
             )
 
-            all_logits.append(logits.detach().cpu())
-            all_labels.append(labels[output_nodes].detach().cpu())
-            all_indices.append(output_nodes.detach().cpu())
+            batch_labels = labels[
+                output_nodes
+            ]
 
-    logits = torch.cat(all_logits, dim=0)
-    y_true = torch.cat(all_labels, dim=0).numpy()
-    indices = torch.cat(all_indices, dim=0).numpy()
+            all_indices.append(
+                output_nodes.cpu()
+            )
 
-    probabilities = torch.softmax(logits, dim=1).numpy()
-    predictions = np.argmax(probabilities, axis=1)
+            all_labels.append(
+                batch_labels.cpu()
+            )
 
-    return indices, y_true, predictions, probabilities
+            all_logits.append(
+                logits.detach().cpu()
+            )
+
+    output_indices = torch.cat(
+        all_indices,
+        dim=0,
+    ).numpy()
+
+    y_true = torch.cat(
+        all_labels,
+        dim=0,
+    ).numpy()
+
+    logits = torch.cat(
+        all_logits,
+        dim=0,
+    )
+
+    probabilities = torch.softmax(
+        logits,
+        dim=1,
+    ).numpy()
+
+    predictions = np.argmax(
+        probabilities,
+        axis=1,
+    )
+
+    return (
+        output_indices,
+        y_true,
+        predictions,
+        probabilities,
+    )
 
 
-def train_one_run(seed, train_ratio):
+# ---------------------------------------------------------------------
+# Main training function
+# ---------------------------------------------------------------------
+
+def train_one_run(
+    seed,
+    train_ratio,
+):
+    print("=" * 70)
+    print("PMP BENCHMARK RUN")
+    print("=" * 70)
+
+    print(f"Dataset     : {DATASET_NAME}")
+    print(f"Model       : {MODEL_NAME}")
+    print(f"Seed        : {seed}")
+    print(f"Train ratio : {train_ratio}")
+    print(f"Max epochs  : {MAX_EPOCHS}")
+    print(f"Early stop  : {EARLY_STOP}")
+    print(f"Learning rate: {LEARNING_RATE}")
+    print("=" * 70)
+
     set_seed(seed)
 
     if not torch.cuda.is_available():
-        raise RuntimeError("CUDA GPU is required for this benchmark.")
+        raise RuntimeError(
+            "CUDA is not available. "
+            "PMP benchmark must run on the Vast.ai GB10."
+        )
 
     device = torch.device("cuda:0")
 
-    graph, features, labels = load_amazon()
-
-    train_idx, valid_idx, test_idx = load_split(
-        seed,
-        train_ratio,
+    print(
+        "GPU:",
+        torch.cuda.get_device_name(0),
     )
 
-    graph = graph.to("cpu")
+    # -------------------------------------------------------------
+    # Load graph
+    # -------------------------------------------------------------
 
-    model = build_model(
+    (
         graph,
         features,
-        device,
+        labels,
+        relations,
+    ) = load_amazon()
+
+    print(
+        f"Nodes: {graph.num_nodes()}"
+    )
+
+    print(
+        f"Edges: {graph.num_edges()}"
+    )
+
+    print(
+        f"Relations: {relations}"
+    )
+
+    # -------------------------------------------------------------
+    # Load exact canonical benchmark split
+    # -------------------------------------------------------------
+
+    (
+        train_idx,
+        valid_idx,
+        test_idx,
+        discarded_idx,
+        split_path,
+    ) = load_split(
+        seed=seed,
+        train_ratio=train_ratio,
+    )
+
+    validate_split(
+        train_idx,
+        valid_idx,
+        test_idx,
+    )
+
+    print(
+        f"Train nodes     : {len(train_idx)}"
+    )
+
+    print(
+        f"Validation nodes: {len(valid_idx)}"
+    )
+
+    print(
+        f"Test nodes      : {len(test_idx)}"
+    )
+
+    print(
+        f"Discarded nodes : {len(discarded_idx)}"
+    )
+
+    # -------------------------------------------------------------
+    # Give PMP access ONLY to training labels
+    # -------------------------------------------------------------
+
+    graph = configure_pmp_labels(
+        graph=graph,
+        labels=labels,
+        train_idx=train_idx,
+    )
+
+    # Graph remains on CPU.
+    # DGL sampled blocks are transferred batch-by-batch to GPU.
+
+    # -------------------------------------------------------------
+    # Build fresh model
+    # -------------------------------------------------------------
+
+    model = build_model(
+        features=features,
+        relations=relations,
+        device=device,
     )
 
     optimizer = torch.optim.Adam(
@@ -197,172 +615,371 @@ def train_one_run(seed, train_ratio):
         weight_decay=WEIGHT_DECAY,
     )
 
+    # Official PMP Amazon config uses unweighted CE.
+    loss_function = nn.CrossEntropyLoss()
+
     train_loader = make_loader(
-        graph,
-        train_idx,
+        graph=graph,
+        node_indices=train_idx,
+        batch_size=BATCH_SIZE,
         shuffle=True,
     )
+
+    # -------------------------------------------------------------
+    # Early stopping state
+    # -------------------------------------------------------------
 
     best_val_auc = -np.inf
     best_state = None
     best_epoch = 0
 
-    # Team protocol: counter resets to 1 on improvement.
+    # Team's exact early-stop convention.
     wait = 1
+
+    actual_epochs = 0
 
     start_time = time.perf_counter()
 
-    for epoch in range(1, MAX_EPOCHS + 1):
+    # -------------------------------------------------------------
+    # Train
+    # -------------------------------------------------------------
+
+    for epoch in range(
+        1,
+        MAX_EPOCHS + 1,
+    ):
+        actual_epochs = epoch
+
         model.train()
 
-        epoch_loss = 0.0
-        batch_count = 0
+        total_loss = 0.0
+        total_batches = 0
 
-        for input_nodes, output_nodes, blocks in train_loader:
-            blocks = [b.to(device) for b in blocks]
+        for (
+            input_nodes,
+            output_nodes,
+            blocks,
+        ) in train_loader:
 
-            batch_features = features[input_nodes].to(device)
-            batch_labels = labels[output_nodes].to(device)
+            logits = forward_batch(
+                model=model,
+                blocks=blocks,
+                relations=relations,
+                features=features,
+                input_nodes=input_nodes,
+                device=device,
+            )
+
+            batch_labels = labels[
+                output_nodes
+            ].to(device)
 
             optimizer.zero_grad()
 
-            logits = model(
-                blocks,
-                batch_features,
-            )
-
-            loss = F.cross_entropy(
+            loss = loss_function(
                 logits,
                 batch_labels,
             )
 
             loss.backward()
+
             optimizer.step()
 
-            epoch_loss += float(loss.item())
-            batch_count += 1
+            total_loss += float(
+                loss.detach().cpu().item()
+            )
+
+            total_batches += 1
+
+        average_loss = (
+            total_loss /
+            max(total_batches, 1)
+        )
+
+        # ---------------------------------------------------------
+        # Validation only
+        # ---------------------------------------------------------
 
         (
             _,
-            val_true,
-            val_pred,
-            val_prob,
-        ) = run_inference(
-            model,
-            graph,
-            features,
-            labels,
-            valid_idx,
-            device,
+            y_val,
+            _,
+            val_probabilities,
+        ) = evaluate_nodes(
+            model=model,
+            graph=graph,
+            features=features,
+            labels=labels,
+            relations=relations,
+            node_indices=valid_idx,
+            device=device,
         )
 
         val_auc = roc_auc_score(
-            val_true,
-            val_prob[:, 1],
+            y_val,
+            val_probabilities[:, 1],
         )
 
-        avg_loss = epoch_loss / max(batch_count, 1)
-
-        print(
-            f"Epoch {epoch:03d} | "
-            f"loss={avg_loss:.6f} | "
-            f"val_AUROC={val_auc:.6f} | "
-            f"best={best_val_auc:.6f} | "
-            f"wait={wait}"
+        improved = (
+            val_auc > best_val_auc
         )
 
-        if val_auc > best_val_auc:
-            best_val_auc = val_auc
-            best_epoch = epoch
-            best_state = copy.deepcopy(model.state_dict())
+        if improved:
+            best_val_auc = float(
+                val_auc
+            )
+
+            best_epoch = int(
+                epoch
+            )
+
+            best_state = copy.deepcopy(
+                model.state_dict()
+            )
+
+            # Exact team convention
             wait = 1
+
         else:
             wait += 1
 
+        print(
+            f"Epoch {epoch:03d} | "
+            f"Loss {average_loss:.6f} | "
+            f"Val AUROC {val_auc:.6f} | "
+            f"Best {best_val_auc:.6f} | "
+            f"Best epoch {best_epoch} | "
+            f"Wait {wait}/{EARLY_STOP}"
+        )
+
         if wait >= EARLY_STOP:
             print(
-                f"Early stopping at epoch {epoch}. "
-                f"Best epoch: {best_epoch}"
+                f"\nEarly stopping triggered "
+                f"at epoch {epoch}."
             )
+
             break
 
-    train_time = time.perf_counter() - start_time
+    train_time = (
+        time.perf_counter()
+        - start_time
+    )
+
+    # -------------------------------------------------------------
+    # Restore best validation checkpoint
+    # -------------------------------------------------------------
 
     if best_state is None:
-        raise RuntimeError("No best model checkpoint was recorded.")
+        raise RuntimeError(
+            "No best model checkpoint was recorded."
+        )
 
-    model.load_state_dict(best_state)
+    model.load_state_dict(
+        best_state
+    )
+
+    print(
+        f"\nRestored best checkpoint "
+        f"from epoch {best_epoch}"
+    )
+
+    print(
+        f"Best validation AUROC: "
+        f"{best_val_auc:.6f}"
+    )
+
+    # -------------------------------------------------------------
+    # TEST SET — touched only now
+    # -------------------------------------------------------------
 
     (
         test_order,
         y_test,
         test_predictions,
         test_probabilities,
-    ) = run_inference(
-        model,
-        graph,
-        features,
-        labels,
-        test_idx,
-        device,
+    ) = evaluate_nodes(
+        model=model,
+        graph=graph,
+        features=features,
+        labels=labels,
+        relations=relations,
+        node_indices=test_idx,
+        device=device,
     )
 
-    test_metrics = compute_classification_metrics(
-        y_test,
-        test_predictions,
-        test_probabilities,
-        sigmoid=False,
+    test_metrics = (
+        compute_classification_metrics(
+            y_true=y_test,
+            y_pred=test_predictions,
+            y_prob=test_probabilities,
+            sigmoid=False,
+        )
     )
 
-    test_metrics["best_epoch"] = int(best_epoch)
-    test_metrics["best_val_auroc"] = float(best_val_auc)
-    test_metrics["train_time_seconds"] = float(train_time)
+    # Add benchmark metadata to metrics.
+    test_metrics[
+        "best_epoch"
+    ] = int(best_epoch)
+
+    test_metrics[
+        "best_val_auroc"
+    ] = float(best_val_auc)
+
+    test_metrics[
+        "train_time_seconds"
+    ] = float(train_time)
+
+    test_metrics[
+        "epochs_executed"
+    ] = int(actual_epochs)
+
+    # -------------------------------------------------------------
+    # Split information
+    # -------------------------------------------------------------
 
     split_info = {
         "seed": int(seed),
-        "train_ratio": float(train_ratio),
-        "train_size": int(len(train_idx)),
-        "valid_size": int(len(valid_idx)),
-        "test_size": int(len(test_idx)),
-        "nested_split_protocol": True,
-        "validation_ratio": 0.2,
-        "test_ratio": 0.4,
+
+        "train_ratio":
+            float(train_ratio),
+
+        "train_size":
+            int(len(train_idx)),
+
+        "validation_size":
+            int(len(valid_idx)),
+
+        "test_size":
+            int(len(test_idx)),
+
+        "discarded_size":
+            int(len(discarded_idx)),
+
+        "train_pool_ratio":
+            0.4,
+
+        "validation_ratio":
+            0.2,
+
+        "test_ratio":
+            0.4,
+
+        "nested_training_subsets":
+            True,
+
+        "split_file":
+            os.path.relpath(
+                split_path,
+                PROJECT_ROOT,
+            ),
     }
+
+    # -------------------------------------------------------------
+    # Full configuration
+    # -------------------------------------------------------------
 
     config = {
-        "model": MODEL_NAME,
-        "dataset": DATASET_NAME,
-        "seed": int(seed),
-        "train_ratio": float(train_ratio),
+        "model":
+            MODEL_NAME,
 
-        "optimizer": "Adam",
-        "learning_rate": LEARNING_RATE,
-        "weight_decay": WEIGHT_DECAY,
+        "dataset":
+            DATASET_NAME,
 
-        "max_epochs": MAX_EPOCHS,
-        "early_stop": EARLY_STOP,
-        "early_stop_metric": "validation_AUROC",
-        "early_stop_improvement": "strict_greater_than",
-        "early_stop_reset_value": 1,
+        "seed":
+            int(seed),
 
-        "hidden_dim": HIDDEN_DIM,
-        "dropout": DROPOUT,
-        "num_layers": NUM_LAYERS,
-        "batch_size": BATCH_SIZE,
+        "train_ratio":
+            float(train_ratio),
 
-        "pmp_aggregation": "mean",
-        "relation_aggregation": "cat",
-        "projection": True,
-        "num_transformations": 1,
-        "residual_parameter": 0.2,
+        # Benchmark-wide settings
+        "optimizer":
+            "Adam",
 
-        "gpu": torch.cuda.get_device_name(0),
-        "torch_version": torch.__version__,
-        "dgl_version": dgl.__version__,
-        "cuda_version": torch.version.cuda,
+        "learning_rate":
+            LEARNING_RATE,
+
+        "weight_decay":
+            WEIGHT_DECAY,
+
+        "max_epochs":
+            MAX_EPOCHS,
+
+        "early_stop":
+            EARLY_STOP,
+
+        "early_stop_metric":
+            "validation_AUROC",
+
+        "early_stop_rule":
+            "strict_greater_than",
+
+        "early_stop_counter_reset":
+            1,
+
+        # PMP settings
+        "hidden_dim":
+            HIDDEN_DIM,
+
+        "dropout":
+            DROPOUT,
+
+        "num_layers":
+            NUM_LAYERS,
+
+        "batch_size":
+            BATCH_SIZE,
+
+        "num_trans":
+            NUM_TRANS,
+
+        "aggregation":
+            AGGREGATION,
+
+        "relation_aggregation":
+            RELATION_AGGREGATION,
+
+        "projection":
+            PROJECTION,
+
+        "output_classes":
+            2,
+
+        "mlp_activation":
+            "ELU",
+
+        "feature_normalization":
+            "PMP row normalization",
+
+        "weighted_loss":
+            False,
+
+        "loss":
+            "CrossEntropyLoss",
+
+        # Hardware/software
+        "platform":
+            "Vast.ai",
+
+        "gpu":
+            torch.cuda.get_device_name(0),
+
+        "torch_version":
+            torch.__version__,
+
+        "dgl_version":
+            dgl.__version__,
+
+        "cuda_version":
+            torch.version.cuda,
     }
 
-    run_tag = f"train_{int(train_ratio * 100)}"
+    # -------------------------------------------------------------
+    # Output location
+    # -------------------------------------------------------------
+
+    ratio_percent = int(
+        round(train_ratio * 100)
+    )
 
     output_dir = os.path.join(
         PROJECT_ROOT,
@@ -370,83 +987,219 @@ def train_one_run(seed, train_ratio):
         MODEL_NAME,
         DATASET_NAME,
         f"seed_{seed}",
-        run_tag,
+        f"train_{ratio_percent}",
     )
 
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(
+        output_dir,
+        exist_ok=True,
+    )
+
+    # -------------------------------------------------------------
+    # Save standardized project outputs
+    # -------------------------------------------------------------
 
     save_run_outputs(
         save_dir=output_dir,
+
         model_name=MODEL_NAME,
+
         config=config,
+
         split_info=split_info,
+
         test_metrics=test_metrics,
+
         model=model,
+
         predictions=test_predictions,
+
         probabilities=test_probabilities,
+
         test_indices=test_order,
+
         train_indices=train_idx,
+
         valid_indices=valid_idx,
+
+        discarded_indices=discarded_idx,
+
         y_test=y_test,
+
+        y_train=labels[
+            torch.as_tensor(
+                train_idx,
+                dtype=torch.long,
+            )
+        ].cpu().numpy(),
+
         train_time=train_time,
     )
 
+    # Extra benchmark-specific metadata.
+    metadata_path = os.path.join(
+        output_dir,
+        "benchmark_metadata.json",
+    )
+
     with open(
-        os.path.join(output_dir, "benchmark_metadata.json"),
+        metadata_path,
         "w",
         encoding="utf-8",
-    ) as f:
+    ) as file:
         json.dump(
             {
-                "best_epoch": best_epoch,
-                "best_validation_auroc": best_val_auc,
-                "actual_epochs_executed": epoch,
+                "model":
+                    MODEL_NAME,
+
+                "dataset":
+                    DATASET_NAME,
+
+                "seed":
+                    int(seed),
+
+                "train_ratio":
+                    float(train_ratio),
+
+                "best_epoch":
+                    int(best_epoch),
+
+                "best_validation_auroc":
+                    float(best_val_auc),
+
+                "epochs_executed":
+                    int(actual_epochs),
+
+                "train_time_seconds":
+                    float(train_time),
+
+                "test_evaluated_after_model_selection":
+                    True,
             },
-            f,
+            file,
             indent=2,
         )
 
-    print("\nFINAL TEST METRICS")
-    print("=" * 60)
+    # -------------------------------------------------------------
+    # Final terminal output
+    # -------------------------------------------------------------
 
-    for key, value in test_metrics.items():
-        if isinstance(value, (int, float, np.integer, np.floating)):
-            print(f"{key}: {value}")
+    print("\n")
+    print("=" * 70)
+    print("FINAL TEST RESULTS")
+    print("=" * 70)
 
-    print("=" * 60)
-    print("Saved to:", output_dir)
+    ordered_metrics = [
+        "auroc",
+        "auprc",
+        "g_mean",
+        "f1_macro",
+        "f1_micro",
+        "f1_weighted",
+        "precision_macro",
+        "recall_macro",
+        "accuracy",
+        "best_val_auroc",
+        "best_epoch",
+        "epochs_executed",
+        "train_time_seconds",
+    ]
 
+    printed = set()
+
+    for metric in ordered_metrics:
+        if metric in test_metrics:
+            value = test_metrics[
+                metric
+            ]
+
+            if isinstance(
+                value,
+                (
+                    float,
+                    np.floating,
+                ),
+            ):
+                print(
+                    f"{metric:25s}: "
+                    f"{float(value):.6f}"
+                )
+            else:
+                print(
+                    f"{metric:25s}: "
+                    f"{value}"
+                )
+
+            printed.add(metric)
+
+    # Print any additional metrics produced by
+    # utils/evaluation.py.
+    for metric, value in (
+        test_metrics.items()
+    ):
+        if metric in printed:
+            continue
+
+        print(
+            f"{metric:25s}: "
+            f"{value}"
+        )
+
+    print("=" * 70)
+
+    print(
+        f"Best epoch: {best_epoch}"
+    )
+
+    print(
+        f"Best validation AUROC: "
+        f"{best_val_auc:.6f}"
+    )
+
+    print(
+        f"Training time: "
+        f"{train_time:.2f} seconds"
+    )
+
+    print(
+        f"Results saved to:\n"
+        f"{output_dir}"
+    )
+
+    print("=" * 70)
+
+
+# ---------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description=(
+            "PMP unified benchmark runner"
+        )
+    )
 
     parser.add_argument(
         "--seed",
         type=int,
         required=True,
-        choices=[
-            123,
-            1234,
-            12345,
-            123456,
-            1234567,
-        ],
+        choices=ALLOWED_SEEDS,
     )
 
     parser.add_argument(
         "--train-ratio",
         type=float,
         required=True,
-        choices=[
-            0.4,
-            0.3,
-            0.2,
-            0.1,
-        ],
+        choices=ALLOWED_TRAIN_RATIOS,
     )
 
     return parser.parse_args()
 
+
+# ---------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------
 
 if __name__ == "__main__":
     args = parse_args()
