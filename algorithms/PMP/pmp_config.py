@@ -24,7 +24,7 @@ PMP_CONFIGS = {
     },
     # Official PMP config/yelp.yml model/optimizer settings.
     "yelp": {
-        "hidden_dim": 48,
+        "hidden_dim": 256,
         "dropout": 0.0,
         "num_layers": 1,
         "batch_size": 512,
@@ -41,21 +41,21 @@ PMP_CONFIGS = {
     },
     # Official PMP config/tfinance.yml active LA-SAGE-S settings.
     "tfinance": {
-        "hidden_dim": 64,
-        "dropout": 0.4,
-        "num_layers": 1,
-        "batch_size": 256,
-        "learning_rate": 0.005,
-        "weight_decay": 0.0,
-        "num_trans": 1,
-        "aggregation": "mean",
-        "relation_aggregation": "cat",
-        "projection": True,
-        "mlp_activation": "relu",
-        "eval_batch_size": 4096,
-        "weighted_loss": False,
-        "source_note": "Official Xtra-Computing/PMP config/tfinance.yml active LA-SAGE-S settings; benchmark-wide stopping protocol applied separately.",
-    },
+    "hidden_dim": 64,
+    "dropout": 0.4,
+    "num_layers": 1,
+    "batch_size": 256,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0,
+    "num_trans": 1,
+    "aggregation": "mean",
+    "relation_aggregation": "cat",
+    "projection": True,
+    "mlp_activation": "relu",
+    "eval_batch_size": 4096,
+    "weighted_loss": False,
+    "source_note": "PMP ICLR 2024 Appendix D.4 dataset-specific T-Finance setting; unified benchmark stopping protocol applied separately.",
+   },
 }
 
 
