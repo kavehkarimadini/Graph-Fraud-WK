@@ -10,6 +10,8 @@ import time
 
 import dgl
 import numpy as np
+import os
+os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 import torch
 import torch.nn.functional as F
 from sklearn.metrics import roc_auc_score
@@ -73,6 +75,7 @@ def set_seed(seed):
     try:
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+        torch.use_deterministic_algorithms(True)
     except Exception:
         pass
 
