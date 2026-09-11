@@ -171,9 +171,7 @@ def load_split(dataset, seed, train_ratio):
     if not os.path.exists(path):
         raise FileNotFoundError(
             "Benchmark split not found: {}\n"
-            "Run the benchmark split generator first.".format(
-                path
-            )
+            "Run the benchmark split generator first.".format(path)
         )
 
     data = np.load(path)
@@ -281,14 +279,13 @@ def corrected_environment_loss(
     """
     SEC-GFD environmental loss.
 
-    Two corrections are applied relative to the released repository:
+    Corrections relative to the released repository:
 
-    1. Actual global training-node IDs are used rather than positions
+    1. Use actual global training-node IDs rather than positions
        inside labels[idx_train].
 
-    2. exp(cosine_similarity) is used before class-wise averaging,
+    2. Apply exp(cosine_similarity) before class-wise averaging,
        matching the environmental-constraint equation in the paper.
-       This also guarantees positive values inside the logarithm.
     """
 
     train_idx = torch.as_tensor(
@@ -664,9 +661,6 @@ def train_one_run(
     best_val_auc = -np.inf
     best_epoch = 0
     best_state = None
-
-    # Preserve the same patience-counter convention
-    # used by the completed PMP benchmark.
     wait = 1
 
     start_epoch = 1
@@ -733,9 +727,9 @@ def train_one_run(
             )
         )
 
-    segment_start = (
-        time.perf_counter()
-    )
+    segment_start = time.perf_counter()
+
+    checkpoint_io_seconds = 0.0
 
     actual_epochs = (
         start_epoch - 1
@@ -843,6 +837,11 @@ def train_one_run(
                 elapsed_before_resume
                 + time.perf_counter()
                 - segment_start
+                - checkpoint_io_seconds
+            )
+
+            checkpoint_start = (
+                time.perf_counter()
             )
 
             save_training_state(
@@ -855,6 +854,11 @@ def train_one_run(
                 best_state=best_state,
                 wait=wait,
                 elapsed_seconds=elapsed_now,
+            )
+
+            checkpoint_io_seconds += (
+                time.perf_counter()
+                - checkpoint_start
             )
 
             print(
@@ -901,6 +905,7 @@ def train_one_run(
         elapsed_before_resume
         + time.perf_counter()
         - segment_start
+        - checkpoint_io_seconds
     )
 
     if best_state is None:
@@ -1077,6 +1082,11 @@ def train_one_run(
             "SEC-GFD paper's fixed 100 epochs."
         ),
 
+        "timing_note": (
+            "train_time_seconds excludes epoch-level "
+            "recovery-checkpoint disk I/O."
+        ),
+
         "platform": "Vast.ai",
 
         "gpu": torch.cuda.get_device_name(
@@ -1149,6 +1159,7 @@ def train_one_run(
                 "test_evaluated_after_model_selection": True,
                 "test_used_during_training": False,
                 "epoch_resume_enabled": True,
+                "checkpoint_io_excluded_from_train_time": True,
                 "environment_loss_indexing_corrected": True,
                 "environment_loss_exp_similarity": True,
             },
