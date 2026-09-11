@@ -56,6 +56,22 @@ PMP_CONFIGS = {
     "weighted_loss": False,
     "source_note": "PMP ICLR 2024 Appendix D.4 dataset-specific T-Finance setting; unified benchmark stopping protocol applied separately.",
    },
+   "tsocial": {
+    "hidden_dim": 128,
+    "dropout": 0.0,
+    "num_layers": 1,
+    "batch_size": 131072,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "num_trans": 1,
+    "aggregation": "mean",
+    "relation_aggregation": "cat",
+    "projection": True,
+    "mlp_activation": "relu",
+    "eval_batch_size": 4096,
+    "weighted_loss": False,
+    "source_note": "PMP ICLR 2024 Appendix D.4 Table 5 T-Social setting; unified benchmark stopping protocol applied separately.",
+},
 }
 
 
