@@ -1090,6 +1090,17 @@ def train_one_run(
             "recovery-checkpoint disk I/O."
         ),
 
+        "reproducibility_note": (
+            "Python, NumPy, PyTorch and DGL seeds are fixed and "
+            "PyTorch deterministic algorithms are enabled. Diagnostic "
+            "testing confirmed identical model initialization for a fixed "
+            "seed, but DGL CUDA sparse message-passing produced small "
+            "numerical differences across repeated forward passes with "
+            "identical parameters and inputs. Therefore CUDA execution is "
+            "not bitwise deterministic and results are summarized across "
+            "the five predefined benchmark seeds."
+        ),
+
         "platform": "Vast.ai",
 
         "gpu": torch.cuda.get_device_name(
@@ -1163,6 +1174,9 @@ def train_one_run(
                 "test_used_during_training": False,
                 "epoch_resume_enabled": True,
                 "checkpoint_io_excluded_from_train_time": True,
+                "fixed_seed_initialization_verified": True,
+                "deterministic_pytorch_algorithms_enabled": True,
+                "dgl_cuda_bitwise_deterministic": False,
                 "environment_loss_indexing_corrected": True,
                 "environment_loss_exp_similarity": True,
             },
