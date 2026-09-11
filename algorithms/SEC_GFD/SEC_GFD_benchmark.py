@@ -17,6 +17,7 @@ from sklearn.metrics import roc_auc_score
 PROJECT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
 )
+
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
@@ -125,7 +126,11 @@ def output_dir_for(dataset, seed, train_ratio):
 
 
 def run_complete(dataset, seed, train_ratio):
-    out = output_dir_for(dataset, seed, train_ratio)
+    out = output_dir_for(
+        dataset,
+        seed,
+        train_ratio,
+    )
 
     required = [
         "metrics.json",
@@ -137,14 +142,20 @@ def run_complete(dataset, seed, train_ratio):
     ]
 
     return all(
-        os.path.exists(os.path.join(out, name))
+        os.path.exists(
+            os.path.join(out, name)
+        )
         for name in required
     )
 
 
 def training_state_path(dataset, seed, train_ratio):
     return os.path.join(
-        output_dir_for(dataset, seed, train_ratio),
+        output_dir_for(
+            dataset,
+            seed,
+            train_ratio,
+        ),
         "training_state.pt",
     )
 
@@ -160,7 +171,9 @@ def load_split(dataset, seed, train_ratio):
     if not os.path.exists(path):
         raise FileNotFoundError(
             "Benchmark split not found: {}\n"
-            "Run the benchmark split generator first.".format(path)
+            "Run the benchmark split generator first.".format(
+                path
+            )
         )
 
     data = np.load(path)
@@ -169,8 +182,13 @@ def load_split(dataset, seed, train_ratio):
         ratio_to_key(train_ratio)
     ].astype(np.int64)
 
-    valid_idx = data["val"].astype(np.int64)
-    test_idx = data["test"].astype(np.int64)
+    valid_idx = data[
+        "val"
+    ].astype(np.int64)
+
+    test_idx = data[
+        "test"
+    ].astype(np.int64)
 
     train40_idx = data[
         "train_40"
@@ -191,7 +209,11 @@ def load_split(dataset, seed, train_ratio):
     )
 
 
-def validate_split(train_idx, valid_idx, test_idx):
+def validate_split(
+    train_idx,
+    valid_idx,
+    test_idx,
+):
     tr = set(train_idx.tolist())
     va = set(valid_idx.tolist())
     te = set(test_idx.tolist())
@@ -209,7 +231,10 @@ def validate_eligible_indices(
     eligible,
 ):
     eligible_set = set(
-        np.asarray(eligible, dtype=np.int64).tolist()
+        np.asarray(
+            eligible,
+            dtype=np.int64,
+        ).tolist()
     )
 
     for name, values in [
@@ -217,12 +242,15 @@ def validate_eligible_indices(
         ("validation", valid_idx),
         ("test", test_idx),
     ]:
-        invalid = set(values.tolist()) - eligible_set
+        invalid = (
+            set(values.tolist())
+            - eligible_set
+        )
 
         if invalid:
             raise RuntimeError(
-                "{} split contains nodes that are not eligible "
-                "for SEC-GFD.".format(name)
+                "{} split contains nodes that are not "
+                "eligible for SEC-GFD.".format(name)
             )
 
 
@@ -251,12 +279,16 @@ def corrected_environment_loss(
     train_idx,
 ):
     """
-    Preserve the released SEC-GFD environmental-loss formula while
-    correcting its train-index addressing bug.
+    SEC-GFD environmental loss.
 
-    The official implementation first obtains positions within
-    labels[idx_train], then mistakenly uses those positions as global
-    graph node IDs. Here we use the actual global training-node IDs.
+    Two corrections are applied relative to the released repository:
+
+    1. Actual global training-node IDs are used rather than positions
+       inside labels[idx_train].
+
+    2. exp(cosine_similarity) is used before class-wise averaging,
+       matching the environmental-constraint equation in the paper.
+       This also guarantees positive values inside the logarithm.
     """
 
     train_idx = torch.as_tensor(
@@ -265,7 +297,9 @@ def corrected_environment_loss(
         device=labels.device,
     )
 
-    train_labels = labels[train_idx]
+    train_labels = labels[
+        train_idx
+    ]
 
     normal_nodes = train_idx[
         train_labels == 0
@@ -292,23 +326,32 @@ def corrected_environment_loss(
     )
 
     normal_similarity = torch.mean(
-        similarity[normal_nodes]
+        torch.exp(
+            similarity[normal_nodes]
+        )
     )
 
     anomaly_similarity = torch.mean(
-        similarity[anomaly_nodes]
+        torch.exp(
+            similarity[anomaly_nodes]
+        )
     )
 
     loss = -torch.log(
-        normal_similarity / anomaly_similarity
+        normal_similarity
+        / anomaly_similarity
     )
 
     if not torch.isfinite(loss):
         raise RuntimeError(
             "SEC-GFD environmental loss became non-finite. "
             "normal_similarity={} anomaly_similarity={}".format(
-                float(normal_similarity.detach().cpu()),
-                float(anomaly_similarity.detach().cpu()),
+                float(
+                    normal_similarity.detach().cpu()
+                ),
+                float(
+                    anomaly_similarity.detach().cpu()
+                ),
             )
         )
 
@@ -330,7 +373,9 @@ def evaluate_indices(
     )
 
     with torch.no_grad():
-        logits, _ = model(features)
+        logits, _ = model(
+            features
+        )
 
         probabilities = torch.softmax(
             logits[index_tensor],
@@ -343,8 +388,13 @@ def evaluate_indices(
         )
 
     return (
-        np.asarray(node_indices, dtype=np.int64),
-        labels[index_tensor].detach().cpu().numpy(),
+        np.asarray(
+            node_indices,
+            dtype=np.int64,
+        ),
+        labels[
+            index_tensor
+        ].detach().cpu().numpy(),
         predictions.detach().cpu().numpy(),
         probabilities.detach().cpu().numpy(),
     )
@@ -374,11 +424,15 @@ def save_training_state(
         "best_epoch": int(best_epoch),
         "best_state_dict": best_state,
         "wait": int(wait),
-        "elapsed_seconds": float(elapsed_seconds),
+        "elapsed_seconds": float(
+            elapsed_seconds
+        ),
         "rng_state": capture_rng_state(),
     }
 
-    temporary_path = path + ".tmp"
+    temporary_path = (
+        path + ".tmp"
+    )
 
     torch.save(
         payload,
@@ -430,8 +484,13 @@ def train_one_run(
     train_ratio,
     resume=False,
 ):
-    dataset = canonical_dataset_name(dataset)
-    config = get_secgfd_config(dataset)
+    dataset = canonical_dataset_name(
+        dataset
+    )
+
+    config = get_secgfd_config(
+        dataset
+    )
 
     print("=" * 70)
     print(
@@ -451,18 +510,23 @@ def train_one_run(
             "Run benchmark training on a GPU instance."
         )
 
-    device = torch.device("cuda:0")
+    device = torch.device(
+        "cuda:0"
+    )
 
     print(
         "GPU:",
         torch.cuda.get_device_name(0),
     )
 
-    graph, features, labels, eligible = (
-        load_secgfd_dataset(
-            dataset,
-            PROJECT_ROOT,
-        )
+    (
+        graph,
+        features,
+        labels,
+        eligible,
+    ) = load_secgfd_dataset(
+        dataset,
+        PROJECT_ROOT,
     )
 
     print(
@@ -507,7 +571,9 @@ def train_one_run(
         )
     )
 
-    graph = graph.to(device)
+    graph = graph.to(
+        device
+    )
 
     features = graph.ndata[
         "feature"
@@ -519,15 +585,21 @@ def train_one_run(
 
     model = build_model(
         graph=graph,
-        in_features=int(features.shape[1]),
+        in_features=int(
+            features.shape[1]
+        ),
         config=config,
         device=device,
     )
 
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=config["learning_rate"],
-        weight_decay=config["weight_decay"],
+        lr=config[
+            "learning_rate"
+        ],
+        weight_decay=config[
+            "weight_decay"
+        ],
     )
 
     train_tensor = torch.as_tensor(
@@ -541,11 +613,15 @@ def train_one_run(
     ]
 
     benign_count = int(
-        (train_labels == 0).sum().item()
+        (
+            train_labels == 0
+        ).sum().item()
     )
 
     fraud_count = int(
-        (train_labels == 1).sum().item()
+        (
+            train_labels == 1
+        ).sum().item()
     )
 
     if fraud_count == 0:
@@ -554,11 +630,15 @@ def train_one_run(
         )
 
     fraud_weight = (
-        benign_count / fraud_count
+        benign_count
+        / fraud_count
     )
 
     class_weight = torch.tensor(
-        [1.0, fraud_weight],
+        [
+            1.0,
+            fraud_weight,
+        ],
         dtype=torch.float32,
         device=device,
     )
@@ -585,13 +665,19 @@ def train_one_run(
     best_epoch = 0
     best_state = None
 
-    # Keep the same counter convention used by PMP.
+    # Preserve the same patience-counter convention
+    # used by the completed PMP benchmark.
     wait = 1
 
     start_epoch = 1
     elapsed_before_resume = 0.0
 
-    if resume and os.path.exists(state_path):
+    if (
+        resume
+        and os.path.exists(
+            state_path
+        )
+    ):
         state = load_training_state(
             state_path,
             model,
@@ -599,16 +685,23 @@ def train_one_run(
             device,
         )
 
-        start_epoch = int(
-            state["epoch"]
-        ) + 1
+        start_epoch = (
+            int(
+                state["epoch"]
+            )
+            + 1
+        )
 
         best_val_auc = float(
-            state["best_val_auc"]
+            state[
+                "best_val_auc"
+            ]
         )
 
         best_epoch = int(
-            state["best_epoch"]
+            state[
+                "best_epoch"
+            ]
         )
 
         best_state = state[
@@ -616,7 +709,9 @@ def train_one_run(
         ]
 
         wait = int(
-            state["wait"]
+            state[
+                "wait"
+            ]
         )
 
         elapsed_before_resume = float(
@@ -638,10 +733,16 @@ def train_one_run(
             )
         )
 
-    segment_start = time.perf_counter()
-    actual_epochs = start_epoch - 1
+    segment_start = (
+        time.perf_counter()
+    )
+
+    actual_epochs = (
+        start_epoch - 1
+    )
 
     if wait < EARLY_STOP:
+
         for epoch in range(
             start_epoch,
             MAX_EPOCHS + 1,
@@ -658,8 +759,12 @@ def train_one_run(
 
             classification_loss = (
                 F.cross_entropy(
-                    logits[train_tensor],
-                    labels[train_tensor],
+                    logits[
+                        train_tensor
+                    ],
+                    labels[
+                        train_tensor
+                    ],
                     weight=class_weight,
                 )
             )
@@ -675,11 +780,23 @@ def train_one_run(
 
             loss = (
                 classification_loss
-                + config["lambda_env"]
+                + config[
+                    "lambda_env"
+                ]
                 * environment_loss
             )
 
+            if not torch.isfinite(
+                loss
+            ):
+                raise RuntimeError(
+                    "SEC-GFD total training loss "
+                    "became non-finite at epoch {}."
+                    .format(epoch)
+                )
+
             loss.backward()
+
             optimizer.step()
 
             (
@@ -696,10 +813,13 @@ def train_one_run(
 
             val_auc = roc_auc_score(
                 y_val,
-                val_probabilities[:, 1],
+                val_probabilities[
+                    :, 1
+                ],
             )
 
             if val_auc > best_val_auc:
+
                 best_val_auc = float(
                     val_auc
                 )
@@ -708,8 +828,10 @@ def train_one_run(
                     epoch
                 )
 
-                best_state = copy.deepcopy(
-                    model.state_dict()
+                best_state = (
+                    copy.deepcopy(
+                        model.state_dict()
+                    )
                 )
 
                 wait = 1
@@ -811,20 +933,40 @@ def train_one_run(
         )
     )
 
-    test_metrics.update({
-        "best_epoch": int(best_epoch),
-        "best_val_auroc": float(best_val_auc),
-        "train_time_seconds": float(train_time),
-        "epochs_executed": int(actual_epochs),
-    })
+    test_metrics.update(
+        {
+            "best_epoch": int(
+                best_epoch
+            ),
+            "best_val_auroc": float(
+                best_val_auc
+            ),
+            "train_time_seconds": float(
+                train_time
+            ),
+            "epochs_executed": int(
+                actual_epochs
+            ),
+        }
+    )
 
     split_info = {
         "seed": int(seed),
-        "train_ratio": float(train_ratio),
-        "train_size": len(train_idx),
-        "validation_size": len(valid_idx),
-        "test_size": len(test_idx),
-        "discarded_size": len(discarded_idx),
+        "train_ratio": float(
+            train_ratio
+        ),
+        "train_size": len(
+            train_idx
+        ),
+        "validation_size": len(
+            valid_idx
+        ),
+        "test_size": len(
+            test_idx
+        ),
+        "discarded_size": len(
+            discarded_idx
+        ),
         "train_pool_ratio": 0.4,
         "validation_ratio": 0.2,
         "test_ratio": 0.4,
@@ -839,12 +981,18 @@ def train_one_run(
         "model": MODEL_NAME,
         "dataset": dataset,
         "seed": int(seed),
-        "train_ratio": float(train_ratio),
+        "train_ratio": float(
+            train_ratio
+        ),
 
-        "optimizer": config["optimizer"],
+        "optimizer": config[
+            "optimizer"
+        ],
+
         "learning_rate": config[
             "learning_rate"
         ],
+
         "weight_decay": config[
             "weight_decay"
         ],
@@ -852,12 +1000,15 @@ def train_one_run(
         "hidden_dim": config[
             "hidden_dim"
         ],
+
         "order_C": config[
             "order"
         ],
+
         "high_order": config[
             "high_order"
         ],
+
         "lambda_env": config[
             "lambda_env"
         ],
@@ -878,13 +1029,17 @@ def train_one_run(
         ),
 
         "max_epochs": MAX_EPOCHS,
+
         "early_stop": EARLY_STOP,
+
         "early_stop_metric": (
             "validation_AUROC"
         ),
+
         "early_stop_rule": (
             "strict_greater_than"
         ),
+
         "early_stop_counter_reset": 1,
 
         "hard_prediction_rule": (
@@ -899,6 +1054,12 @@ def train_one_run(
         "environment_loss_indexing": (
             "corrected to use actual global "
             "training-node IDs"
+        ),
+
+        "environment_loss_similarity": (
+            "exp(cosine_similarity) before "
+            "class-wise averaging, matching "
+            "SEC-GFD paper environmental loss"
         ),
 
         "official_code_high_order_note": (
@@ -917,9 +1078,15 @@ def train_one_run(
         ),
 
         "platform": "Vast.ai",
-        "gpu": torch.cuda.get_device_name(0),
+
+        "gpu": torch.cuda.get_device_name(
+            0
+        ),
+
         "torch_version": torch.__version__,
+
         "dgl_version": dgl.__version__,
+
         "cuda_version": torch.version.cuda,
     }
 
@@ -958,6 +1125,7 @@ def train_one_run(
         "w",
         encoding="utf-8",
     ) as f:
+
         json.dump(
             {
                 "model": MODEL_NAME,
@@ -982,16 +1150,23 @@ def train_one_run(
                 "test_used_during_training": False,
                 "epoch_resume_enabled": True,
                 "environment_loss_indexing_corrected": True,
+                "environment_loss_exp_similarity": True,
             },
             f,
             indent=2,
         )
 
-    if os.path.exists(state_path):
-        os.remove(state_path)
+    if os.path.exists(
+        state_path
+    ):
+        os.remove(
+            state_path
+        )
 
     print("=" * 70)
-    print("FINAL TEST RESULTS")
+    print(
+        "FINAL TEST RESULTS"
+    )
 
     for key in [
         "auroc",
@@ -1008,20 +1183,30 @@ def train_one_run(
         "epochs_executed",
         "train_time_seconds",
     ]:
+
         if key in test_metrics:
-            value = test_metrics[key]
+
+            value = test_metrics[
+                key
+            ]
 
             if isinstance(
                 value,
-                (float, np.floating),
+                (
+                    float,
+                    np.floating,
+                ),
             ):
+
                 print(
                     "{:25s}: {:.6f}".format(
                         key,
                         value,
                     )
                 )
+
             else:
+
                 print(
                     "{:25s}: {}".format(
                         key,
@@ -1041,6 +1226,7 @@ def train_one_run(
 
 
 def parse_args():
+
     parser = argparse.ArgumentParser(
         description=(
             "SEC-GFD unified benchmark runner"
@@ -1094,6 +1280,7 @@ def parse_args():
 
 
 def main():
+
     args = parse_args()
 
     dataset = canonical_dataset_name(
@@ -1101,7 +1288,9 @@ def main():
     )
 
     if args.all:
+
         for ratio in ALLOWED_TRAIN_RATIOS:
+
             for seed in ALLOWED_SEEDS:
 
                 if (
