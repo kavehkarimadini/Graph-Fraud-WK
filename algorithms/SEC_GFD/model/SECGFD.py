@@ -11,8 +11,8 @@ import dgl
 class GCN(nn.Module):
     def __init__(self, in_dim, hid_dim, out_dim, g):
         super(GCN, self).__init__()
-        self.conv1 = GraphConv(in_dim, hid_dim)
-        self.conv2 = GraphConv(hid_dim, out_dim)
+        self.conv1 = GraphConv(in_dim, hid_dim, allow_zero_in_degree=True)
+        self.conv2 = GraphConv(hid_dim, out_dim, allow_zero_in_degree=True)
         self.act = nn.ReLU()
         self.g = g
 
