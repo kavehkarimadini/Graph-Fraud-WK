@@ -46,30 +46,52 @@ SEC_GFD_CONFIG = {
         "order": 5,
         "high_order": 2,
     },
+    "elliptic": {
+        "hidden_dim": 16,
+        "order": 2,
+        "high_order": 2,
+    },
 }
 
 
 def get_secgfd_config(dataset_name):
-    dataset_name = canonical_dataset_name(dataset_name)
+    dataset_name = canonical_dataset_name(
+        dataset_name
+    )
+
+    cfg = dict(
+        SEC_GFD_CONFIG[
+            dataset_name
+        ]
+    )
 
     if dataset_name == "elliptic":
-        raise ValueError(
-            "Elliptic does not yet have a fixed SEC-GFD configuration. "
-            "Run the validation-only hyperparameter search first, then "
-            "freeze the selected configuration before final benchmarking."
+        source_note = (
+            "Elliptic SEC-GFD configuration selected by the predefined "
+            "validation-only hyperparameter search. Search space: "
+            "hidden_dim in {16, 64} and order_C in {2, 5}; "
+            "all configurations evaluated on train_40 using the five "
+            "predefined benchmark seeds and selected by mean validation "
+            "AUROC. Selected hidden_dim=16 and order_C=2. "
+            "The test set was not accessed during tuning. "
+            "Learning rate=0.01, weight decay=0.0, lambda_env=0.2, "
+            "Adam optimizer, and high_order=2 were kept fixed from "
+            "SEC-GFD paper/released-code settings."
         )
-
-    cfg = dict(SEC_GFD_CONFIG[dataset_name])
-
-    cfg.update({
-        "learning_rate": 0.01,
-        "weight_decay": 0.0,
-        "lambda_env": 0.2,
-        "optimizer": "Adam",
-        "source_note": (
+    else:
+        source_note = (
             "SEC-GFD paper/released repository settings; "
             "high_order=2 preserved from released implementation."
-        ),
-    })
+        )
+
+    cfg.update(
+        {
+            "learning_rate": 0.01,
+            "weight_decay": 0.0,
+            "lambda_env": 0.2,
+            "optimizer": "Adam",
+            "source_note": source_note,
+        }
+    )
 
     return cfg

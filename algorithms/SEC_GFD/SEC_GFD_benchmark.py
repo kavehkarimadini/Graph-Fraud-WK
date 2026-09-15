@@ -1,5 +1,7 @@
 """SEC-GFD runner for the unified graph-fraud benchmark."""
 
+"""SEC-GFD runner for the unified graph-fraud benchmark."""
+
 import argparse
 import copy
 import json
@@ -1270,6 +1272,7 @@ def parse_args():
             "yelpchi",
             "tfinance",
             "tsocial",
+            "elliptic",
         ],
     )
 
