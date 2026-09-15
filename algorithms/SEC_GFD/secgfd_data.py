@@ -6,7 +6,7 @@ import dgl
 import numpy as np
 import torch
 from dgl.data import FraudAmazonDataset, FraudYelpDataset
-
+from utils.data_loader import load_tgraph_arrays, load_elliptic_arrays
 
 
 
