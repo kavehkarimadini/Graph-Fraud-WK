@@ -84,6 +84,6 @@ def generate(dataset):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", required=True, choices=["amazon", "yelp", "yelpchi", "tfinance"])
+    parser.add_argument("--dataset", required=True, choices=["amazon", "yelp", "yelpchi", "tfinance", "elliptic"])
     args = parser.parse_args()
     generate(args.dataset)

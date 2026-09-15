@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from dgl.data import FraudAmazonDataset, FraudYelpDataset
 
-from utils.data_loader import load_tgraph_arrays
+
 
 
 def canonical_dataset_name(name):
@@ -21,6 +21,7 @@ def canonical_dataset_name(name):
         "t-finance": "tfinance",
         "tsocial": "tsocial",
         "t-social": "tsocial",
+        "elliptic": "elliptic",
     }
 
     if name not in aliases:
@@ -100,7 +101,6 @@ def _load_t_dataset(dataset_name, dataset_dir):
     # no self-loop is added to T-Finance/T-Social when del_ratio=0.
     return graph, None
 
-
 def load_secgfd_dataset(dataset_name, project_root):
     """
     Load SEC-GFD data without PMP-specific feature normalization.
@@ -132,13 +132,71 @@ def load_secgfd_dataset(dataset_name, project_root):
             dataset_dir,
         )
 
+    elif dataset_name == "elliptic":
+        features_np, labels_np, src, dst = load_elliptic_arrays(
+            prefix=dataset_dir,
+            labeled_only=True,
+        )
+
+        features_np = np.ascontiguousarray(
+            features_np,
+            dtype=np.float32,
+        )
+
+        labels_np = np.ascontiguousarray(
+            labels_np,
+            dtype=np.int64,
+        )
+
+        src = np.asarray(
+            src,
+            dtype=np.int64,
+        )
+
+        dst = np.asarray(
+            dst,
+            dtype=np.int64,
+        )
+
+        graph = dgl.graph(
+            (
+                torch.as_tensor(
+                    src,
+                    dtype=torch.int64,
+                ),
+                torch.as_tensor(
+                    dst,
+                    dtype=torch.int64,
+                ),
+            ),
+            num_nodes=int(
+                features_np.shape[0]
+            ),
+        )
+
+        graph.ndata["feature"] = torch.as_tensor(
+            features_np,
+            dtype=torch.float32,
+        )
+
+        graph.ndata["label"] = torch.as_tensor(
+            labels_np,
+            dtype=torch.long,
+        ).view(-1)
+
+        labeled_from = None
+
     else:
         raise ValueError(
-            "Unsupported SEC-GFD dataset: {}".format(dataset_name)
+            "Unsupported SEC-GFD dataset: {}".format(
+                dataset_name
+            )
         )
 
     features = graph.ndata["feature"].float()
-    labels = _flatten_labels(graph.ndata["label"])
+    labels = _flatten_labels(
+        graph.ndata["label"]
+    )
 
     graph.ndata["feature"] = features
     graph.ndata["label"] = labels
@@ -158,7 +216,10 @@ def load_secgfd_dataset(dataset_name, project_root):
     y = labels.detach().cpu().numpy()
 
     eligible = eligible[
-        np.isin(y[eligible], [0, 1])
+        np.isin(
+            y[eligible],
+            [0, 1],
+        )
     ]
 
     if eligible.size == 0:
