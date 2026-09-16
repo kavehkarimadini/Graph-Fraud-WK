@@ -75,26 +75,24 @@ PMP_CONFIGS = {
 
 
     "fdcompcn": {
-        "hidden_dim": 256,
-        "dropout": 0.6,
+        "hidden_dim": 512,
+        "dropout": 0.0,
         "num_layers": 1,
-        "batch_size": 128,
-        "learning_rate": 0.01,
+        "batch_size": 256,
+        "learning_rate": 0.005,
         "weight_decay": 0.0,
         "num_trans": 1,
         "aggregation": "mean",
         "relation_aggregation": "cat",
         "projection": True,
-        "mlp_activation": "elu",
+        "mlp_activation": "relu",
         "eval_batch_size": 4096,
         "weighted_loss": False,
         "source_note": (
-            "FDCompCN PMP configuration selected by predefined validation-only tuning. "
-            "Five compatible configurations derived from PMP paper/released-code settings "
-            "were evaluated on train_40 across five benchmark seeds using validation AUROC only. "
-            "Selected release_amazon configuration: hidden_dim=256, dropout=0.6, "
-            "batch_size=128, learning_rate=0.01; mean validation AUROC=0.569280, "
-            "std=0.030365. Test set was not accessed during tuning."
+            "FDCompCN PMP configuration selected by predefined paper-grounded "
+            "validation-only search. Selected hidden_dim=512, learning_rate=0.005, "
+            "dropout=0.0, batch_size=256; mean validation AUROC=0.575675, "
+            "std=0.028980. Test set was not accessed during selection."
         ),
     },
 
