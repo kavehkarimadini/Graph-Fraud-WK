@@ -1,0 +1,86 @@
+{
+  "model": "PMP",
+  "dataset": "fdcompcn",
+  "selection_metric": "mean validation AUROC across five seeds",
+  "test_accessed": false,
+  "candidates": [
+    {
+      "candidate": "release_amazon",
+      "hidden_dim": 256,
+      "dropout": 0.6,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "mlp_activation": "elu",
+      "mean_val_auroc": 0.5692804566621601,
+      "std_val_auroc": 0.030365152493972637,
+      "num_seeds": 5,
+      "test_accessed": false
+    },
+    {
+      "candidate": "paper_yelp",
+      "hidden_dim": 256,
+      "dropout": 0.0,
+      "batch_size": 512,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "mlp_activation": "relu",
+      "mean_val_auroc": 0.5692738846327174,
+      "std_val_auroc": 0.02972793502383342,
+      "num_seeds": 5,
+      "test_accessed": false
+    },
+    {
+      "candidate": "release_tfinance",
+      "hidden_dim": 64,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "learning_rate": 0.005,
+      "weight_decay": 0.0,
+      "mlp_activation": "relu",
+      "mean_val_auroc": 0.5686589304491513,
+      "std_val_auroc": 0.02716300262395415,
+      "num_seeds": 5,
+      "test_accessed": false
+    },
+    {
+      "candidate": "paper_tfinance",
+      "hidden_dim": 64,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "mlp_activation": "relu",
+      "mean_val_auroc": 0.5675435631665915,
+      "std_val_auroc": 0.03288748414925071,
+      "num_seeds": 5,
+      "test_accessed": false
+    },
+    {
+      "candidate": "paper_amazon",
+      "hidden_dim": 128,
+      "dropout": 0.6,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "mlp_activation": "elu",
+      "mean_val_auroc": 0.5576808246958089,
+      "std_val_auroc": 0.02944924637787267,
+      "num_seeds": 5,
+      "test_accessed": false
+    }
+  ],
+  "selected": {
+    "candidate": "release_amazon",
+    "hidden_dim": 256,
+    "dropout": 0.6,
+    "batch_size": 128,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0,
+    "mlp_activation": "elu",
+    "mean_val_auroc": 0.5692804566621601,
+    "std_val_auroc": 0.030365152493972637,
+    "num_seeds": 5,
+    "test_accessed": false
+  }
+}

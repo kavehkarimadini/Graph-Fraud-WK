@@ -1,0 +1,6 @@
+candidate,hidden_dim,dropout,batch_size,learning_rate,weight_decay,mlp_activation,mean_val_auroc,std_val_auroc,num_seeds,test_accessed
+release_amazon,256,0.6,128,0.01,0.0,elu,0.5692804566621601,0.030365152493972637,5,False
+paper_yelp,256,0.0,512,0.01,0.0,relu,0.5692738846327174,0.02972793502383342,5,False
+release_tfinance,64,0.4,256,0.005,0.0,relu,0.5686589304491513,0.02716300262395415,5,False
+paper_tfinance,64,0.4,256,0.01,0.0,relu,0.5675435631665915,0.03288748414925071,5,False
+paper_amazon,128,0.6,128,0.01,0.0,elu,0.5576808246958089,0.02944924637787267,5,False
