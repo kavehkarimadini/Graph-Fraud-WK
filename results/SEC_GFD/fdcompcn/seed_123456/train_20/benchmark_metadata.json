@@ -1,0 +1,19 @@
+{
+  "model": "SEC_GFD",
+  "dataset": "fdcompcn",
+  "seed": 123456,
+  "train_ratio": 0.2,
+  "best_epoch": 5,
+  "best_validation_auroc": 0.6194841895748836,
+  "epochs_executed": 29,
+  "train_time_seconds": 0.5435253167524934,
+  "test_evaluated_after_model_selection": true,
+  "test_used_during_training": false,
+  "epoch_resume_enabled": true,
+  "checkpoint_io_excluded_from_train_time": true,
+  "fixed_seed_initialization_verified": true,
+  "deterministic_pytorch_algorithms_enabled": true,
+  "dgl_cuda_bitwise_deterministic": false,
+  "environment_loss_indexing_corrected": true,
+  "environment_loss_exp_similarity": true
+}

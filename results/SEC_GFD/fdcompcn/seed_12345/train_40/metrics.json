@@ -1,0 +1,37 @@
+{
+  "model": "SEC_GFD",
+  "split": {
+    "seed": 12345,
+    "train_ratio": 0.4,
+    "train_size": 2126,
+    "validation_size": 1063,
+    "test_size": 2128,
+    "discarded_size": 0,
+    "train_pool_ratio": 0.4,
+    "validation_ratio": 0.2,
+    "test_ratio": 0.4,
+    "nested_training_subsets": true,
+    "split_file": "splits/fdcompcn/seed_12345.npz"
+  },
+  "test": {
+    "accuracy": 0.6837406015037594,
+    "f1_micro": 0.6837406015037594,
+    "f1_macro": 0.5167199109936178,
+    "f1_weighted": 0.741283301431714,
+    "precision_macro": 0.5369368752567438,
+    "recall_macro": 0.5838176618057271,
+    "g_mean": 0.5699661483464936,
+    "auroc": 0.6299059590645341,
+    "auprc": 0.1638658411687244,
+    "auc_roc": 0.6299059590645341,
+    "best_epoch": 121,
+    "best_val_auroc": 0.6484950052576236,
+    "train_time_seconds": 2.6090485882014036,
+    "epochs_executed": 145
+  },
+  "complexity": {
+    "train_time_sec": 2.6090485882014036,
+    "num_parameters": 35963,
+    "num_trainable_parameters": 35963
+  }
+}

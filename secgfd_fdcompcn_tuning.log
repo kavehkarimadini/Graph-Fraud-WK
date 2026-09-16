@@ -1,0 +1,1230 @@
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Eligible=5317
+Features=(5317, 57)
+Benign=4758 Fraud=559
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=2 | seed=123
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=2 seed=123 epoch=001 loss=0.712088 val_auc=0.519669 best=0.519669@1 wait=1/25
+hidden=16 C=2 seed=123 epoch=002 loss=0.698001 val_auc=0.529250 best=0.529250@2 wait=1/25
+hidden=16 C=2 seed=123 epoch=003 loss=0.691594 val_auc=0.534897 best=0.534897@3 wait=1/25
+hidden=16 C=2 seed=123 epoch=004 loss=0.687576 val_auc=0.528072 best=0.534897@3 wait=2/25
+hidden=16 C=2 seed=123 epoch=005 loss=0.685006 val_auc=0.535860 best=0.535860@5 wait=1/25
+hidden=16 C=2 seed=123 epoch=006 loss=0.684101 val_auc=0.535029 best=0.535860@5 wait=2/25
+hidden=16 C=2 seed=123 epoch=007 loss=0.684157 val_auc=0.535231 best=0.535860@5 wait=3/25
+hidden=16 C=2 seed=123 epoch=008 loss=0.683845 val_auc=0.537634 best=0.537634@8 wait=1/25
+hidden=16 C=2 seed=123 epoch=009 loss=0.682073 val_auc=0.538822 best=0.538822@9 wait=1/25
+hidden=16 C=2 seed=123 epoch=010 loss=0.679710 val_auc=0.538061 best=0.538822@9 wait=2/25
+hidden=16 C=2 seed=123 epoch=011 loss=0.677293 val_auc=0.542803 best=0.542803@11 wait=1/25
+hidden=16 C=2 seed=123 epoch=012 loss=0.675025 val_auc=0.543432 best=0.543432@12 wait=1/25
+hidden=16 C=2 seed=123 epoch=013 loss=0.672939 val_auc=0.544577 best=0.544577@13 wait=1/25
+hidden=16 C=2 seed=123 epoch=014 loss=0.670941 val_auc=0.539460 best=0.544577@13 wait=2/25
+hidden=16 C=2 seed=123 epoch=015 loss=0.669104 val_auc=0.541737 best=0.544577@13 wait=3/25
+hidden=16 C=2 seed=123 epoch=016 loss=0.667391 val_auc=0.545863 best=0.545863@16 wait=1/25
+hidden=16 C=2 seed=123 epoch=017 loss=0.665450 val_auc=0.545826 best=0.545863@16 wait=2/25
+hidden=16 C=2 seed=123 epoch=018 loss=0.663104 val_auc=0.543967 best=0.545863@16 wait=3/25
+hidden=16 C=2 seed=123 epoch=019 loss=0.660654 val_auc=0.542366 best=0.545863@16 wait=4/25
+hidden=16 C=2 seed=123 epoch=020 loss=0.658431 val_auc=0.539160 best=0.545863@16 wait=5/25
+hidden=16 C=2 seed=123 epoch=021 loss=0.656542 val_auc=0.536137 best=0.545863@16 wait=6/25
+hidden=16 C=2 seed=123 epoch=022 loss=0.654786 val_auc=0.533461 best=0.545863@16 wait=7/25
+hidden=16 C=2 seed=123 epoch=023 loss=0.652955 val_auc=0.533724 best=0.545863@16 wait=8/25
+hidden=16 C=2 seed=123 epoch=024 loss=0.651096 val_auc=0.535583 best=0.545863@16 wait=9/25
+hidden=16 C=2 seed=123 epoch=025 loss=0.649108 val_auc=0.535987 best=0.545863@16 wait=10/25
+hidden=16 C=2 seed=123 epoch=026 loss=0.646843 val_auc=0.537104 best=0.545863@16 wait=11/25
+hidden=16 C=2 seed=123 epoch=027 loss=0.644517 val_auc=0.540296 best=0.545863@16 wait=12/25
+hidden=16 C=2 seed=123 epoch=028 loss=0.642160 val_auc=0.544080 best=0.545863@16 wait=13/25
+hidden=16 C=2 seed=123 epoch=029 loss=0.639916 val_auc=0.545159 best=0.545863@16 wait=14/25
+hidden=16 C=2 seed=123 epoch=030 loss=0.637653 val_auc=0.545366 best=0.545863@16 wait=15/25
+hidden=16 C=2 seed=123 epoch=031 loss=0.635448 val_auc=0.545666 best=0.545863@16 wait=16/25
+hidden=16 C=2 seed=123 epoch=032 loss=0.633120 val_auc=0.545798 best=0.545863@16 wait=17/25
+hidden=16 C=2 seed=123 epoch=033 loss=0.630779 val_auc=0.546624 best=0.546624@33 wait=1/25
+hidden=16 C=2 seed=123 epoch=034 loss=0.628472 val_auc=0.556867 best=0.556867@34 wait=1/25
+hidden=16 C=2 seed=123 epoch=035 loss=0.626152 val_auc=0.554013 best=0.556867@34 wait=2/25
+hidden=16 C=2 seed=123 epoch=036 loss=0.623943 val_auc=0.556942 best=0.556942@36 wait=1/25
+hidden=16 C=2 seed=123 epoch=037 loss=0.621169 val_auc=0.560425 best=0.560425@37 wait=1/25
+hidden=16 C=2 seed=123 epoch=038 loss=0.618035 val_auc=0.573363 best=0.573363@38 wait=1/25
+hidden=16 C=2 seed=123 epoch=039 loss=0.615505 val_auc=0.574339 best=0.574339@39 wait=1/25
+hidden=16 C=2 seed=123 epoch=040 loss=0.613182 val_auc=0.574574 best=0.574574@40 wait=1/25
+hidden=16 C=2 seed=123 epoch=041 loss=0.611637 val_auc=0.577822 best=0.577822@41 wait=1/25
+hidden=16 C=2 seed=123 epoch=042 loss=0.609016 val_auc=0.580517 best=0.580517@42 wait=1/25
+hidden=16 C=2 seed=123 epoch=043 loss=0.605537 val_auc=0.586225 best=0.586225@43 wait=1/25
+hidden=16 C=2 seed=123 epoch=044 loss=0.602756 val_auc=0.585014 best=0.586225@43 wait=2/25
+hidden=16 C=2 seed=123 epoch=045 loss=0.601047 val_auc=0.578489 best=0.586225@43 wait=3/25
+hidden=16 C=2 seed=123 epoch=046 loss=0.599270 val_auc=0.575212 best=0.586225@43 wait=4/25
+hidden=16 C=2 seed=123 epoch=047 loss=0.596210 val_auc=0.576611 best=0.586225@43 wait=5/25
+hidden=16 C=2 seed=123 epoch=048 loss=0.593947 val_auc=0.572734 best=0.586225@43 wait=6/25
+hidden=16 C=2 seed=123 epoch=049 loss=0.591021 val_auc=0.574339 best=0.586225@43 wait=7/25
+hidden=16 C=2 seed=123 epoch=050 loss=0.589045 val_auc=0.570161 best=0.586225@43 wait=8/25
+hidden=16 C=2 seed=123 epoch=051 loss=0.586689 val_auc=0.572227 best=0.586225@43 wait=9/25
+hidden=16 C=2 seed=123 epoch=052 loss=0.584557 val_auc=0.567542 best=0.586225@43 wait=10/25
+hidden=16 C=2 seed=123 epoch=053 loss=0.582544 val_auc=0.572109 best=0.586225@43 wait=11/25
+hidden=16 C=2 seed=123 epoch=054 loss=0.581367 val_auc=0.571654 best=0.586225@43 wait=12/25
+hidden=16 C=2 seed=123 epoch=055 loss=0.580014 val_auc=0.574611 best=0.586225@43 wait=13/25
+hidden=16 C=2 seed=123 epoch=056 loss=0.579549 val_auc=0.579615 best=0.586225@43 wait=14/25
+hidden=16 C=2 seed=123 epoch=057 loss=0.572433 val_auc=0.577419 best=0.586225@43 wait=15/25
+hidden=16 C=2 seed=123 epoch=058 loss=0.570678 val_auc=0.573513 best=0.586225@43 wait=16/25
+hidden=16 C=2 seed=123 epoch=059 loss=0.572949 val_auc=0.574959 best=0.586225@43 wait=17/25
+hidden=16 C=2 seed=123 epoch=060 loss=0.567160 val_auc=0.580395 best=0.586225@43 wait=18/25
+hidden=16 C=2 seed=123 epoch=061 loss=0.562723 val_auc=0.580348 best=0.586225@43 wait=19/25
+hidden=16 C=2 seed=123 epoch=062 loss=0.562174 val_auc=0.572630 best=0.586225@43 wait=20/25
+hidden=16 C=2 seed=123 epoch=063 loss=0.561756 val_auc=0.581258 best=0.586225@43 wait=21/25
+hidden=16 C=2 seed=123 epoch=064 loss=0.560039 val_auc=0.581409 best=0.586225@43 wait=22/25
+hidden=16 C=2 seed=123 epoch=065 loss=0.554443 val_auc=0.583042 best=0.586225@43 wait=23/25
+hidden=16 C=2 seed=123 epoch=066 loss=0.551776 val_auc=0.584695 best=0.586225@43 wait=24/25
+hidden=16 C=2 seed=123 epoch=067 loss=0.551345 val_auc=0.574874 best=0.586225@43 wait=25/25
+Early stopping at epoch 67.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_2/seed_123.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=2 | seed=1234
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=2 seed=1234 epoch=001 loss=0.695805 val_auc=0.496564 best=0.496564@1 wait=1/25
+hidden=16 C=2 seed=1234 epoch=002 loss=0.686973 val_auc=0.515679 best=0.515679@2 wait=1/25
+hidden=16 C=2 seed=1234 epoch=003 loss=0.685543 val_auc=0.530968 best=0.530968@3 wait=1/25
+hidden=16 C=2 seed=1234 epoch=004 loss=0.684174 val_auc=0.546981 best=0.546981@4 wait=1/25
+hidden=16 C=2 seed=1234 epoch=005 loss=0.682304 val_auc=0.554905 best=0.554905@5 wait=1/25
+hidden=16 C=2 seed=1234 epoch=006 loss=0.680190 val_auc=0.558730 best=0.558730@6 wait=1/25
+hidden=16 C=2 seed=1234 epoch=007 loss=0.677813 val_auc=0.562340 best=0.562340@7 wait=1/25
+hidden=16 C=2 seed=1234 epoch=008 loss=0.674967 val_auc=0.567044 best=0.567044@8 wait=1/25
+hidden=16 C=2 seed=1234 epoch=009 loss=0.671963 val_auc=0.572668 best=0.572668@9 wait=1/25
+hidden=16 C=2 seed=1234 epoch=010 loss=0.669136 val_auc=0.574095 best=0.574095@10 wait=1/25
+hidden=16 C=2 seed=1234 epoch=011 loss=0.666440 val_auc=0.573607 best=0.574095@10 wait=2/25
+hidden=16 C=2 seed=1234 epoch=012 loss=0.664473 val_auc=0.573377 best=0.574095@10 wait=3/25
+hidden=16 C=2 seed=1234 epoch=013 loss=0.662576 val_auc=0.569635 best=0.574095@10 wait=4/25
+hidden=16 C=2 seed=1234 epoch=014 loss=0.660218 val_auc=0.561561 best=0.574095@10 wait=5/25
+hidden=16 C=2 seed=1234 epoch=015 loss=0.657619 val_auc=0.558275 best=0.574095@10 wait=6/25
+hidden=16 C=2 seed=1234 epoch=016 loss=0.654749 val_auc=0.557346 best=0.574095@10 wait=7/25
+hidden=16 C=2 seed=1234 epoch=017 loss=0.651908 val_auc=0.557740 best=0.574095@10 wait=8/25
+hidden=16 C=2 seed=1234 epoch=018 loss=0.649272 val_auc=0.558228 best=0.574095@10 wait=9/25
+hidden=16 C=2 seed=1234 epoch=019 loss=0.646675 val_auc=0.561693 best=0.574095@10 wait=10/25
+hidden=16 C=2 seed=1234 epoch=020 loss=0.644137 val_auc=0.562584 best=0.574095@10 wait=11/25
+hidden=16 C=2 seed=1234 epoch=021 loss=0.641759 val_auc=0.563617 best=0.574095@10 wait=12/25
+hidden=16 C=2 seed=1234 epoch=022 loss=0.639448 val_auc=0.568049 best=0.574095@10 wait=13/25
+hidden=16 C=2 seed=1234 epoch=023 loss=0.637795 val_auc=0.566528 best=0.574095@10 wait=14/25
+hidden=16 C=2 seed=1234 epoch=024 loss=0.636303 val_auc=0.568490 best=0.574095@10 wait=15/25
+hidden=16 C=2 seed=1234 epoch=025 loss=0.632787 val_auc=0.567204 best=0.574095@10 wait=16/25
+hidden=16 C=2 seed=1234 epoch=026 loss=0.629806 val_auc=0.563885 best=0.574095@10 wait=17/25
+hidden=16 C=2 seed=1234 epoch=027 loss=0.628320 val_auc=0.564256 best=0.574095@10 wait=18/25
+hidden=16 C=2 seed=1234 epoch=028 loss=0.624856 val_auc=0.562406 best=0.574095@10 wait=19/25
+hidden=16 C=2 seed=1234 epoch=029 loss=0.622306 val_auc=0.555853 best=0.574095@10 wait=20/25
+hidden=16 C=2 seed=1234 epoch=030 loss=0.620215 val_auc=0.556745 best=0.574095@10 wait=21/25
+hidden=16 C=2 seed=1234 epoch=031 loss=0.616770 val_auc=0.557505 best=0.574095@10 wait=22/25
+hidden=16 C=2 seed=1234 epoch=032 loss=0.614602 val_auc=0.557702 best=0.574095@10 wait=23/25
+hidden=16 C=2 seed=1234 epoch=033 loss=0.612683 val_auc=0.560697 best=0.574095@10 wait=24/25
+hidden=16 C=2 seed=1234 epoch=034 loss=0.609402 val_auc=0.559233 best=0.574095@10 wait=25/25
+Early stopping at epoch 34.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_2/seed_1234.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=2 | seed=12345
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=2 seed=12345 epoch=001 loss=0.687594 val_auc=0.534503 best=0.534503@1 wait=1/25
+hidden=16 C=2 seed=12345 epoch=002 loss=0.677882 val_auc=0.544521 best=0.544521@2 wait=1/25
+hidden=16 C=2 seed=12345 epoch=003 loss=0.677214 val_auc=0.541047 best=0.544521@2 wait=2/25
+hidden=16 C=2 seed=12345 epoch=004 loss=0.676324 val_auc=0.529241 best=0.544521@2 wait=3/25
+hidden=16 C=2 seed=12345 epoch=005 loss=0.674447 val_auc=0.528457 best=0.544521@2 wait=4/25
+hidden=16 C=2 seed=12345 epoch=006 loss=0.671607 val_auc=0.529133 best=0.544521@2 wait=5/25
+hidden=16 C=2 seed=12345 epoch=007 loss=0.667962 val_auc=0.528814 best=0.544521@2 wait=6/25
+hidden=16 C=2 seed=12345 epoch=008 loss=0.663612 val_auc=0.526147 best=0.544521@2 wait=7/25
+hidden=16 C=2 seed=12345 epoch=009 loss=0.658781 val_auc=0.525866 best=0.544521@2 wait=8/25
+hidden=16 C=2 seed=12345 epoch=010 loss=0.654065 val_auc=0.524823 best=0.544521@2 wait=9/25
+hidden=16 C=2 seed=12345 epoch=011 loss=0.650465 val_auc=0.523284 best=0.544521@2 wait=10/25
+hidden=16 C=2 seed=12345 epoch=012 loss=0.648474 val_auc=0.521472 best=0.544521@2 wait=11/25
+hidden=16 C=2 seed=12345 epoch=013 loss=0.647126 val_auc=0.520120 best=0.544521@2 wait=12/25
+hidden=16 C=2 seed=12345 epoch=014 loss=0.644763 val_auc=0.520650 best=0.544521@2 wait=13/25
+hidden=16 C=2 seed=12345 epoch=015 loss=0.641843 val_auc=0.521467 best=0.544521@2 wait=14/25
+hidden=16 C=2 seed=12345 epoch=016 loss=0.638940 val_auc=0.521537 best=0.544521@2 wait=15/25
+hidden=16 C=2 seed=12345 epoch=017 loss=0.636584 val_auc=0.513750 best=0.544521@2 wait=16/25
+hidden=16 C=2 seed=12345 epoch=018 loss=0.634729 val_auc=0.513332 best=0.544521@2 wait=17/25
+hidden=16 C=2 seed=12345 epoch=019 loss=0.632724 val_auc=0.515172 best=0.544521@2 wait=18/25
+hidden=16 C=2 seed=12345 epoch=020 loss=0.630280 val_auc=0.514177 best=0.544521@2 wait=19/25
+hidden=16 C=2 seed=12345 epoch=021 loss=0.627808 val_auc=0.515012 best=0.544521@2 wait=20/25
+hidden=16 C=2 seed=12345 epoch=022 loss=0.625362 val_auc=0.521087 best=0.544521@2 wait=21/25
+hidden=16 C=2 seed=12345 epoch=023 loss=0.623102 val_auc=0.529569 best=0.544521@2 wait=22/25
+hidden=16 C=2 seed=12345 epoch=024 loss=0.621230 val_auc=0.531330 best=0.544521@2 wait=23/25
+hidden=16 C=2 seed=12345 epoch=025 loss=0.619191 val_auc=0.534996 best=0.544521@2 wait=24/25
+hidden=16 C=2 seed=12345 epoch=026 loss=0.616938 val_auc=0.535034 best=0.544521@2 wait=25/25
+Early stopping at epoch 26.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_2/seed_12345.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=2 | seed=123456
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=2 seed=123456 epoch=001 loss=0.694309 val_auc=0.536714 best=0.536714@1 wait=1/25
+hidden=16 C=2 seed=123456 epoch=002 loss=0.684848 val_auc=0.558590 best=0.558590@2 wait=1/25
+hidden=16 C=2 seed=123456 epoch=003 loss=0.682515 val_auc=0.595712 best=0.595712@3 wait=1/25
+hidden=16 C=2 seed=123456 epoch=004 loss=0.681894 val_auc=0.600003 best=0.600003@4 wait=1/25
+hidden=16 C=2 seed=123456 epoch=005 loss=0.680353 val_auc=0.600200 best=0.600200@5 wait=1/25
+hidden=16 C=2 seed=123456 epoch=006 loss=0.677163 val_auc=0.603970 best=0.603970@6 wait=1/25
+hidden=16 C=2 seed=123456 epoch=007 loss=0.673728 val_auc=0.606368 best=0.606368@7 wait=1/25
+hidden=16 C=2 seed=123456 epoch=008 loss=0.670408 val_auc=0.609326 best=0.609326@8 wait=1/25
+hidden=16 C=2 seed=123456 epoch=009 loss=0.667275 val_auc=0.609927 best=0.609927@9 wait=1/25
+hidden=16 C=2 seed=123456 epoch=010 loss=0.664378 val_auc=0.612072 best=0.612072@10 wait=1/25
+hidden=16 C=2 seed=123456 epoch=011 loss=0.661944 val_auc=0.615072 best=0.615072@11 wait=1/25
+hidden=16 C=2 seed=123456 epoch=012 loss=0.660124 val_auc=0.616527 best=0.616527@12 wait=1/25
+hidden=16 C=2 seed=123456 epoch=013 loss=0.658338 val_auc=0.615696 best=0.616527@12 wait=2/25
+hidden=16 C=2 seed=123456 epoch=014 loss=0.656318 val_auc=0.613710 best=0.616527@12 wait=3/25
+hidden=16 C=2 seed=123456 epoch=015 loss=0.654500 val_auc=0.611058 best=0.616527@12 wait=4/25
+hidden=16 C=2 seed=123456 epoch=016 loss=0.652784 val_auc=0.604495 best=0.616527@12 wait=5/25
+hidden=16 C=2 seed=123456 epoch=017 loss=0.650980 val_auc=0.604218 best=0.616527@12 wait=6/25
+hidden=16 C=2 seed=123456 epoch=018 loss=0.649484 val_auc=0.603871 best=0.616527@12 wait=7/25
+hidden=16 C=2 seed=123456 epoch=019 loss=0.648192 val_auc=0.593604 best=0.616527@12 wait=8/25
+hidden=16 C=2 seed=123456 epoch=020 loss=0.646808 val_auc=0.589248 best=0.616527@12 wait=9/25
+hidden=16 C=2 seed=123456 epoch=021 loss=0.645401 val_auc=0.586845 best=0.616527@12 wait=10/25
+hidden=16 C=2 seed=123456 epoch=022 loss=0.643713 val_auc=0.582906 best=0.616527@12 wait=11/25
+hidden=16 C=2 seed=123456 epoch=023 loss=0.641772 val_auc=0.582540 best=0.616527@12 wait=12/25
+hidden=16 C=2 seed=123456 epoch=024 loss=0.640062 val_auc=0.581254 best=0.616527@12 wait=13/25
+hidden=16 C=2 seed=123456 epoch=025 loss=0.638578 val_auc=0.577071 best=0.616527@12 wait=14/25
+hidden=16 C=2 seed=123456 epoch=026 loss=0.637161 val_auc=0.569274 best=0.616527@12 wait=15/25
+hidden=16 C=2 seed=123456 epoch=027 loss=0.635920 val_auc=0.556271 best=0.616527@12 wait=16/25
+hidden=16 C=2 seed=123456 epoch=028 loss=0.634288 val_auc=0.543986 best=0.616527@12 wait=17/25
+hidden=16 C=2 seed=123456 epoch=029 loss=0.633070 val_auc=0.531738 best=0.616527@12 wait=18/25
+hidden=16 C=2 seed=123456 epoch=030 loss=0.631910 val_auc=0.523124 best=0.616527@12 wait=19/25
+hidden=16 C=2 seed=123456 epoch=031 loss=0.631093 val_auc=0.522622 best=0.616527@12 wait=20/25
+hidden=16 C=2 seed=123456 epoch=032 loss=0.630017 val_auc=0.523472 best=0.616527@12 wait=21/25
+hidden=16 C=2 seed=123456 epoch=033 loss=0.628630 val_auc=0.528748 best=0.616527@12 wait=22/25
+hidden=16 C=2 seed=123456 epoch=034 loss=0.627530 val_auc=0.530950 best=0.616527@12 wait=23/25
+hidden=16 C=2 seed=123456 epoch=035 loss=0.626674 val_auc=0.528485 best=0.616527@12 wait=24/25
+hidden=16 C=2 seed=123456 epoch=036 loss=0.625352 val_auc=0.520275 best=0.616527@12 wait=25/25
+Early stopping at epoch 36.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_2/seed_123456.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=2 | seed=1234567
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=2 seed=1234567 epoch=001 loss=0.693940 val_auc=0.502070 best=0.502070@1 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=002 loss=0.686072 val_auc=0.517627 best=0.517627@2 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=003 loss=0.684888 val_auc=0.520711 best=0.520711@3 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=004 loss=0.683276 val_auc=0.524697 best=0.524697@4 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=005 loss=0.681317 val_auc=0.533837 best=0.533837@5 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=006 loss=0.679094 val_auc=0.538700 best=0.538700@6 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=007 loss=0.676438 val_auc=0.539756 best=0.539756@7 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=008 loss=0.673096 val_auc=0.542394 best=0.542394@8 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=009 loss=0.669149 val_auc=0.547051 best=0.547051@9 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=010 loss=0.664613 val_auc=0.548563 best=0.548563@10 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=011 loss=0.659769 val_auc=0.552722 best=0.552722@11 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=012 loss=0.655690 val_auc=0.555031 best=0.555031@12 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=013 loss=0.652457 val_auc=0.552027 best=0.555031@12 wait=2/25
+hidden=16 C=2 seed=1234567 epoch=014 loss=0.651001 val_auc=0.558975 best=0.558975@14 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=015 loss=0.649233 val_auc=0.553895 best=0.558975@14 wait=2/25
+hidden=16 C=2 seed=1234567 epoch=016 loss=0.646148 val_auc=0.546849 best=0.558975@14 wait=3/25
+hidden=16 C=2 seed=1234567 epoch=017 loss=0.643905 val_auc=0.543061 best=0.558975@14 wait=4/25
+hidden=16 C=2 seed=1234567 epoch=018 loss=0.641026 val_auc=0.547596 best=0.558975@14 wait=5/25
+hidden=16 C=2 seed=1234567 epoch=019 loss=0.638567 val_auc=0.541685 best=0.558975@14 wait=6/25
+hidden=16 C=2 seed=1234567 epoch=020 loss=0.636298 val_auc=0.543850 best=0.558975@14 wait=7/25
+hidden=16 C=2 seed=1234567 epoch=021 loss=0.634375 val_auc=0.551013 best=0.558975@14 wait=8/25
+hidden=16 C=2 seed=1234567 epoch=022 loss=0.632499 val_auc=0.551013 best=0.558975@14 wait=9/25
+hidden=16 C=2 seed=1234567 epoch=023 loss=0.630505 val_auc=0.551774 best=0.558975@14 wait=10/25
+hidden=16 C=2 seed=1234567 epoch=024 loss=0.628565 val_auc=0.557059 best=0.558975@14 wait=11/25
+hidden=16 C=2 seed=1234567 epoch=025 loss=0.625842 val_auc=0.557961 best=0.558975@14 wait=12/25
+hidden=16 C=2 seed=1234567 epoch=026 loss=0.623835 val_auc=0.558449 best=0.558975@14 wait=13/25
+hidden=16 C=2 seed=1234567 epoch=027 loss=0.621682 val_auc=0.559266 best=0.559266@27 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=028 loss=0.619150 val_auc=0.561528 best=0.561528@28 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=029 loss=0.616387 val_auc=0.564833 best=0.564833@29 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=030 loss=0.613472 val_auc=0.565227 best=0.565227@30 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=031 loss=0.610730 val_auc=0.565856 best=0.565856@31 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=032 loss=0.608326 val_auc=0.564833 best=0.565856@31 wait=2/25
+hidden=16 C=2 seed=1234567 epoch=033 loss=0.606274 val_auc=0.566842 best=0.566842@33 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=034 loss=0.609135 val_auc=0.561782 best=0.566842@33 wait=2/25
+hidden=16 C=2 seed=1234567 epoch=035 loss=0.614257 val_auc=0.565932 best=0.566842@33 wait=3/25
+hidden=16 C=2 seed=1234567 epoch=036 loss=0.599152 val_auc=0.568964 best=0.568964@36 wait=1/25
+hidden=16 C=2 seed=1234567 epoch=037 loss=0.609442 val_auc=0.563594 best=0.568964@36 wait=2/25
+hidden=16 C=2 seed=1234567 epoch=038 loss=0.595144 val_auc=0.555801 best=0.568964@36 wait=3/25
+hidden=16 C=2 seed=1234567 epoch=039 loss=0.603314 val_auc=0.557247 best=0.568964@36 wait=4/25
+hidden=16 C=2 seed=1234567 epoch=040 loss=0.593069 val_auc=0.559641 best=0.568964@36 wait=5/25
+hidden=16 C=2 seed=1234567 epoch=041 loss=0.595994 val_auc=0.560270 best=0.568964@36 wait=6/25
+hidden=16 C=2 seed=1234567 epoch=042 loss=0.592082 val_auc=0.556787 best=0.568964@36 wait=7/25
+hidden=16 C=2 seed=1234567 epoch=043 loss=0.588230 val_auc=0.552600 best=0.568964@36 wait=8/25
+hidden=16 C=2 seed=1234567 epoch=044 loss=0.590497 val_auc=0.558167 best=0.568964@36 wait=9/25
+hidden=16 C=2 seed=1234567 epoch=045 loss=0.582932 val_auc=0.558458 best=0.568964@36 wait=10/25
+hidden=16 C=2 seed=1234567 epoch=046 loss=0.586449 val_auc=0.555482 best=0.568964@36 wait=11/25
+hidden=16 C=2 seed=1234567 epoch=047 loss=0.579554 val_auc=0.547089 best=0.568964@36 wait=12/25
+hidden=16 C=2 seed=1234567 epoch=048 loss=0.581629 val_auc=0.548394 best=0.568964@36 wait=13/25
+hidden=16 C=2 seed=1234567 epoch=049 loss=0.576652 val_auc=0.555998 best=0.568964@36 wait=14/25
+hidden=16 C=2 seed=1234567 epoch=050 loss=0.577372 val_auc=0.557285 best=0.568964@36 wait=15/25
+hidden=16 C=2 seed=1234567 epoch=051 loss=0.573945 val_auc=0.549905 best=0.568964@36 wait=16/25
+hidden=16 C=2 seed=1234567 epoch=052 loss=0.573324 val_auc=0.550882 best=0.568964@36 wait=17/25
+hidden=16 C=2 seed=1234567 epoch=053 loss=0.570246 val_auc=0.555585 best=0.568964@36 wait=18/25
+hidden=16 C=2 seed=1234567 epoch=054 loss=0.569838 val_auc=0.552769 best=0.568964@36 wait=19/25
+hidden=16 C=2 seed=1234567 epoch=055 loss=0.567027 val_auc=0.545455 best=0.568964@36 wait=20/25
+hidden=16 C=2 seed=1234567 epoch=056 loss=0.566789 val_auc=0.548825 best=0.568964@36 wait=21/25
+hidden=16 C=2 seed=1234567 epoch=057 loss=0.563714 val_auc=0.554036 best=0.568964@36 wait=22/25
+hidden=16 C=2 seed=1234567 epoch=058 loss=0.563590 val_auc=0.549624 best=0.568964@36 wait=23/25
+hidden=16 C=2 seed=1234567 epoch=059 loss=0.560450 val_auc=0.548159 best=0.568964@36 wait=24/25
+hidden=16 C=2 seed=1234567 epoch=060 loss=0.560345 val_auc=0.555923 best=0.568964@36 wait=25/25
+Early stopping at epoch 60.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_2/seed_1234567.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=5 | seed=123
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=5 seed=123 epoch=001 loss=0.700858 val_auc=0.503906 best=0.503906@1 wait=1/25
+hidden=16 C=5 seed=123 epoch=002 loss=0.690356 val_auc=0.518312 best=0.518312@2 wait=1/25
+hidden=16 C=5 seed=123 epoch=003 loss=0.686403 val_auc=0.516073 best=0.518312@2 wait=2/25
+hidden=16 C=5 seed=123 epoch=004 loss=0.683413 val_auc=0.533799 best=0.533799@4 wait=1/25
+hidden=16 C=5 seed=123 epoch=005 loss=0.680917 val_auc=0.551811 best=0.551811@5 wait=1/25
+hidden=16 C=5 seed=123 epoch=006 loss=0.678704 val_auc=0.561955 best=0.561955@6 wait=1/25
+hidden=16 C=5 seed=123 epoch=007 loss=0.676239 val_auc=0.538897 best=0.561955@6 wait=2/25
+hidden=16 C=5 seed=123 epoch=008 loss=0.674189 val_auc=0.546957 best=0.561955@6 wait=3/25
+hidden=16 C=5 seed=123 epoch=009 loss=0.672051 val_auc=0.548661 best=0.561955@6 wait=4/25
+hidden=16 C=5 seed=123 epoch=010 loss=0.668657 val_auc=0.538174 best=0.561955@6 wait=5/25
+hidden=16 C=5 seed=123 epoch=011 loss=0.665446 val_auc=0.544981 best=0.561955@6 wait=6/25
+hidden=16 C=5 seed=123 epoch=012 loss=0.663674 val_auc=0.548211 best=0.561955@6 wait=7/25
+hidden=16 C=5 seed=123 epoch=013 loss=0.661103 val_auc=0.549046 best=0.561955@6 wait=8/25
+hidden=16 C=5 seed=123 epoch=014 loss=0.658860 val_auc=0.548337 best=0.561955@6 wait=9/25
+hidden=16 C=5 seed=123 epoch=015 loss=0.655127 val_auc=0.548295 best=0.561955@6 wait=10/25
+hidden=16 C=5 seed=123 epoch=016 loss=0.653940 val_auc=0.551703 best=0.561955@6 wait=11/25
+hidden=16 C=5 seed=123 epoch=017 loss=0.650744 val_auc=0.551633 best=0.561955@6 wait=12/25
+hidden=16 C=5 seed=123 epoch=018 loss=0.647720 val_auc=0.546586 best=0.561955@6 wait=13/25
+hidden=16 C=5 seed=123 epoch=019 loss=0.645397 val_auc=0.537123 best=0.561955@6 wait=14/25
+hidden=16 C=5 seed=123 epoch=020 loss=0.643004 val_auc=0.534775 best=0.561955@6 wait=15/25
+hidden=16 C=5 seed=123 epoch=021 loss=0.640863 val_auc=0.542314 best=0.561955@6 wait=16/25
+hidden=16 C=5 seed=123 epoch=022 loss=0.636953 val_auc=0.545798 best=0.561955@6 wait=17/25
+hidden=16 C=5 seed=123 epoch=023 loss=0.635363 val_auc=0.545826 best=0.561955@6 wait=18/25
+hidden=16 C=5 seed=123 epoch=024 loss=0.631575 val_auc=0.546699 best=0.561955@6 wait=19/25
+hidden=16 C=5 seed=123 epoch=025 loss=0.629282 val_auc=0.544587 best=0.561955@6 wait=20/25
+hidden=16 C=5 seed=123 epoch=026 loss=0.626486 val_auc=0.547901 best=0.561955@6 wait=21/25
+hidden=16 C=5 seed=123 epoch=027 loss=0.623416 val_auc=0.544441 best=0.561955@6 wait=22/25
+hidden=16 C=5 seed=123 epoch=028 loss=0.620921 val_auc=0.540183 best=0.561955@6 wait=23/25
+hidden=16 C=5 seed=123 epoch=029 loss=0.618532 val_auc=0.540258 best=0.561955@6 wait=24/25
+hidden=16 C=5 seed=123 epoch=030 loss=0.615075 val_auc=0.534221 best=0.561955@6 wait=25/25
+Early stopping at epoch 30.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_5/seed_123.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=5 | seed=1234
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=5 seed=1234 epoch=001 loss=0.695024 val_auc=0.533804 best=0.533804@1 wait=1/25
+hidden=16 C=5 seed=1234 epoch=002 loss=0.685058 val_auc=0.531241 best=0.533804@1 wait=2/25
+hidden=16 C=5 seed=1234 epoch=003 loss=0.683769 val_auc=0.531846 best=0.533804@1 wait=3/25
+hidden=16 C=5 seed=1234 epoch=004 loss=0.680877 val_auc=0.550365 best=0.550365@4 wait=1/25
+hidden=16 C=5 seed=1234 epoch=005 loss=0.678652 val_auc=0.561434 best=0.561434@5 wait=1/25
+hidden=16 C=5 seed=1234 epoch=006 loss=0.676713 val_auc=0.559392 best=0.561434@5 wait=2/25
+hidden=16 C=5 seed=1234 epoch=007 loss=0.674078 val_auc=0.564181 best=0.564181@7 wait=1/25
+hidden=16 C=5 seed=1234 epoch=008 loss=0.672111 val_auc=0.556313 best=0.564181@7 wait=2/25
+hidden=16 C=5 seed=1234 epoch=009 loss=0.670639 val_auc=0.557576 best=0.564181@7 wait=3/25
+hidden=16 C=5 seed=1234 epoch=010 loss=0.668176 val_auc=0.556613 best=0.564181@7 wait=4/25
+hidden=16 C=5 seed=1234 epoch=011 loss=0.666288 val_auc=0.544878 best=0.564181@7 wait=5/25
+hidden=16 C=5 seed=1234 epoch=012 loss=0.663386 val_auc=0.543920 best=0.564181@7 wait=6/25
+hidden=16 C=5 seed=1234 epoch=013 loss=0.660921 val_auc=0.545131 best=0.564181@7 wait=7/25
+hidden=16 C=5 seed=1234 epoch=014 loss=0.658307 val_auc=0.541751 best=0.564181@7 wait=8/25
+hidden=16 C=5 seed=1234 epoch=015 loss=0.655670 val_auc=0.540456 best=0.564181@7 wait=9/25
+hidden=16 C=5 seed=1234 epoch=016 loss=0.653076 val_auc=0.548042 best=0.564181@7 wait=10/25
+hidden=16 C=5 seed=1234 epoch=017 loss=0.650307 val_auc=0.550811 best=0.564181@7 wait=11/25
+hidden=16 C=5 seed=1234 epoch=018 loss=0.647371 val_auc=0.547995 best=0.564181@7 wait=12/25
+hidden=16 C=5 seed=1234 epoch=019 loss=0.644493 val_auc=0.551881 best=0.564181@7 wait=13/25
+hidden=16 C=5 seed=1234 epoch=020 loss=0.640951 val_auc=0.549797 best=0.564181@7 wait=14/25
+hidden=16 C=5 seed=1234 epoch=021 loss=0.637310 val_auc=0.543385 best=0.564181@7 wait=15/25
+hidden=16 C=5 seed=1234 epoch=022 loss=0.634103 val_auc=0.549046 best=0.564181@7 wait=16/25
+hidden=16 C=5 seed=1234 epoch=023 loss=0.630501 val_auc=0.551778 best=0.564181@7 wait=17/25
+hidden=16 C=5 seed=1234 epoch=024 loss=0.626646 val_auc=0.557580 best=0.564181@7 wait=18/25
+hidden=16 C=5 seed=1234 epoch=025 loss=0.623002 val_auc=0.553355 best=0.564181@7 wait=19/25
+hidden=16 C=5 seed=1234 epoch=026 loss=0.618748 val_auc=0.549375 best=0.564181@7 wait=20/25
+hidden=16 C=5 seed=1234 epoch=027 loss=0.616510 val_auc=0.545366 best=0.564181@7 wait=21/25
+hidden=16 C=5 seed=1234 epoch=028 loss=0.616933 val_auc=0.560763 best=0.564181@7 wait=22/25
+hidden=16 C=5 seed=1234 epoch=029 loss=0.615176 val_auc=0.556078 best=0.564181@7 wait=23/25
+hidden=16 C=5 seed=1234 epoch=030 loss=0.607284 val_auc=0.543648 best=0.564181@7 wait=24/25
+hidden=16 C=5 seed=1234 epoch=031 loss=0.609115 val_auc=0.547131 best=0.564181@7 wait=25/25
+Early stopping at epoch 31.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_5/seed_1234.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=5 | seed=12345
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=5 seed=12345 epoch=001 loss=0.694471 val_auc=0.520542 best=0.520542@1 wait=1/25
+hidden=16 C=5 seed=12345 epoch=002 loss=0.683611 val_auc=0.541728 best=0.541728@2 wait=1/25
+hidden=16 C=5 seed=12345 epoch=003 loss=0.680878 val_auc=0.540038 best=0.541728@2 wait=2/25
+hidden=16 C=5 seed=12345 epoch=004 loss=0.676597 val_auc=0.526964 best=0.541728@2 wait=3/25
+hidden=16 C=5 seed=12345 epoch=005 loss=0.673496 val_auc=0.513299 best=0.541728@2 wait=4/25
+hidden=16 C=5 seed=12345 epoch=006 loss=0.669746 val_auc=0.514872 best=0.541728@2 wait=5/25
+hidden=16 C=5 seed=12345 epoch=007 loss=0.665860 val_auc=0.515604 best=0.541728@2 wait=6/25
+hidden=16 C=5 seed=12345 epoch=008 loss=0.661627 val_auc=0.519622 best=0.541728@2 wait=7/25
+hidden=16 C=5 seed=12345 epoch=009 loss=0.657534 val_auc=0.523134 best=0.541728@2 wait=8/25
+hidden=16 C=5 seed=12345 epoch=010 loss=0.654061 val_auc=0.526194 best=0.541728@2 wait=9/25
+hidden=16 C=5 seed=12345 epoch=011 loss=0.650998 val_auc=0.522392 best=0.541728@2 wait=10/25
+hidden=16 C=5 seed=12345 epoch=012 loss=0.648155 val_auc=0.515407 best=0.541728@2 wait=11/25
+hidden=16 C=5 seed=12345 epoch=013 loss=0.645034 val_auc=0.507516 best=0.541728@2 wait=12/25
+hidden=16 C=5 seed=12345 epoch=014 loss=0.642239 val_auc=0.495015 best=0.541728@2 wait=13/25
+hidden=16 C=5 seed=12345 epoch=015 loss=0.639256 val_auc=0.491006 best=0.541728@2 wait=14/25
+hidden=16 C=5 seed=12345 epoch=016 loss=0.636801 val_auc=0.482885 best=0.541728@2 wait=15/25
+hidden=16 C=5 seed=12345 epoch=017 loss=0.634199 val_auc=0.483767 best=0.541728@2 wait=16/25
+hidden=16 C=5 seed=12345 epoch=018 loss=0.631343 val_auc=0.486358 best=0.541728@2 wait=17/25
+hidden=16 C=5 seed=12345 epoch=019 loss=0.627855 val_auc=0.493897 best=0.541728@2 wait=18/25
+hidden=16 C=5 seed=12345 epoch=020 loss=0.624723 val_auc=0.511379 best=0.541728@2 wait=19/25
+hidden=16 C=5 seed=12345 epoch=021 loss=0.622495 val_auc=0.517078 best=0.541728@2 wait=20/25
+hidden=16 C=5 seed=12345 epoch=022 loss=0.619462 val_auc=0.514102 best=0.541728@2 wait=21/25
+hidden=16 C=5 seed=12345 epoch=023 loss=0.615996 val_auc=0.524213 best=0.541728@2 wait=22/25
+hidden=16 C=5 seed=12345 epoch=024 loss=0.613188 val_auc=0.525312 best=0.541728@2 wait=23/25
+hidden=16 C=5 seed=12345 epoch=025 loss=0.609807 val_auc=0.524683 best=0.541728@2 wait=24/25
+hidden=16 C=5 seed=12345 epoch=026 loss=0.606231 val_auc=0.529358 best=0.541728@2 wait=25/25
+Early stopping at epoch 26.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_5/seed_12345.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=5 | seed=123456
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=5 seed=123456 epoch=001 loss=0.687878 val_auc=0.584958 best=0.584958@1 wait=1/25
+hidden=16 C=5 seed=123456 epoch=002 loss=0.683296 val_auc=0.598191 best=0.598191@2 wait=1/25
+hidden=16 C=5 seed=123456 epoch=003 loss=0.679293 val_auc=0.602481 best=0.602481@3 wait=1/25
+hidden=16 C=5 seed=123456 epoch=004 loss=0.676437 val_auc=0.611349 best=0.611349@4 wait=1/25
+hidden=16 C=5 seed=123456 epoch=005 loss=0.672963 val_auc=0.624094 best=0.624094@5 wait=1/25
+hidden=16 C=5 seed=123456 epoch=006 loss=0.668658 val_auc=0.625601 best=0.625601@6 wait=1/25
+hidden=16 C=5 seed=123456 epoch=007 loss=0.665823 val_auc=0.624394 best=0.625601@6 wait=2/25
+hidden=16 C=5 seed=123456 epoch=008 loss=0.662642 val_auc=0.622531 best=0.625601@6 wait=3/25
+hidden=16 C=5 seed=123456 epoch=009 loss=0.659690 val_auc=0.612912 best=0.625601@6 wait=4/25
+hidden=16 C=5 seed=123456 epoch=010 loss=0.657590 val_auc=0.607640 best=0.625601@6 wait=5/25
+hidden=16 C=5 seed=123456 epoch=011 loss=0.654389 val_auc=0.595811 best=0.625601@6 wait=6/25
+hidden=16 C=5 seed=123456 epoch=012 loss=0.652777 val_auc=0.580334 best=0.625601@6 wait=7/25
+hidden=16 C=5 seed=123456 epoch=013 loss=0.649352 val_auc=0.571264 best=0.625601@6 wait=8/25
+hidden=16 C=5 seed=123456 epoch=014 loss=0.647329 val_auc=0.573245 best=0.625601@6 wait=9/25
+hidden=16 C=5 seed=123456 epoch=015 loss=0.644289 val_auc=0.571715 best=0.625601@6 wait=10/25
+hidden=16 C=5 seed=123456 epoch=016 loss=0.642056 val_auc=0.569283 best=0.625601@6 wait=11/25
+hidden=16 C=5 seed=123456 epoch=017 loss=0.639577 val_auc=0.562796 best=0.625601@6 wait=12/25
+hidden=16 C=5 seed=123456 epoch=018 loss=0.637374 val_auc=0.561923 best=0.625601@6 wait=13/25
+hidden=16 C=5 seed=123456 epoch=019 loss=0.634920 val_auc=0.566110 best=0.625601@6 wait=14/25
+hidden=16 C=5 seed=123456 epoch=020 loss=0.632167 val_auc=0.566748 best=0.625601@6 wait=15/25
+hidden=16 C=5 seed=123456 epoch=021 loss=0.629872 val_auc=0.568795 best=0.625601@6 wait=16/25
+hidden=16 C=5 seed=123456 epoch=022 loss=0.626959 val_auc=0.560599 best=0.625601@6 wait=17/25
+hidden=16 C=5 seed=123456 epoch=023 loss=0.624200 val_auc=0.555811 best=0.625601@6 wait=18/25
+hidden=16 C=5 seed=123456 epoch=024 loss=0.621506 val_auc=0.553079 best=0.625601@6 wait=19/25
+hidden=16 C=5 seed=123456 epoch=025 loss=0.619795 val_auc=0.548976 best=0.625601@6 wait=20/25
+hidden=16 C=5 seed=123456 epoch=026 loss=0.617437 val_auc=0.546844 best=0.625601@6 wait=21/25
+hidden=16 C=5 seed=123456 epoch=027 loss=0.614292 val_auc=0.549586 best=0.625601@6 wait=22/25
+hidden=16 C=5 seed=123456 epoch=028 loss=0.611926 val_auc=0.559153 best=0.625601@6 wait=23/25
+hidden=16 C=5 seed=123456 epoch=029 loss=0.610573 val_auc=0.560420 best=0.625601@6 wait=24/25
+hidden=16 C=5 seed=123456 epoch=030 loss=0.609030 val_auc=0.567537 best=0.625601@6 wait=25/25
+Early stopping at epoch 30.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_5/seed_123456.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=16 | C=5 | seed=1234567
+======================================================================
+Train=2126 Validation=1063
+hidden=16 C=5 seed=1234567 epoch=001 loss=0.691891 val_auc=0.508243 best=0.508243@1 wait=1/25
+hidden=16 C=5 seed=1234567 epoch=002 loss=0.684798 val_auc=0.524913 best=0.524913@2 wait=1/25
+hidden=16 C=5 seed=1234567 epoch=003 loss=0.683056 val_auc=0.530668 best=0.530668@3 wait=1/25
+hidden=16 C=5 seed=1234567 epoch=004 loss=0.681109 val_auc=0.517660 best=0.530668@3 wait=2/25
+hidden=16 C=5 seed=1234567 epoch=005 loss=0.678778 val_auc=0.516594 best=0.530668@3 wait=3/25
+hidden=16 C=5 seed=1234567 epoch=006 loss=0.676137 val_auc=0.514214 best=0.530668@3 wait=4/25
+hidden=16 C=5 seed=1234567 epoch=007 loss=0.673193 val_auc=0.525828 best=0.530668@3 wait=5/25
+hidden=16 C=5 seed=1234567 epoch=008 loss=0.669910 val_auc=0.530260 best=0.530668@3 wait=6/25
+hidden=16 C=5 seed=1234567 epoch=009 loss=0.666649 val_auc=0.534179 best=0.534179@9 wait=1/25
+hidden=16 C=5 seed=1234567 epoch=010 loss=0.663753 val_auc=0.539972 best=0.539972@10 wait=1/25
+hidden=16 C=5 seed=1234567 epoch=011 loss=0.661232 val_auc=0.539836 best=0.539972@10 wait=2/25
+hidden=16 C=5 seed=1234567 epoch=012 loss=0.659036 val_auc=0.536508 best=0.539972@10 wait=3/25
+hidden=16 C=5 seed=1234567 epoch=013 loss=0.656544 val_auc=0.535588 best=0.539972@10 wait=4/25
+hidden=16 C=5 seed=1234567 epoch=014 loss=0.653618 val_auc=0.545554 best=0.545554@14 wait=1/25
+hidden=16 C=5 seed=1234567 epoch=015 loss=0.650284 val_auc=0.544680 best=0.545554@14 wait=2/25
+hidden=16 C=5 seed=1234567 epoch=016 loss=0.647255 val_auc=0.542357 best=0.545554@14 wait=3/25
+hidden=16 C=5 seed=1234567 epoch=017 loss=0.644649 val_auc=0.537794 best=0.545554@14 wait=4/25
+hidden=16 C=5 seed=1234567 epoch=018 loss=0.642077 val_auc=0.533484 best=0.545554@14 wait=5/25
+hidden=16 C=5 seed=1234567 epoch=019 loss=0.639622 val_auc=0.530828 best=0.545554@14 wait=6/25
+hidden=16 C=5 seed=1234567 epoch=020 loss=0.637191 val_auc=0.523598 best=0.545554@14 wait=7/25
+hidden=16 C=5 seed=1234567 epoch=021 loss=0.634824 val_auc=0.522622 best=0.545554@14 wait=8/25
+hidden=16 C=5 seed=1234567 epoch=022 loss=0.632934 val_auc=0.525119 best=0.545554@14 wait=9/25
+hidden=16 C=5 seed=1234567 epoch=023 loss=0.630777 val_auc=0.520350 best=0.545554@14 wait=10/25
+hidden=16 C=5 seed=1234567 epoch=024 loss=0.628920 val_auc=0.517674 best=0.545554@14 wait=11/25
+hidden=16 C=5 seed=1234567 epoch=025 loss=0.627059 val_auc=0.513731 best=0.545554@14 wait=12/25
+hidden=16 C=5 seed=1234567 epoch=026 loss=0.624873 val_auc=0.513121 best=0.545554@14 wait=13/25
+hidden=16 C=5 seed=1234567 epoch=027 loss=0.622927 val_auc=0.512294 best=0.545554@14 wait=14/25
+hidden=16 C=5 seed=1234567 epoch=028 loss=0.621031 val_auc=0.507656 best=0.545554@14 wait=15/25
+hidden=16 C=5 seed=1234567 epoch=029 loss=0.618917 val_auc=0.510417 best=0.545554@14 wait=16/25
+hidden=16 C=5 seed=1234567 epoch=030 loss=0.616799 val_auc=0.513102 best=0.545554@14 wait=17/25
+hidden=16 C=5 seed=1234567 epoch=031 loss=0.614945 val_auc=0.509421 best=0.545554@14 wait=18/25
+hidden=16 C=5 seed=1234567 epoch=032 loss=0.613089 val_auc=0.524593 best=0.545554@14 wait=19/25
+hidden=16 C=5 seed=1234567 epoch=033 loss=0.611551 val_auc=0.505290 best=0.545554@14 wait=20/25
+hidden=16 C=5 seed=1234567 epoch=034 loss=0.610602 val_auc=0.514787 best=0.545554@14 wait=21/25
+hidden=16 C=5 seed=1234567 epoch=035 loss=0.607660 val_auc=0.513862 best=0.545554@14 wait=22/25
+hidden=16 C=5 seed=1234567 epoch=036 loss=0.605020 val_auc=0.503647 best=0.545554@14 wait=23/25
+hidden=16 C=5 seed=1234567 epoch=037 loss=0.603951 val_auc=0.512032 best=0.545554@14 wait=24/25
+hidden=16 C=5 seed=1234567 epoch=038 loss=0.600807 val_auc=0.512797 best=0.545554@14 wait=25/25
+Early stopping at epoch 38.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_16/C_5/seed_1234567.json
+SKIP complete: hidden=64 C=2 seed=123
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=2 | seed=1234
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=2 seed=1234 epoch=001 loss=0.692382 val_auc=0.565415 best=0.565415@1 wait=1/25
+hidden=64 C=2 seed=1234 epoch=002 loss=0.710098 val_auc=0.562354 best=0.565415@1 wait=2/25
+hidden=64 C=2 seed=1234 epoch=003 loss=0.677281 val_auc=0.545291 best=0.565415@1 wait=3/25
+hidden=64 C=2 seed=1234 epoch=004 loss=0.679677 val_auc=0.565871 best=0.565871@4 wait=1/25
+hidden=64 C=2 seed=1234 epoch=005 loss=0.677227 val_auc=0.564490 best=0.565871@4 wait=2/25
+hidden=64 C=2 seed=1234 epoch=006 loss=0.673482 val_auc=0.593379 best=0.593379@6 wait=1/25
+hidden=64 C=2 seed=1234 epoch=007 loss=0.669175 val_auc=0.560017 best=0.593379@6 wait=2/25
+hidden=64 C=2 seed=1234 epoch=008 loss=0.664890 val_auc=0.563721 best=0.593379@6 wait=3/25
+hidden=64 C=2 seed=1234 epoch=009 loss=0.661193 val_auc=0.583155 best=0.593379@6 wait=4/25
+hidden=64 C=2 seed=1234 epoch=010 loss=0.659343 val_auc=0.584958 best=0.593379@6 wait=5/25
+hidden=64 C=2 seed=1234 epoch=011 loss=0.656062 val_auc=0.580484 best=0.593379@6 wait=6/25
+hidden=64 C=2 seed=1234 epoch=012 loss=0.652299 val_auc=0.564706 best=0.593379@6 wait=7/25
+hidden=64 C=2 seed=1234 epoch=013 loss=0.649535 val_auc=0.557486 best=0.593379@6 wait=8/25
+hidden=64 C=2 seed=1234 epoch=014 loss=0.646631 val_auc=0.551431 best=0.593379@6 wait=9/25
+hidden=64 C=2 seed=1234 epoch=015 loss=0.643544 val_auc=0.552173 best=0.593379@6 wait=10/25
+hidden=64 C=2 seed=1234 epoch=016 loss=0.639215 val_auc=0.548182 best=0.593379@6 wait=11/25
+hidden=64 C=2 seed=1234 epoch=017 loss=0.636453 val_auc=0.551309 best=0.593379@6 wait=12/25
+hidden=64 C=2 seed=1234 epoch=018 loss=0.633156 val_auc=0.540531 best=0.593379@6 wait=13/25
+hidden=64 C=2 seed=1234 epoch=019 loss=0.628940 val_auc=0.524340 best=0.593379@6 wait=14/25
+hidden=64 C=2 seed=1234 epoch=020 loss=0.626382 val_auc=0.532560 best=0.593379@6 wait=15/25
+hidden=64 C=2 seed=1234 epoch=021 loss=0.621719 val_auc=0.534588 best=0.593379@6 wait=16/25
+hidden=64 C=2 seed=1234 epoch=022 loss=0.616624 val_auc=0.528917 best=0.593379@6 wait=17/25
+hidden=64 C=2 seed=1234 epoch=023 loss=0.613363 val_auc=0.536860 best=0.593379@6 wait=18/25
+hidden=64 C=2 seed=1234 epoch=024 loss=0.609174 val_auc=0.527593 best=0.593379@6 wait=19/25
+hidden=64 C=2 seed=1234 epoch=025 loss=0.604641 val_auc=0.528945 best=0.593379@6 wait=20/25
+hidden=64 C=2 seed=1234 epoch=026 loss=0.601064 val_auc=0.548680 best=0.593379@6 wait=21/25
+hidden=64 C=2 seed=1234 epoch=027 loss=0.607039 val_auc=0.532738 best=0.593379@6 wait=22/25
+hidden=64 C=2 seed=1234 epoch=028 loss=0.595935 val_auc=0.527274 best=0.593379@6 wait=23/25
+hidden=64 C=2 seed=1234 epoch=029 loss=0.592571 val_auc=0.534437 best=0.593379@6 wait=24/25
+hidden=64 C=2 seed=1234 epoch=030 loss=0.590630 val_auc=0.534897 best=0.593379@6 wait=25/25
+Early stopping at epoch 30.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_2/seed_1234.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=2 | seed=12345
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=2 seed=12345 epoch=001 loss=0.691689 val_auc=0.523504 best=0.523504@1 wait=1/25
+hidden=64 C=2 seed=12345 epoch=002 loss=0.676011 val_auc=0.520387 best=0.523504@1 wait=2/25
+hidden=64 C=2 seed=12345 epoch=003 loss=0.665861 val_auc=0.519472 best=0.523504@1 wait=3/25
+hidden=64 C=2 seed=12345 epoch=004 loss=0.658017 val_auc=0.527790 best=0.527790@4 wait=1/25
+hidden=64 C=2 seed=12345 epoch=005 loss=0.649800 val_auc=0.519275 best=0.527790@4 wait=2/25
+hidden=64 C=2 seed=12345 epoch=006 loss=0.644927 val_auc=0.527030 best=0.527790@4 wait=3/25
+hidden=64 C=2 seed=12345 epoch=007 loss=0.640036 val_auc=0.528926 best=0.528926@7 wait=1/25
+hidden=64 C=2 seed=12345 epoch=008 loss=0.633701 val_auc=0.541301 best=0.541301@8 wait=1/25
+hidden=64 C=2 seed=12345 epoch=009 loss=0.630632 val_auc=0.545394 best=0.545394@9 wait=1/25
+hidden=64 C=2 seed=12345 epoch=010 loss=0.626393 val_auc=0.544737 best=0.545394@9 wait=2/25
+hidden=64 C=2 seed=12345 epoch=011 loss=0.622479 val_auc=0.543845 best=0.545394@9 wait=3/25
+hidden=64 C=2 seed=12345 epoch=012 loss=0.619816 val_auc=0.538850 best=0.545394@9 wait=4/25
+hidden=64 C=2 seed=12345 epoch=013 loss=0.615566 val_auc=0.532100 best=0.545394@9 wait=5/25
+hidden=64 C=2 seed=12345 epoch=014 loss=0.612765 val_auc=0.534090 best=0.545394@9 wait=6/25
+hidden=64 C=2 seed=12345 epoch=015 loss=0.611198 val_auc=0.525903 best=0.545394@9 wait=7/25
+hidden=64 C=2 seed=12345 epoch=016 loss=0.606245 val_auc=0.522232 best=0.545394@9 wait=8/25
+hidden=64 C=2 seed=12345 epoch=017 loss=0.601030 val_auc=0.524439 best=0.545394@9 wait=9/25
+hidden=64 C=2 seed=12345 epoch=018 loss=0.598290 val_auc=0.527518 best=0.545394@9 wait=10/25
+hidden=64 C=2 seed=12345 epoch=019 loss=0.594132 val_auc=0.534137 best=0.545394@9 wait=11/25
+hidden=64 C=2 seed=12345 epoch=020 loss=0.589253 val_auc=0.533470 best=0.545394@9 wait=12/25
+hidden=64 C=2 seed=12345 epoch=021 loss=0.587506 val_auc=0.538700 best=0.545394@9 wait=13/25
+hidden=64 C=2 seed=12345 epoch=022 loss=0.592859 val_auc=0.528166 best=0.545394@9 wait=14/25
+hidden=64 C=2 seed=12345 epoch=023 loss=0.583382 val_auc=0.542446 best=0.545394@9 wait=15/25
+hidden=64 C=2 seed=12345 epoch=024 loss=0.578976 val_auc=0.544371 best=0.545394@9 wait=16/25
+hidden=64 C=2 seed=12345 epoch=025 loss=0.578646 val_auc=0.547952 best=0.547952@25 wait=1/25
+hidden=64 C=2 seed=12345 epoch=026 loss=0.570129 val_auc=0.537132 best=0.547952@25 wait=2/25
+hidden=64 C=2 seed=12345 epoch=027 loss=0.574705 val_auc=0.548605 best=0.548605@27 wait=1/25
+hidden=64 C=2 seed=12345 epoch=028 loss=0.564861 val_auc=0.556031 best=0.556031@28 wait=1/25
+hidden=64 C=2 seed=12345 epoch=029 loss=0.565746 val_auc=0.575569 best=0.575569@29 wait=1/25
+hidden=64 C=2 seed=12345 epoch=030 loss=0.559099 val_auc=0.575231 best=0.575569@29 wait=2/25
+hidden=64 C=2 seed=12345 epoch=031 loss=0.559001 val_auc=0.566288 best=0.575569@29 wait=3/25
+hidden=64 C=2 seed=12345 epoch=032 loss=0.552559 val_auc=0.563373 best=0.575569@29 wait=4/25
+hidden=64 C=2 seed=12345 epoch=033 loss=0.550576 val_auc=0.570368 best=0.575569@29 wait=5/25
+hidden=64 C=2 seed=12345 epoch=034 loss=0.549765 val_auc=0.571457 best=0.575569@29 wait=6/25
+hidden=64 C=2 seed=12345 epoch=035 loss=0.543245 val_auc=0.569588 best=0.575569@29 wait=7/25
+hidden=64 C=2 seed=12345 epoch=036 loss=0.542591 val_auc=0.579277 best=0.579277@36 wait=1/25
+hidden=64 C=2 seed=12345 epoch=037 loss=0.540625 val_auc=0.573860 best=0.579277@36 wait=2/25
+hidden=64 C=2 seed=12345 epoch=038 loss=0.535584 val_auc=0.565157 best=0.579277@36 wait=3/25
+hidden=64 C=2 seed=12345 epoch=039 loss=0.533129 val_auc=0.571213 best=0.579277@36 wait=4/25
+hidden=64 C=2 seed=12345 epoch=040 loss=0.531690 val_auc=0.565678 best=0.579277@36 wait=5/25
+hidden=64 C=2 seed=12345 epoch=041 loss=0.527293 val_auc=0.586159 best=0.586159@41 wait=1/25
+hidden=64 C=2 seed=12345 epoch=042 loss=0.524144 val_auc=0.589887 best=0.589887@42 wait=1/25
+hidden=64 C=2 seed=12345 epoch=043 loss=0.523109 val_auc=0.583577 best=0.589887@42 wait=2/25
+hidden=64 C=2 seed=12345 epoch=044 loss=0.522993 val_auc=0.568687 best=0.589887@42 wait=3/25
+hidden=64 C=2 seed=12345 epoch=045 loss=0.522800 val_auc=0.585483 best=0.589887@42 wait=4/25
+hidden=64 C=2 seed=12345 epoch=046 loss=0.513762 val_auc=0.588112 best=0.589887@42 wait=5/25
+hidden=64 C=2 seed=12345 epoch=047 loss=0.511264 val_auc=0.562012 best=0.589887@42 wait=6/25
+hidden=64 C=2 seed=12345 epoch=048 loss=0.516507 val_auc=0.581399 best=0.589887@42 wait=7/25
+hidden=64 C=2 seed=12345 epoch=049 loss=0.521948 val_auc=0.581625 best=0.589887@42 wait=8/25
+hidden=64 C=2 seed=12345 epoch=050 loss=0.510920 val_auc=0.568189 best=0.589887@42 wait=9/25
+hidden=64 C=2 seed=12345 epoch=051 loss=0.511880 val_auc=0.567401 best=0.589887@42 wait=10/25
+hidden=64 C=2 seed=12345 epoch=052 loss=0.504646 val_auc=0.566692 best=0.589887@42 wait=11/25
+hidden=64 C=2 seed=12345 epoch=053 loss=0.501445 val_auc=0.567345 best=0.589887@42 wait=12/25
+hidden=64 C=2 seed=12345 epoch=054 loss=0.510564 val_auc=0.583108 best=0.589887@42 wait=13/25
+hidden=64 C=2 seed=12345 epoch=055 loss=0.502799 val_auc=0.587286 best=0.589887@42 wait=14/25
+hidden=64 C=2 seed=12345 epoch=056 loss=0.505644 val_auc=0.596351 best=0.596351@56 wait=1/25
+hidden=64 C=2 seed=12345 epoch=057 loss=0.505517 val_auc=0.591999 best=0.596351@56 wait=2/25
+hidden=64 C=2 seed=12345 epoch=058 loss=0.497173 val_auc=0.579860 best=0.596351@56 wait=3/25
+hidden=64 C=2 seed=12345 epoch=059 loss=0.494106 val_auc=0.563458 best=0.596351@56 wait=4/25
+hidden=64 C=2 seed=12345 epoch=060 loss=0.490255 val_auc=0.561617 best=0.596351@56 wait=5/25
+hidden=64 C=2 seed=12345 epoch=061 loss=0.494744 val_auc=0.589478 best=0.596351@56 wait=6/25
+hidden=64 C=2 seed=12345 epoch=062 loss=0.493647 val_auc=0.584864 best=0.596351@56 wait=7/25
+hidden=64 C=2 seed=12345 epoch=063 loss=0.488833 val_auc=0.581249 best=0.596351@56 wait=8/25
+hidden=64 C=2 seed=12345 epoch=064 loss=0.486783 val_auc=0.607978 best=0.607978@64 wait=1/25
+hidden=64 C=2 seed=12345 epoch=065 loss=0.487138 val_auc=0.588178 best=0.607978@64 wait=2/25
+hidden=64 C=2 seed=12345 epoch=066 loss=0.480392 val_auc=0.561993 best=0.607978@64 wait=3/25
+hidden=64 C=2 seed=12345 epoch=067 loss=0.479760 val_auc=0.560547 best=0.607978@64 wait=4/25
+hidden=64 C=2 seed=12345 epoch=068 loss=0.474637 val_auc=0.587558 best=0.607978@64 wait=5/25
+hidden=64 C=2 seed=12345 epoch=069 loss=0.472570 val_auc=0.591891 best=0.607978@64 wait=6/25
+hidden=64 C=2 seed=12345 epoch=070 loss=0.469183 val_auc=0.573677 best=0.607978@64 wait=7/25
+hidden=64 C=2 seed=12345 epoch=071 loss=0.470241 val_auc=0.572889 best=0.607978@64 wait=8/25
+hidden=64 C=2 seed=12345 epoch=072 loss=0.462928 val_auc=0.582681 best=0.607978@64 wait=9/25
+hidden=64 C=2 seed=12345 epoch=073 loss=0.464300 val_auc=0.569875 best=0.607978@64 wait=10/25
+hidden=64 C=2 seed=12345 epoch=074 loss=0.460617 val_auc=0.583986 best=0.607978@64 wait=11/25
+hidden=64 C=2 seed=12345 epoch=075 loss=0.457799 val_auc=0.598388 best=0.607978@64 wait=12/25
+hidden=64 C=2 seed=12345 epoch=076 loss=0.455293 val_auc=0.601702 best=0.607978@64 wait=13/25
+hidden=64 C=2 seed=12345 epoch=077 loss=0.455599 val_auc=0.589253 best=0.607978@64 wait=14/25
+hidden=64 C=2 seed=12345 epoch=078 loss=0.452940 val_auc=0.584821 best=0.607978@64 wait=15/25
+hidden=64 C=2 seed=12345 epoch=079 loss=0.450517 val_auc=0.604969 best=0.607978@64 wait=16/25
+hidden=64 C=2 seed=12345 epoch=080 loss=0.449650 val_auc=0.602904 best=0.607978@64 wait=17/25
+hidden=64 C=2 seed=12345 epoch=081 loss=0.446729 val_auc=0.583516 best=0.607978@64 wait=18/25
+hidden=64 C=2 seed=12345 epoch=082 loss=0.446540 val_auc=0.604791 best=0.607978@64 wait=19/25
+hidden=64 C=2 seed=12345 epoch=083 loss=0.440959 val_auc=0.594097 best=0.607978@64 wait=20/25
+hidden=64 C=2 seed=12345 epoch=084 loss=0.443864 val_auc=0.585873 best=0.607978@64 wait=21/25
+hidden=64 C=2 seed=12345 epoch=085 loss=0.440093 val_auc=0.589610 best=0.607978@64 wait=22/25
+hidden=64 C=2 seed=12345 epoch=086 loss=0.431579 val_auc=0.621381 best=0.621381@86 wait=1/25
+hidden=64 C=2 seed=12345 epoch=087 loss=0.435041 val_auc=0.606645 best=0.621381@86 wait=2/25
+hidden=64 C=2 seed=12345 epoch=088 loss=0.431561 val_auc=0.582756 best=0.621381@86 wait=3/25
+hidden=64 C=2 seed=12345 epoch=089 loss=0.426370 val_auc=0.602453 best=0.621381@86 wait=4/25
+hidden=64 C=2 seed=12345 epoch=090 loss=0.425319 val_auc=0.591131 best=0.621381@86 wait=5/25
+hidden=64 C=2 seed=12345 epoch=091 loss=0.430239 val_auc=0.584117 best=0.621381@86 wait=6/25
+hidden=64 C=2 seed=12345 epoch=092 loss=0.445527 val_auc=0.574212 best=0.621381@86 wait=7/25
+hidden=64 C=2 seed=12345 epoch=093 loss=0.439672 val_auc=0.609959 best=0.621381@86 wait=8/25
+hidden=64 C=2 seed=12345 epoch=094 loss=0.424564 val_auc=0.625427 best=0.625427@94 wait=1/25
+hidden=64 C=2 seed=12345 epoch=095 loss=0.446425 val_auc=0.569189 best=0.625427@94 wait=2/25
+hidden=64 C=2 seed=12345 epoch=096 loss=0.425392 val_auc=0.559594 best=0.625427@94 wait=3/25
+hidden=64 C=2 seed=12345 epoch=097 loss=0.441741 val_auc=0.595121 best=0.625427@94 wait=4/25
+hidden=64 C=2 seed=12345 epoch=098 loss=0.423383 val_auc=0.617330 best=0.625427@94 wait=5/25
+hidden=64 C=2 seed=12345 epoch=099 loss=0.423277 val_auc=0.612626 best=0.625427@94 wait=6/25
+hidden=64 C=2 seed=12345 epoch=100 loss=0.412189 val_auc=0.605725 best=0.625427@94 wait=7/25
+hidden=64 C=2 seed=12345 epoch=101 loss=0.410609 val_auc=0.596768 best=0.625427@94 wait=8/25
+hidden=64 C=2 seed=12345 epoch=102 loss=0.413974 val_auc=0.604401 best=0.625427@94 wait=9/25
+hidden=64 C=2 seed=12345 epoch=103 loss=0.414579 val_auc=0.610739 best=0.625427@94 wait=10/25
+hidden=64 C=2 seed=12345 epoch=104 loss=0.412364 val_auc=0.625479 best=0.625479@104 wait=1/25
+hidden=64 C=2 seed=12345 epoch=105 loss=0.408836 val_auc=0.611865 best=0.625479@104 wait=2/25
+hidden=64 C=2 seed=12345 epoch=106 loss=0.400414 val_auc=0.603387 best=0.625479@104 wait=3/25
+hidden=64 C=2 seed=12345 epoch=107 loss=0.397580 val_auc=0.608495 best=0.625479@104 wait=4/25
+hidden=64 C=2 seed=12345 epoch=108 loss=0.400801 val_auc=0.604744 best=0.625479@104 wait=5/25
+hidden=64 C=2 seed=12345 epoch=109 loss=0.405067 val_auc=0.604819 best=0.625479@104 wait=6/25
+hidden=64 C=2 seed=12345 epoch=110 loss=0.406410 val_auc=0.609138 best=0.625479@104 wait=7/25
+hidden=64 C=2 seed=12345 epoch=111 loss=0.394820 val_auc=0.627624 best=0.627624@111 wait=1/25
+hidden=64 C=2 seed=12345 epoch=112 loss=0.396755 val_auc=0.593670 best=0.627624@111 wait=2/25
+hidden=64 C=2 seed=12345 epoch=113 loss=0.418476 val_auc=0.609086 best=0.627624@111 wait=3/25
+hidden=64 C=2 seed=12345 epoch=114 loss=0.435234 val_auc=0.575433 best=0.627624@111 wait=4/25
+hidden=64 C=2 seed=12345 epoch=115 loss=0.450316 val_auc=0.590976 best=0.627624@111 wait=5/25
+hidden=64 C=2 seed=12345 epoch=116 loss=0.456426 val_auc=0.604153 best=0.627624@111 wait=6/25
+hidden=64 C=2 seed=12345 epoch=117 loss=0.410227 val_auc=0.604171 best=0.627624@111 wait=7/25
+hidden=64 C=2 seed=12345 epoch=118 loss=0.425001 val_auc=0.607119 best=0.627624@111 wait=8/25
+hidden=64 C=2 seed=12345 epoch=119 loss=0.425389 val_auc=0.608049 best=0.627624@111 wait=9/25
+hidden=64 C=2 seed=12345 epoch=120 loss=0.395022 val_auc=0.603134 best=0.627624@111 wait=10/25
+hidden=64 C=2 seed=12345 epoch=121 loss=0.406937 val_auc=0.614447 best=0.627624@111 wait=11/25
+hidden=64 C=2 seed=12345 epoch=122 loss=0.395863 val_auc=0.625737 best=0.627624@111 wait=12/25
+hidden=64 C=2 seed=12345 epoch=123 loss=0.398914 val_auc=0.623676 best=0.627624@111 wait=13/25
+hidden=64 C=2 seed=12345 epoch=124 loss=0.389356 val_auc=0.616869 best=0.627624@111 wait=14/25
+hidden=64 C=2 seed=12345 epoch=125 loss=0.391412 val_auc=0.626901 best=0.627624@111 wait=15/25
+hidden=64 C=2 seed=12345 epoch=126 loss=0.384692 val_auc=0.635173 best=0.635173@126 wait=1/25
+hidden=64 C=2 seed=12345 epoch=127 loss=0.380407 val_auc=0.626328 best=0.635173@126 wait=2/25
+hidden=64 C=2 seed=12345 epoch=128 loss=0.379082 val_auc=0.629399 best=0.635173@126 wait=3/25
+hidden=64 C=2 seed=12345 epoch=129 loss=0.377685 val_auc=0.627108 best=0.635173@126 wait=4/25
+hidden=64 C=2 seed=12345 epoch=130 loss=0.372629 val_auc=0.608232 best=0.635173@126 wait=5/25
+hidden=64 C=2 seed=12345 epoch=131 loss=0.374607 val_auc=0.629802 best=0.635173@126 wait=6/25
+hidden=64 C=2 seed=12345 epoch=132 loss=0.367387 val_auc=0.631300 best=0.635173@126 wait=7/25
+hidden=64 C=2 seed=12345 epoch=133 loss=0.362753 val_auc=0.624089 best=0.635173@126 wait=8/25
+hidden=64 C=2 seed=12345 epoch=134 loss=0.362702 val_auc=0.635600 best=0.635600@134 wait=1/25
+hidden=64 C=2 seed=12345 epoch=135 loss=0.361557 val_auc=0.629680 best=0.635600@134 wait=2/25
+hidden=64 C=2 seed=12345 epoch=136 loss=0.355179 val_auc=0.620869 best=0.635600@134 wait=3/25
+hidden=64 C=2 seed=12345 epoch=137 loss=0.354986 val_auc=0.630403 best=0.635600@134 wait=4/25
+hidden=64 C=2 seed=12345 epoch=138 loss=0.354997 val_auc=0.628497 best=0.635600@134 wait=5/25
+hidden=64 C=2 seed=12345 epoch=139 loss=0.350594 val_auc=0.631464 best=0.635600@134 wait=6/25
+hidden=64 C=2 seed=12345 epoch=140 loss=0.344845 val_auc=0.633135 best=0.635600@134 wait=7/25
+hidden=64 C=2 seed=12345 epoch=141 loss=0.343903 val_auc=0.634609 best=0.635600@134 wait=8/25
+hidden=64 C=2 seed=12345 epoch=142 loss=0.343507 val_auc=0.641942 best=0.641942@142 wait=1/25
+hidden=64 C=2 seed=12345 epoch=143 loss=0.340951 val_auc=0.638656 best=0.641942@142 wait=2/25
+hidden=64 C=2 seed=12345 epoch=144 loss=0.338652 val_auc=0.637022 best=0.641942@142 wait=3/25
+hidden=64 C=2 seed=12345 epoch=145 loss=0.335887 val_auc=0.633788 best=0.641942@142 wait=4/25
+hidden=64 C=2 seed=12345 epoch=146 loss=0.334391 val_auc=0.639651 best=0.641942@142 wait=5/25
+hidden=64 C=2 seed=12345 epoch=147 loss=0.332065 val_auc=0.639383 best=0.641942@142 wait=6/25
+hidden=64 C=2 seed=12345 epoch=148 loss=0.332122 val_auc=0.640519 best=0.641942@142 wait=7/25
+hidden=64 C=2 seed=12345 epoch=149 loss=0.338214 val_auc=0.630544 best=0.641942@142 wait=8/25
+hidden=64 C=2 seed=12345 epoch=150 loss=0.357270 val_auc=0.649875 best=0.649875@150 wait=1/25
+hidden=64 C=2 seed=12345 epoch=151 loss=0.409597 val_auc=0.618461 best=0.649875@150 wait=2/25
+hidden=64 C=2 seed=12345 epoch=152 loss=0.391059 val_auc=0.643378 best=0.649875@150 wait=3/25
+hidden=64 C=2 seed=12345 epoch=153 loss=0.335736 val_auc=0.648612 best=0.649875@150 wait=4/25
+hidden=64 C=2 seed=12345 epoch=154 loss=0.360162 val_auc=0.619137 best=0.649875@150 wait=5/25
+hidden=64 C=2 seed=12345 epoch=155 loss=0.358311 val_auc=0.628882 best=0.649875@150 wait=6/25
+hidden=64 C=2 seed=12345 epoch=156 loss=0.328666 val_auc=0.644627 best=0.649875@150 wait=7/25
+hidden=64 C=2 seed=12345 epoch=157 loss=0.350302 val_auc=0.624113 best=0.649875@150 wait=8/25
+hidden=64 C=2 seed=12345 epoch=158 loss=0.325691 val_auc=0.623493 best=0.649875@150 wait=9/25
+hidden=64 C=2 seed=12345 epoch=159 loss=0.343440 val_auc=0.645462 best=0.649875@150 wait=10/25
+hidden=64 C=2 seed=12345 epoch=160 loss=0.334096 val_auc=0.642979 best=0.649875@150 wait=11/25
+hidden=64 C=2 seed=12345 epoch=161 loss=0.325421 val_auc=0.634187 best=0.649875@150 wait=12/25
+hidden=64 C=2 seed=12345 epoch=162 loss=0.340310 val_auc=0.640393 best=0.649875@150 wait=13/25
+hidden=64 C=2 seed=12345 epoch=163 loss=0.323245 val_auc=0.646401 best=0.649875@150 wait=14/25
+hidden=64 C=2 seed=12345 epoch=164 loss=0.328824 val_auc=0.632445 best=0.649875@150 wait=15/25
+hidden=64 C=2 seed=12345 epoch=165 loss=0.326820 val_auc=0.623038 best=0.649875@150 wait=16/25
+hidden=64 C=2 seed=12345 epoch=166 loss=0.319609 val_auc=0.632239 best=0.649875@150 wait=17/25
+hidden=64 C=2 seed=12345 epoch=167 loss=0.321833 val_auc=0.630924 best=0.649875@150 wait=18/25
+hidden=64 C=2 seed=12345 epoch=168 loss=0.316300 val_auc=0.630305 best=0.649875@150 wait=19/25
+hidden=64 C=2 seed=12345 epoch=169 loss=0.315478 val_auc=0.638285 best=0.649875@150 wait=20/25
+hidden=64 C=2 seed=12345 epoch=170 loss=0.317486 val_auc=0.647298 best=0.649875@150 wait=21/25
+hidden=64 C=2 seed=12345 epoch=171 loss=0.310642 val_auc=0.636107 best=0.649875@150 wait=22/25
+hidden=64 C=2 seed=12345 epoch=172 loss=0.312890 val_auc=0.633572 best=0.649875@150 wait=23/25
+hidden=64 C=2 seed=12345 epoch=173 loss=0.309883 val_auc=0.634642 best=0.649875@150 wait=24/25
+hidden=64 C=2 seed=12345 epoch=174 loss=0.308092 val_auc=0.636848 best=0.649875@150 wait=25/25
+Early stopping at epoch 174.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_2/seed_12345.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=2 | seed=123456
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=2 seed=123456 epoch=001 loss=0.691076 val_auc=0.593539 best=0.593539@1 wait=1/25
+hidden=64 C=2 seed=123456 epoch=002 loss=0.688395 val_auc=0.591656 best=0.593539@1 wait=2/25
+hidden=64 C=2 seed=123456 epoch=003 loss=0.673751 val_auc=0.594572 best=0.594572@3 wait=1/25
+hidden=64 C=2 seed=123456 epoch=004 loss=0.668918 val_auc=0.604115 best=0.604115@4 wait=1/25
+hidden=64 C=2 seed=123456 epoch=005 loss=0.663616 val_auc=0.606650 best=0.606650@5 wait=1/25
+hidden=64 C=2 seed=123456 epoch=006 loss=0.661603 val_auc=0.605598 best=0.606650@5 wait=2/25
+hidden=64 C=2 seed=123456 epoch=007 loss=0.656265 val_auc=0.606749 best=0.606749@7 wait=1/25
+hidden=64 C=2 seed=123456 epoch=008 loss=0.651967 val_auc=0.607279 best=0.607279@8 wait=1/25
+hidden=64 C=2 seed=123456 epoch=009 loss=0.649116 val_auc=0.604932 best=0.607279@8 wait=2/25
+hidden=64 C=2 seed=123456 epoch=010 loss=0.646136 val_auc=0.605030 best=0.607279@8 wait=3/25
+hidden=64 C=2 seed=123456 epoch=011 loss=0.644261 val_auc=0.591243 best=0.607279@8 wait=4/25
+hidden=64 C=2 seed=123456 epoch=012 loss=0.641577 val_auc=0.583193 best=0.607279@8 wait=5/25
+hidden=64 C=2 seed=123456 epoch=013 loss=0.639583 val_auc=0.574442 best=0.607279@8 wait=6/25
+hidden=64 C=2 seed=123456 epoch=014 loss=0.635955 val_auc=0.552651 best=0.607279@8 wait=7/25
+hidden=64 C=2 seed=123456 epoch=015 loss=0.632671 val_auc=0.520631 best=0.607279@8 wait=8/25
+hidden=64 C=2 seed=123456 epoch=016 loss=0.629808 val_auc=0.512135 best=0.607279@8 wait=9/25
+hidden=64 C=2 seed=123456 epoch=017 loss=0.627076 val_auc=0.516012 best=0.607279@8 wait=10/25
+hidden=64 C=2 seed=123456 epoch=018 loss=0.624995 val_auc=0.509140 best=0.607279@8 wait=11/25
+hidden=64 C=2 seed=123456 epoch=019 loss=0.622403 val_auc=0.510154 best=0.607279@8 wait=12/25
+hidden=64 C=2 seed=123456 epoch=020 loss=0.620178 val_auc=0.512388 best=0.607279@8 wait=13/25
+hidden=64 C=2 seed=123456 epoch=021 loss=0.617788 val_auc=0.509576 best=0.607279@8 wait=14/25
+hidden=64 C=2 seed=123456 epoch=022 loss=0.615399 val_auc=0.505704 best=0.607279@8 wait=15/25
+hidden=64 C=2 seed=123456 epoch=023 loss=0.612563 val_auc=0.516472 best=0.607279@8 wait=16/25
+hidden=64 C=2 seed=123456 epoch=024 loss=0.610259 val_auc=0.509891 best=0.607279@8 wait=17/25
+hidden=64 C=2 seed=123456 epoch=025 loss=0.607393 val_auc=0.524368 best=0.607279@8 wait=18/25
+hidden=64 C=2 seed=123456 epoch=026 loss=0.602050 val_auc=0.539531 best=0.607279@8 wait=19/25
+hidden=64 C=2 seed=123456 epoch=027 loss=0.599640 val_auc=0.538066 best=0.607279@8 wait=20/25
+hidden=64 C=2 seed=123456 epoch=028 loss=0.597007 val_auc=0.554215 best=0.607279@8 wait=21/25
+hidden=64 C=2 seed=123456 epoch=029 loss=0.592226 val_auc=0.548769 best=0.607279@8 wait=22/25
+hidden=64 C=2 seed=123456 epoch=030 loss=0.587799 val_auc=0.529907 best=0.607279@8 wait=23/25
+hidden=64 C=2 seed=123456 epoch=031 loss=0.585310 val_auc=0.542272 best=0.607279@8 wait=24/25
+hidden=64 C=2 seed=123456 epoch=032 loss=0.581925 val_auc=0.522321 best=0.607279@8 wait=25/25
+Early stopping at epoch 32.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_2/seed_123456.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=2 | seed=1234567
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=2 seed=1234567 epoch=001 loss=0.698080 val_auc=0.538385 best=0.538385@1 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=002 loss=0.686809 val_auc=0.526565 best=0.538385@1 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=003 loss=0.679536 val_auc=0.528523 best=0.538385@1 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=004 loss=0.672782 val_auc=0.540282 best=0.540282@4 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=005 loss=0.663376 val_auc=0.541127 best=0.541127@5 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=006 loss=0.657584 val_auc=0.551975 best=0.551975@6 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=007 loss=0.654244 val_auc=0.542512 best=0.551975@6 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=008 loss=0.648815 val_auc=0.538104 best=0.551975@6 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=009 loss=0.641617 val_auc=0.541915 best=0.551975@6 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=010 loss=0.638568 val_auc=0.551698 best=0.551975@6 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=011 loss=0.634117 val_auc=0.547441 best=0.551975@6 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=012 loss=0.629896 val_auc=0.551896 best=0.551975@6 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=013 loss=0.628199 val_auc=0.553201 best=0.553201@13 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=014 loss=0.624015 val_auc=0.553801 best=0.553801@14 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=015 loss=0.622038 val_auc=0.554046 best=0.554046@15 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=016 loss=0.617819 val_auc=0.551454 best=0.554046@15 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=017 loss=0.614688 val_auc=0.542704 best=0.554046@15 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=018 loss=0.611034 val_auc=0.543080 best=0.554046@15 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=019 loss=0.606676 val_auc=0.546422 best=0.554046@15 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=020 loss=0.602916 val_auc=0.542282 best=0.554046@15 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=021 loss=0.598121 val_auc=0.541362 best=0.554046@15 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=022 loss=0.593561 val_auc=0.547511 best=0.554046@15 wait=8/25
+hidden=64 C=2 seed=1234567 epoch=023 loss=0.588148 val_auc=0.549163 best=0.554046@15 wait=9/25
+hidden=64 C=2 seed=1234567 epoch=024 loss=0.582782 val_auc=0.547671 best=0.554046@15 wait=10/25
+hidden=64 C=2 seed=1234567 epoch=025 loss=0.580155 val_auc=0.557801 best=0.557801@25 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=026 loss=0.581424 val_auc=0.533804 best=0.557801@25 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=027 loss=0.615749 val_auc=0.578512 best=0.578512@27 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=028 loss=0.595422 val_auc=0.581808 best=0.581808@28 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=029 loss=0.589972 val_auc=0.570419 best=0.581808@28 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=030 loss=0.577301 val_auc=0.553182 best=0.581808@28 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=031 loss=0.585753 val_auc=0.555829 best=0.581808@28 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=032 loss=0.575138 val_auc=0.557726 best=0.581808@28 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=033 loss=0.571247 val_auc=0.564767 best=0.581808@28 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=034 loss=0.565699 val_auc=0.552299 best=0.581808@28 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=035 loss=0.567476 val_auc=0.551398 best=0.581808@28 wait=8/25
+hidden=64 C=2 seed=1234567 epoch=036 loss=0.563911 val_auc=0.560693 best=0.581808@28 wait=9/25
+hidden=64 C=2 seed=1234567 epoch=037 loss=0.556711 val_auc=0.557332 best=0.581808@28 wait=10/25
+hidden=64 C=2 seed=1234567 epoch=038 loss=0.557428 val_auc=0.559237 best=0.581808@28 wait=11/25
+hidden=64 C=2 seed=1234567 epoch=039 loss=0.550295 val_auc=0.563613 best=0.581808@28 wait=12/25
+hidden=64 C=2 seed=1234567 epoch=040 loss=0.549673 val_auc=0.570936 best=0.581808@28 wait=13/25
+hidden=64 C=2 seed=1234567 epoch=041 loss=0.546929 val_auc=0.565640 best=0.581808@28 wait=14/25
+hidden=64 C=2 seed=1234567 epoch=042 loss=0.543267 val_auc=0.552684 best=0.581808@28 wait=15/25
+hidden=64 C=2 seed=1234567 epoch=043 loss=0.543174 val_auc=0.571443 best=0.581808@28 wait=16/25
+hidden=64 C=2 seed=1234567 epoch=044 loss=0.536255 val_auc=0.578587 best=0.581808@28 wait=17/25
+hidden=64 C=2 seed=1234567 epoch=045 loss=0.534662 val_auc=0.563199 best=0.581808@28 wait=18/25
+hidden=64 C=2 seed=1234567 epoch=046 loss=0.530744 val_auc=0.569311 best=0.581808@28 wait=19/25
+hidden=64 C=2 seed=1234567 epoch=047 loss=0.527787 val_auc=0.580564 best=0.581808@28 wait=20/25
+hidden=64 C=2 seed=1234567 epoch=048 loss=0.524127 val_auc=0.579573 best=0.581808@28 wait=21/25
+hidden=64 C=2 seed=1234567 epoch=049 loss=0.524178 val_auc=0.590708 best=0.590708@49 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=050 loss=0.522449 val_auc=0.568335 best=0.590708@49 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=051 loss=0.519794 val_auc=0.595581 best=0.595581@51 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=052 loss=0.519027 val_auc=0.580991 best=0.595581@51 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=053 loss=0.513682 val_auc=0.590933 best=0.595581@51 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=054 loss=0.506703 val_auc=0.580991 best=0.595581@51 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=055 loss=0.503917 val_auc=0.568884 best=0.595581@51 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=056 loss=0.502592 val_auc=0.595740 best=0.595740@56 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=057 loss=0.511408 val_auc=0.564664 best=0.595740@56 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=058 loss=0.514540 val_auc=0.598613 best=0.598613@58 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=059 loss=0.515198 val_auc=0.598341 best=0.598613@58 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=060 loss=0.494241 val_auc=0.582502 best=0.598613@58 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=061 loss=0.507462 val_auc=0.593684 best=0.598613@58 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=062 loss=0.492000 val_auc=0.589732 best=0.598613@58 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=063 loss=0.490168 val_auc=0.565030 best=0.598613@58 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=064 loss=0.498205 val_auc=0.596510 best=0.598613@58 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=065 loss=0.485562 val_auc=0.606209 best=0.606209@65 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=066 loss=0.484432 val_auc=0.598679 best=0.606209@65 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=067 loss=0.479311 val_auc=0.583620 best=0.606209@65 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=068 loss=0.475265 val_auc=0.597834 best=0.606209@65 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=069 loss=0.474684 val_auc=0.590886 best=0.606209@65 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=070 loss=0.467319 val_auc=0.573527 best=0.606209@65 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=071 loss=0.468864 val_auc=0.602181 best=0.606209@65 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=072 loss=0.464861 val_auc=0.602913 best=0.606209@65 wait=8/25
+hidden=64 C=2 seed=1234567 epoch=073 loss=0.454144 val_auc=0.593881 best=0.606209@65 wait=9/25
+hidden=64 C=2 seed=1234567 epoch=074 loss=0.460445 val_auc=0.612959 best=0.612959@74 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=075 loss=0.457181 val_auc=0.594633 best=0.612959@74 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=076 loss=0.444051 val_auc=0.585770 best=0.612959@74 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=077 loss=0.446900 val_auc=0.611391 best=0.612959@74 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=078 loss=0.460666 val_auc=0.599280 best=0.612959@74 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=079 loss=0.438311 val_auc=0.606443 best=0.612959@74 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=080 loss=0.435727 val_auc=0.619522 best=0.619522@80 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=081 loss=0.453121 val_auc=0.606641 best=0.619522@80 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=082 loss=0.432980 val_auc=0.595177 best=0.619522@80 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=083 loss=0.420946 val_auc=0.607842 best=0.619522@80 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=084 loss=0.434974 val_auc=0.592736 best=0.619522@80 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=085 loss=0.426884 val_auc=0.622057 best=0.622057@85 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=086 loss=0.424891 val_auc=0.624432 best=0.624432@86 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=087 loss=0.411406 val_auc=0.608039 best=0.624432@86 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=088 loss=0.424982 val_auc=0.623765 best=0.624432@86 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=089 loss=0.435643 val_auc=0.607777 best=0.624432@86 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=090 loss=0.410980 val_auc=0.607795 best=0.624432@86 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=091 loss=0.416561 val_auc=0.617024 best=0.624432@86 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=092 loss=0.425588 val_auc=0.617353 best=0.624432@86 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=093 loss=0.398273 val_auc=0.604847 best=0.624432@86 wait=8/25
+hidden=64 C=2 seed=1234567 epoch=094 loss=0.421481 val_auc=0.618160 best=0.624432@86 wait=9/25
+hidden=64 C=2 seed=1234567 epoch=095 loss=0.418617 val_auc=0.620799 best=0.624432@86 wait=10/25
+hidden=64 C=2 seed=1234567 epoch=096 loss=0.398722 val_auc=0.609560 best=0.624432@86 wait=11/25
+hidden=64 C=2 seed=1234567 epoch=097 loss=0.418960 val_auc=0.619935 best=0.624432@86 wait=12/25
+hidden=64 C=2 seed=1234567 epoch=098 loss=0.392204 val_auc=0.623596 best=0.624432@86 wait=13/25
+hidden=64 C=2 seed=1234567 epoch=099 loss=0.401290 val_auc=0.614715 best=0.624432@86 wait=14/25
+hidden=64 C=2 seed=1234567 epoch=100 loss=0.391411 val_auc=0.613429 best=0.624432@86 wait=15/25
+hidden=64 C=2 seed=1234567 epoch=101 loss=0.383619 val_auc=0.620526 best=0.624432@86 wait=16/25
+hidden=64 C=2 seed=1234567 epoch=102 loss=0.393540 val_auc=0.619249 best=0.624432@86 wait=17/25
+hidden=64 C=2 seed=1234567 epoch=103 loss=0.376893 val_auc=0.613654 best=0.624432@86 wait=18/25
+hidden=64 C=2 seed=1234567 epoch=104 loss=0.387487 val_auc=0.620104 best=0.624432@86 wait=19/25
+hidden=64 C=2 seed=1234567 epoch=105 loss=0.407447 val_auc=0.617578 best=0.624432@86 wait=20/25
+hidden=64 C=2 seed=1234567 epoch=106 loss=0.371350 val_auc=0.607016 best=0.624432@86 wait=21/25
+hidden=64 C=2 seed=1234567 epoch=107 loss=0.408807 val_auc=0.631764 best=0.631764@107 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=108 loss=0.410426 val_auc=0.633492 best=0.633492@108 wait=1/25
+hidden=64 C=2 seed=1234567 epoch=109 loss=0.390071 val_auc=0.614086 best=0.633492@108 wait=2/25
+hidden=64 C=2 seed=1234567 epoch=110 loss=0.399669 val_auc=0.618170 best=0.633492@108 wait=3/25
+hidden=64 C=2 seed=1234567 epoch=111 loss=0.385086 val_auc=0.624845 best=0.633492@108 wait=4/25
+hidden=64 C=2 seed=1234567 epoch=112 loss=0.386165 val_auc=0.625737 best=0.633492@108 wait=5/25
+hidden=64 C=2 seed=1234567 epoch=113 loss=0.376508 val_auc=0.611335 best=0.633492@108 wait=6/25
+hidden=64 C=2 seed=1234567 epoch=114 loss=0.382279 val_auc=0.618761 best=0.633492@108 wait=7/25
+hidden=64 C=2 seed=1234567 epoch=115 loss=0.363277 val_auc=0.618911 best=0.633492@108 wait=8/25
+hidden=64 C=2 seed=1234567 epoch=116 loss=0.372193 val_auc=0.621353 best=0.633492@108 wait=9/25
+hidden=64 C=2 seed=1234567 epoch=117 loss=0.363798 val_auc=0.620536 best=0.633492@108 wait=10/25
+hidden=64 C=2 seed=1234567 epoch=118 loss=0.364593 val_auc=0.618264 best=0.633492@108 wait=11/25
+hidden=64 C=2 seed=1234567 epoch=119 loss=0.354528 val_auc=0.613325 best=0.633492@108 wait=12/25
+hidden=64 C=2 seed=1234567 epoch=120 loss=0.355197 val_auc=0.608603 best=0.633492@108 wait=13/25
+hidden=64 C=2 seed=1234567 epoch=121 loss=0.358410 val_auc=0.619888 best=0.633492@108 wait=14/25
+hidden=64 C=2 seed=1234567 epoch=122 loss=0.358752 val_auc=0.622535 best=0.633492@108 wait=15/25
+hidden=64 C=2 seed=1234567 epoch=123 loss=0.356418 val_auc=0.621146 best=0.633492@108 wait=16/25
+hidden=64 C=2 seed=1234567 epoch=124 loss=0.352391 val_auc=0.621634 best=0.633492@108 wait=17/25
+hidden=64 C=2 seed=1234567 epoch=125 loss=0.351308 val_auc=0.616761 best=0.633492@108 wait=18/25
+hidden=64 C=2 seed=1234567 epoch=126 loss=0.346206 val_auc=0.619137 best=0.633492@108 wait=19/25
+hidden=64 C=2 seed=1234567 epoch=127 loss=0.345726 val_auc=0.612593 best=0.633492@108 wait=20/25
+hidden=64 C=2 seed=1234567 epoch=128 loss=0.341257 val_auc=0.614658 best=0.633492@108 wait=21/25
+hidden=64 C=2 seed=1234567 epoch=129 loss=0.342441 val_auc=0.617888 best=0.633492@108 wait=22/25
+hidden=64 C=2 seed=1234567 epoch=130 loss=0.346094 val_auc=0.626652 best=0.633492@108 wait=23/25
+hidden=64 C=2 seed=1234567 epoch=131 loss=0.365870 val_auc=0.630938 best=0.633492@108 wait=24/25
+hidden=64 C=2 seed=1234567 epoch=132 loss=0.363922 val_auc=0.631276 best=0.633492@108 wait=25/25
+Early stopping at epoch 132.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_2/seed_1234567.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=5 | seed=123
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=5 seed=123 epoch=001 loss=0.696179 val_auc=0.526316 best=0.526316@1 wait=1/25
+hidden=64 C=5 seed=123 epoch=002 loss=0.709385 val_auc=0.514449 best=0.526316@1 wait=2/25
+hidden=64 C=5 seed=123 epoch=003 loss=0.680371 val_auc=0.514482 best=0.526316@1 wait=3/25
+hidden=64 C=5 seed=123 epoch=004 loss=0.681258 val_auc=0.518749 best=0.526316@1 wait=4/25
+hidden=64 C=5 seed=123 epoch=005 loss=0.677307 val_auc=0.526983 best=0.526983@5 wait=1/25
+hidden=64 C=5 seed=123 epoch=006 loss=0.670778 val_auc=0.534907 best=0.534907@6 wait=1/25
+hidden=64 C=5 seed=123 epoch=007 loss=0.665158 val_auc=0.532278 best=0.534907@6 wait=2/25
+hidden=64 C=5 seed=123 epoch=008 loss=0.660769 val_auc=0.528973 best=0.534907@6 wait=3/25
+hidden=64 C=5 seed=123 epoch=009 loss=0.657661 val_auc=0.523612 best=0.534907@6 wait=4/25
+hidden=64 C=5 seed=123 epoch=010 loss=0.654328 val_auc=0.522523 best=0.534907@6 wait=5/25
+hidden=64 C=5 seed=123 epoch=011 loss=0.650391 val_auc=0.522683 best=0.534907@6 wait=6/25
+hidden=64 C=5 seed=123 epoch=012 loss=0.648297 val_auc=0.530832 best=0.534907@6 wait=7/25
+hidden=64 C=5 seed=123 epoch=013 loss=0.644394 val_auc=0.537958 best=0.537958@13 wait=1/25
+hidden=64 C=5 seed=123 epoch=014 loss=0.640436 val_auc=0.534325 best=0.537958@13 wait=2/25
+hidden=64 C=5 seed=123 epoch=015 loss=0.637970 val_auc=0.534484 best=0.537958@13 wait=3/25
+hidden=64 C=5 seed=123 epoch=016 loss=0.639113 val_auc=0.520843 best=0.537958@13 wait=4/25
+hidden=64 C=5 seed=123 epoch=017 loss=0.635259 val_auc=0.524589 best=0.537958@13 wait=5/25
+hidden=64 C=5 seed=123 epoch=018 loss=0.627165 val_auc=0.530325 best=0.537958@13 wait=6/25
+hidden=64 C=5 seed=123 epoch=019 loss=0.627628 val_auc=0.523744 best=0.537958@13 wait=7/25
+hidden=64 C=5 seed=123 epoch=020 loss=0.619771 val_auc=0.524823 best=0.537958@13 wait=8/25
+hidden=64 C=5 seed=123 epoch=021 loss=0.620679 val_auc=0.529368 best=0.537958@13 wait=9/25
+hidden=64 C=5 seed=123 epoch=022 loss=0.613769 val_auc=0.536080 best=0.537958@13 wait=10/25
+hidden=64 C=5 seed=123 epoch=023 loss=0.608747 val_auc=0.521922 best=0.537958@13 wait=11/25
+hidden=64 C=5 seed=123 epoch=024 loss=0.606243 val_auc=0.534099 best=0.537958@13 wait=12/25
+hidden=64 C=5 seed=123 epoch=025 loss=0.598643 val_auc=0.534813 best=0.537958@13 wait=13/25
+hidden=64 C=5 seed=123 epoch=026 loss=0.595152 val_auc=0.530006 best=0.537958@13 wait=14/25
+hidden=64 C=5 seed=123 epoch=027 loss=0.592426 val_auc=0.528447 best=0.537958@13 wait=15/25
+hidden=64 C=5 seed=123 epoch=028 loss=0.587467 val_auc=0.537939 best=0.537958@13 wait=16/25
+hidden=64 C=5 seed=123 epoch=029 loss=0.580044 val_auc=0.544643 best=0.544643@29 wait=1/25
+hidden=64 C=5 seed=123 epoch=030 loss=0.574224 val_auc=0.541826 best=0.544643@29 wait=2/25
+hidden=64 C=5 seed=123 epoch=031 loss=0.569311 val_auc=0.538428 best=0.544643@29 wait=3/25
+hidden=64 C=5 seed=123 epoch=032 loss=0.569362 val_auc=0.548314 best=0.548314@32 wait=1/25
+hidden=64 C=5 seed=123 epoch=033 loss=0.593485 val_auc=0.540033 best=0.548314@32 wait=2/25
+hidden=64 C=5 seed=123 epoch=034 loss=0.602116 val_auc=0.555299 best=0.555299@34 wait=1/25
+hidden=64 C=5 seed=123 epoch=035 loss=0.559079 val_auc=0.554876 best=0.555299@34 wait=2/25
+hidden=64 C=5 seed=123 epoch=036 loss=0.583336 val_auc=0.537592 best=0.555299@34 wait=3/25
+hidden=64 C=5 seed=123 epoch=037 loss=0.559683 val_auc=0.526035 best=0.555299@34 wait=4/25
+hidden=64 C=5 seed=123 epoch=038 loss=0.565159 val_auc=0.532672 best=0.555299@34 wait=5/25
+hidden=64 C=5 seed=123 epoch=039 loss=0.559881 val_auc=0.548736 best=0.555299@34 wait=6/25
+hidden=64 C=5 seed=123 epoch=040 loss=0.550159 val_auc=0.551506 best=0.555299@34 wait=7/25
+hidden=64 C=5 seed=123 epoch=041 loss=0.554498 val_auc=0.556707 best=0.556707@41 wait=1/25
+hidden=64 C=5 seed=123 epoch=042 loss=0.539451 val_auc=0.545187 best=0.556707@41 wait=2/25
+hidden=64 C=5 seed=123 epoch=043 loss=0.543435 val_auc=0.551797 best=0.556707@41 wait=3/25
+hidden=64 C=5 seed=123 epoch=044 loss=0.533538 val_auc=0.566575 best=0.566575@44 wait=1/25
+hidden=64 C=5 seed=123 epoch=045 loss=0.534216 val_auc=0.568631 best=0.568631@45 wait=1/25
+hidden=64 C=5 seed=123 epoch=046 loss=0.526314 val_auc=0.556416 best=0.568631@45 wait=2/25
+hidden=64 C=5 seed=123 epoch=047 loss=0.526474 val_auc=0.580188 best=0.580188@47 wait=1/25
+hidden=64 C=5 seed=123 epoch=048 loss=0.514176 val_auc=0.600083 best=0.600083@48 wait=1/25
+hidden=64 C=5 seed=123 epoch=049 loss=0.517941 val_auc=0.589483 best=0.600083@48 wait=2/25
+hidden=64 C=5 seed=123 epoch=050 loss=0.512188 val_auc=0.600937 best=0.600937@50 wait=1/25
+hidden=64 C=5 seed=123 epoch=051 loss=0.500254 val_auc=0.613950 best=0.613950@51 wait=1/25
+hidden=64 C=5 seed=123 epoch=052 loss=0.505365 val_auc=0.570199 best=0.613950@51 wait=2/25
+hidden=64 C=5 seed=123 epoch=053 loss=0.499972 val_auc=0.591070 best=0.613950@51 wait=3/25
+hidden=64 C=5 seed=123 epoch=054 loss=0.487037 val_auc=0.614062 best=0.614062@54 wait=1/25
+hidden=64 C=5 seed=123 epoch=055 loss=0.483423 val_auc=0.594675 best=0.614062@54 wait=2/25
+hidden=64 C=5 seed=123 epoch=056 loss=0.483569 val_auc=0.607932 best=0.614062@54 wait=3/25
+hidden=64 C=5 seed=123 epoch=057 loss=0.476287 val_auc=0.608645 best=0.614062@54 wait=4/25
+hidden=64 C=5 seed=123 epoch=058 loss=0.466624 val_auc=0.625432 best=0.625432@58 wait=1/25
+hidden=64 C=5 seed=123 epoch=059 loss=0.460164 val_auc=0.620465 best=0.625432@58 wait=2/25
+hidden=64 C=5 seed=123 epoch=060 loss=0.453266 val_auc=0.623272 best=0.625432@58 wait=3/25
+hidden=64 C=5 seed=123 epoch=061 loss=0.446632 val_auc=0.621676 best=0.625432@58 wait=4/25
+hidden=64 C=5 seed=123 epoch=062 loss=0.440529 val_auc=0.624502 best=0.625432@58 wait=5/25
+hidden=64 C=5 seed=123 epoch=063 loss=0.436999 val_auc=0.630389 best=0.630389@63 wait=1/25
+hidden=64 C=5 seed=123 epoch=064 loss=0.523942 val_auc=0.638388 best=0.638388@64 wait=1/25
+hidden=64 C=5 seed=123 epoch=065 loss=0.989784 val_auc=0.619817 best=0.638388@64 wait=2/25
+hidden=64 C=5 seed=123 epoch=066 loss=0.468048 val_auc=0.579916 best=0.638388@64 wait=3/25
+hidden=64 C=5 seed=123 epoch=067 loss=0.683505 val_auc=0.588309 best=0.638388@64 wait=4/25
+hidden=64 C=5 seed=123 epoch=068 loss=0.538736 val_auc=0.607162 best=0.638388@64 wait=5/25
+hidden=64 C=5 seed=123 epoch=069 loss=0.522972 val_auc=0.613255 best=0.638388@64 wait=6/25
+hidden=64 C=5 seed=123 epoch=070 loss=0.559132 val_auc=0.593867 best=0.638388@64 wait=7/25
+hidden=64 C=5 seed=123 epoch=071 loss=0.549148 val_auc=0.582244 best=0.638388@64 wait=8/25
+hidden=64 C=5 seed=123 epoch=072 loss=0.536180 val_auc=0.575644 best=0.638388@64 wait=9/25
+hidden=64 C=5 seed=123 epoch=073 loss=0.528912 val_auc=0.554914 best=0.638388@64 wait=10/25
+hidden=64 C=5 seed=123 epoch=074 loss=0.519780 val_auc=0.562322 best=0.638388@64 wait=11/25
+hidden=64 C=5 seed=123 epoch=075 loss=0.514724 val_auc=0.567391 best=0.638388@64 wait=12/25
+hidden=64 C=5 seed=123 epoch=076 loss=0.518522 val_auc=0.558923 best=0.638388@64 wait=13/25
+hidden=64 C=5 seed=123 epoch=077 loss=0.521312 val_auc=0.556294 best=0.638388@64 wait=14/25
+hidden=64 C=5 seed=123 epoch=078 loss=0.514502 val_auc=0.551928 best=0.638388@64 wait=15/25
+hidden=64 C=5 seed=123 epoch=079 loss=0.504218 val_auc=0.550135 best=0.638388@64 wait=16/25
+hidden=64 C=5 seed=123 epoch=080 loss=0.500789 val_auc=0.557364 best=0.638388@64 wait=17/25
+hidden=64 C=5 seed=123 epoch=081 loss=0.500899 val_auc=0.568884 best=0.638388@64 wait=18/25
+hidden=64 C=5 seed=123 epoch=082 loss=0.498924 val_auc=0.585737 best=0.638388@64 wait=19/25
+hidden=64 C=5 seed=123 epoch=083 loss=0.493760 val_auc=0.593680 best=0.638388@64 wait=20/25
+hidden=64 C=5 seed=123 epoch=084 loss=0.488680 val_auc=0.595881 best=0.638388@64 wait=21/25
+hidden=64 C=5 seed=123 epoch=085 loss=0.485677 val_auc=0.588281 best=0.638388@64 wait=22/25
+hidden=64 C=5 seed=123 epoch=086 loss=0.481870 val_auc=0.577325 best=0.638388@64 wait=23/25
+hidden=64 C=5 seed=123 epoch=087 loss=0.476521 val_auc=0.561439 best=0.638388@64 wait=24/25
+hidden=64 C=5 seed=123 epoch=088 loss=0.474305 val_auc=0.559402 best=0.638388@64 wait=25/25
+Early stopping at epoch 88.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_5/seed_123.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=5 | seed=1234
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=5 seed=1234 epoch=001 loss=0.697486 val_auc=0.545521 best=0.545521@1 wait=1/25
+hidden=64 C=5 seed=1234 epoch=002 loss=0.686966 val_auc=0.540592 best=0.545521@1 wait=2/25
+hidden=64 C=5 seed=1234 epoch=003 loss=0.677366 val_auc=0.544173 best=0.545521@1 wait=3/25
+hidden=64 C=5 seed=1234 epoch=004 loss=0.672822 val_auc=0.544488 best=0.545521@1 wait=4/25
+hidden=64 C=5 seed=1234 epoch=005 loss=0.664973 val_auc=0.563777 best=0.563777@5 wait=1/25
+hidden=64 C=5 seed=1234 epoch=006 loss=0.659912 val_auc=0.564260 best=0.564260@6 wait=1/25
+hidden=64 C=5 seed=1234 epoch=007 loss=0.652571 val_auc=0.533114 best=0.564260@6 wait=2/25
+hidden=64 C=5 seed=1234 epoch=008 loss=0.647044 val_auc=0.522570 best=0.564260@6 wait=3/25
+hidden=64 C=5 seed=1234 epoch=009 loss=0.643883 val_auc=0.530644 best=0.564260@6 wait=4/25
+hidden=64 C=5 seed=1234 epoch=010 loss=0.638194 val_auc=0.547544 best=0.564260@6 wait=5/25
+hidden=64 C=5 seed=1234 epoch=011 loss=0.632054 val_auc=0.560256 best=0.564260@6 wait=6/25
+hidden=64 C=5 seed=1234 epoch=012 loss=0.627910 val_auc=0.536334 best=0.564260@6 wait=7/25
+hidden=64 C=5 seed=1234 epoch=013 loss=0.624053 val_auc=0.545760 best=0.564260@6 wait=8/25
+hidden=64 C=5 seed=1234 epoch=014 loss=0.618766 val_auc=0.548924 best=0.564260@6 wait=9/25
+hidden=64 C=5 seed=1234 epoch=015 loss=0.613777 val_auc=0.545150 best=0.564260@6 wait=10/25
+hidden=64 C=5 seed=1234 epoch=016 loss=0.608324 val_auc=0.549854 best=0.564260@6 wait=11/25
+hidden=64 C=5 seed=1234 epoch=017 loss=0.603583 val_auc=0.552013 best=0.564260@6 wait=12/25
+hidden=64 C=5 seed=1234 epoch=018 loss=0.602305 val_auc=0.563617 best=0.564260@6 wait=13/25
+hidden=64 C=5 seed=1234 epoch=019 loss=0.595383 val_auc=0.540803 best=0.564260@6 wait=14/25
+hidden=64 C=5 seed=1234 epoch=020 loss=0.589967 val_auc=0.566011 best=0.566011@20 wait=1/25
+hidden=64 C=5 seed=1234 epoch=021 loss=0.582631 val_auc=0.539197 best=0.566011@20 wait=2/25
+hidden=64 C=5 seed=1234 epoch=022 loss=0.583802 val_auc=0.550126 best=0.566011@20 wait=3/25
+hidden=64 C=5 seed=1234 epoch=023 loss=0.594716 val_auc=0.542868 best=0.566011@20 wait=4/25
+hidden=64 C=5 seed=1234 epoch=024 loss=0.581092 val_auc=0.564631 best=0.566011@20 wait=5/25
+hidden=64 C=5 seed=1234 epoch=025 loss=0.581143 val_auc=0.552980 best=0.566011@20 wait=6/25
+hidden=64 C=5 seed=1234 epoch=026 loss=0.576502 val_auc=0.554895 best=0.566011@20 wait=7/25
+hidden=64 C=5 seed=1234 epoch=027 loss=0.566134 val_auc=0.576949 best=0.576949@27 wait=1/25
+hidden=64 C=5 seed=1234 epoch=028 loss=0.565205 val_auc=0.574564 best=0.576949@27 wait=2/25
+hidden=64 C=5 seed=1234 epoch=029 loss=0.559463 val_auc=0.549093 best=0.576949@27 wait=3/25
+hidden=64 C=5 seed=1234 epoch=030 loss=0.553286 val_auc=0.560388 best=0.576949@27 wait=4/25
+hidden=64 C=5 seed=1234 epoch=031 loss=0.548498 val_auc=0.566697 best=0.576949@27 wait=5/25
+hidden=64 C=5 seed=1234 epoch=032 loss=0.542022 val_auc=0.562941 best=0.576949@27 wait=6/25
+hidden=64 C=5 seed=1234 epoch=033 loss=0.537851 val_auc=0.557430 best=0.576949@27 wait=7/25
+hidden=64 C=5 seed=1234 epoch=034 loss=0.531191 val_auc=0.563589 best=0.576949@27 wait=8/25
+hidden=64 C=5 seed=1234 epoch=035 loss=0.526175 val_auc=0.579559 best=0.579559@35 wait=1/25
+hidden=64 C=5 seed=1234 epoch=036 loss=0.534813 val_auc=0.558022 best=0.579559@35 wait=2/25
+hidden=64 C=5 seed=1234 epoch=037 loss=0.552909 val_auc=0.567251 best=0.579559@35 wait=3/25
+hidden=64 C=5 seed=1234 epoch=038 loss=0.553958 val_auc=0.571184 best=0.579559@35 wait=4/25
+hidden=64 C=5 seed=1234 epoch=039 loss=0.532497 val_auc=0.577710 best=0.579559@35 wait=5/25
+hidden=64 C=5 seed=1234 epoch=040 loss=0.532586 val_auc=0.573447 best=0.579559@35 wait=6/25
+hidden=64 C=5 seed=1234 epoch=041 loss=0.532017 val_auc=0.569879 best=0.579559@35 wait=7/25
+hidden=64 C=5 seed=1234 epoch=042 loss=0.514591 val_auc=0.575109 best=0.579559@35 wait=8/25
+hidden=64 C=5 seed=1234 epoch=043 loss=0.526705 val_auc=0.573795 best=0.579559@35 wait=9/25
+hidden=64 C=5 seed=1234 epoch=044 loss=0.514048 val_auc=0.575419 best=0.579559@35 wait=10/25
+hidden=64 C=5 seed=1234 epoch=045 loss=0.510935 val_auc=0.575635 best=0.579559@35 wait=11/25
+hidden=64 C=5 seed=1234 epoch=046 loss=0.506306 val_auc=0.575287 best=0.579559@35 wait=12/25
+hidden=64 C=5 seed=1234 epoch=047 loss=0.497984 val_auc=0.574968 best=0.579559@35 wait=13/25
+hidden=64 C=5 seed=1234 epoch=048 loss=0.500841 val_auc=0.573701 best=0.579559@35 wait=14/25
+hidden=64 C=5 seed=1234 epoch=049 loss=0.489061 val_auc=0.569391 best=0.579559@35 wait=15/25
+hidden=64 C=5 seed=1234 epoch=050 loss=0.493410 val_auc=0.577428 best=0.579559@35 wait=16/25
+hidden=64 C=5 seed=1234 epoch=051 loss=0.482565 val_auc=0.579071 best=0.579559@35 wait=17/25
+hidden=64 C=5 seed=1234 epoch=052 loss=0.482896 val_auc=0.579080 best=0.579559@35 wait=18/25
+hidden=64 C=5 seed=1234 epoch=053 loss=0.478270 val_auc=0.587051 best=0.587051@53 wait=1/25
+hidden=64 C=5 seed=1234 epoch=054 loss=0.474865 val_auc=0.584253 best=0.587051@53 wait=2/25
+hidden=64 C=5 seed=1234 epoch=055 loss=0.467778 val_auc=0.588929 best=0.588929@55 wait=1/25
+hidden=64 C=5 seed=1234 epoch=056 loss=0.467697 val_auc=0.594478 best=0.594478@56 wait=1/25
+hidden=64 C=5 seed=1234 epoch=057 loss=0.460940 val_auc=0.589473 best=0.594478@56 wait=2/25
+hidden=64 C=5 seed=1234 epoch=058 loss=0.457854 val_auc=0.588572 best=0.594478@56 wait=3/25
+hidden=64 C=5 seed=1234 epoch=059 loss=0.452045 val_auc=0.592825 best=0.594478@56 wait=4/25
+hidden=64 C=5 seed=1234 epoch=060 loss=0.450241 val_auc=0.583070 best=0.594478@56 wait=5/25
+hidden=64 C=5 seed=1234 epoch=061 loss=0.454217 val_auc=0.602120 best=0.602120@61 wait=1/25
+hidden=64 C=5 seed=1234 epoch=062 loss=0.483391 val_auc=0.595520 best=0.602120@61 wait=2/25
+hidden=64 C=5 seed=1234 epoch=063 loss=0.456389 val_auc=0.602411 best=0.602411@63 wait=1/25
+hidden=64 C=5 seed=1234 epoch=064 loss=0.443980 val_auc=0.597848 best=0.602411@63 wait=2/25
+hidden=64 C=5 seed=1234 epoch=065 loss=0.451502 val_auc=0.607246 best=0.607246@65 wait=1/25
+hidden=64 C=5 seed=1234 epoch=066 loss=0.441183 val_auc=0.599303 best=0.607246@65 wait=2/25
+hidden=64 C=5 seed=1234 epoch=067 loss=0.440400 val_auc=0.602458 best=0.607246@65 wait=3/25
+hidden=64 C=5 seed=1234 epoch=068 loss=0.432843 val_auc=0.612476 best=0.612476@68 wait=1/25
+hidden=64 C=5 seed=1234 epoch=069 loss=0.428267 val_auc=0.615799 best=0.615799@69 wait=1/25
+hidden=64 C=5 seed=1234 epoch=070 loss=0.428996 val_auc=0.612973 best=0.615799@69 wait=2/25
+hidden=64 C=5 seed=1234 epoch=071 loss=0.424154 val_auc=0.605791 best=0.615799@69 wait=3/25
+hidden=64 C=5 seed=1234 epoch=072 loss=0.420536 val_auc=0.612222 best=0.615799@69 wait=4/25
+hidden=64 C=5 seed=1234 epoch=073 loss=0.420297 val_auc=0.610410 best=0.615799@69 wait=5/25
+hidden=64 C=5 seed=1234 epoch=074 loss=0.412983 val_auc=0.613940 best=0.615799@69 wait=6/25
+hidden=64 C=5 seed=1234 epoch=075 loss=0.408002 val_auc=0.606533 best=0.615799@69 wait=7/25
+hidden=64 C=5 seed=1234 epoch=076 loss=0.414249 val_auc=0.615546 best=0.615799@69 wait=8/25
+hidden=64 C=5 seed=1234 epoch=077 loss=0.470238 val_auc=0.607612 best=0.615799@69 wait=9/25
+hidden=64 C=5 seed=1234 epoch=078 loss=0.435716 val_auc=0.629497 best=0.629497@78 wait=1/25
+hidden=64 C=5 seed=1234 epoch=079 loss=0.419794 val_auc=0.626962 best=0.629497@78 wait=2/25
+hidden=64 C=5 seed=1234 epoch=080 loss=0.424201 val_auc=0.629056 best=0.629497@78 wait=3/25
+hidden=64 C=5 seed=1234 epoch=081 loss=0.425568 val_auc=0.626896 best=0.629497@78 wait=4/25
+hidden=64 C=5 seed=1234 epoch=082 loss=0.417717 val_auc=0.623808 best=0.629497@78 wait=5/25
+hidden=64 C=5 seed=1234 epoch=083 loss=0.403759 val_auc=0.631995 best=0.631995@83 wait=1/25
+hidden=64 C=5 seed=1234 epoch=084 loss=0.405992 val_auc=0.627572 best=0.631995@83 wait=2/25
+hidden=64 C=5 seed=1234 epoch=085 loss=0.403583 val_auc=0.638088 best=0.638088@85 wait=1/25
+hidden=64 C=5 seed=1234 epoch=086 loss=0.393120 val_auc=0.644087 best=0.644087@86 wait=1/25
+hidden=64 C=5 seed=1234 epoch=087 loss=0.386831 val_auc=0.625972 best=0.644087@86 wait=2/25
+hidden=64 C=5 seed=1234 epoch=088 loss=0.388638 val_auc=0.620442 best=0.644087@86 wait=3/25
+hidden=64 C=5 seed=1234 epoch=089 loss=0.388442 val_auc=0.627812 best=0.644087@86 wait=4/25
+hidden=64 C=5 seed=1234 epoch=090 loss=0.385539 val_auc=0.641219 best=0.644087@86 wait=5/25
+hidden=64 C=5 seed=1234 epoch=091 loss=0.405162 val_auc=0.639069 best=0.644087@86 wait=6/25
+hidden=64 C=5 seed=1234 epoch=092 loss=0.391643 val_auc=0.645566 best=0.645566@92 wait=1/25
+hidden=64 C=5 seed=1234 epoch=093 loss=0.373501 val_auc=0.645247 best=0.645566@92 wait=2/25
+hidden=64 C=5 seed=1234 epoch=094 loss=0.372513 val_auc=0.648298 best=0.648298@94 wait=1/25
+hidden=64 C=5 seed=1234 epoch=095 loss=0.365540 val_auc=0.658001 best=0.658001@95 wait=1/25
+hidden=64 C=5 seed=1234 epoch=096 loss=0.369682 val_auc=0.650443 best=0.658001@95 wait=2/25
+hidden=64 C=5 seed=1234 epoch=097 loss=0.389992 val_auc=0.663475 best=0.663475@97 wait=1/25
+hidden=64 C=5 seed=1234 epoch=098 loss=0.383037 val_auc=0.656433 best=0.663475@97 wait=2/25
+hidden=64 C=5 seed=1234 epoch=099 loss=0.369916 val_auc=0.656471 best=0.663475@97 wait=3/25
+hidden=64 C=5 seed=1234 epoch=100 loss=0.348043 val_auc=0.649570 best=0.663475@97 wait=4/25
+hidden=64 C=5 seed=1234 epoch=101 loss=0.368113 val_auc=0.639369 best=0.663475@97 wait=5/25
+hidden=64 C=5 seed=1234 epoch=102 loss=0.432583 val_auc=0.659297 best=0.663475@97 wait=6/25
+hidden=64 C=5 seed=1234 epoch=103 loss=0.361553 val_auc=0.671483 best=0.671483@103 wait=1/25
+hidden=64 C=5 seed=1234 epoch=104 loss=0.411431 val_auc=0.672868 best=0.672868@104 wait=1/25
+hidden=64 C=5 seed=1234 epoch=105 loss=0.387232 val_auc=0.648401 best=0.672868@104 wait=2/25
+hidden=64 C=5 seed=1234 epoch=106 loss=0.392642 val_auc=0.649669 best=0.672868@104 wait=3/25
+hidden=64 C=5 seed=1234 epoch=107 loss=0.381129 val_auc=0.652992 best=0.672868@104 wait=4/25
+hidden=64 C=5 seed=1234 epoch=108 loss=0.374587 val_auc=0.653264 best=0.672868@104 wait=5/25
+hidden=64 C=5 seed=1234 epoch=109 loss=0.373528 val_auc=0.667591 best=0.672868@104 wait=6/25
+hidden=64 C=5 seed=1234 epoch=110 loss=0.364453 val_auc=0.659212 best=0.672868@104 wait=7/25
+hidden=64 C=5 seed=1234 epoch=111 loss=0.360816 val_auc=0.653382 best=0.672868@104 wait=8/25
+hidden=64 C=5 seed=1234 epoch=112 loss=0.345753 val_auc=0.647486 best=0.672868@104 wait=9/25
+hidden=64 C=5 seed=1234 epoch=113 loss=0.344673 val_auc=0.647716 best=0.672868@104 wait=10/25
+hidden=64 C=5 seed=1234 epoch=114 loss=0.345841 val_auc=0.659376 best=0.672868@104 wait=11/25
+hidden=64 C=5 seed=1234 epoch=115 loss=0.336993 val_auc=0.649105 best=0.672868@104 wait=12/25
+hidden=64 C=5 seed=1234 epoch=116 loss=0.331846 val_auc=0.645509 best=0.672868@104 wait=13/25
+hidden=64 C=5 seed=1234 epoch=117 loss=0.333820 val_auc=0.643247 best=0.672868@104 wait=14/25
+hidden=64 C=5 seed=1234 epoch=118 loss=0.357251 val_auc=0.639487 best=0.672868@104 wait=15/25
+hidden=64 C=5 seed=1234 epoch=119 loss=0.599563 val_auc=0.652809 best=0.672868@104 wait=16/25
+hidden=64 C=5 seed=1234 epoch=120 loss=0.390980 val_auc=0.659667 best=0.672868@104 wait=17/25
+hidden=64 C=5 seed=1234 epoch=121 loss=0.567061 val_auc=0.659517 best=0.672868@104 wait=18/25
+hidden=64 C=5 seed=1234 epoch=122 loss=0.384395 val_auc=0.649162 best=0.672868@104 wait=19/25
+hidden=64 C=5 seed=1234 epoch=123 loss=0.455064 val_auc=0.633933 best=0.672868@104 wait=20/25
+hidden=64 C=5 seed=1234 epoch=124 loss=0.405753 val_auc=0.629957 best=0.672868@104 wait=21/25
+hidden=64 C=5 seed=1234 epoch=125 loss=0.432485 val_auc=0.627169 best=0.672868@104 wait=22/25
+hidden=64 C=5 seed=1234 epoch=126 loss=0.398020 val_auc=0.629525 best=0.672868@104 wait=23/25
+hidden=64 C=5 seed=1234 epoch=127 loss=0.403996 val_auc=0.653053 best=0.672868@104 wait=24/25
+hidden=64 C=5 seed=1234 epoch=128 loss=0.415479 val_auc=0.660282 best=0.672868@104 wait=25/25
+Early stopping at epoch 128.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_5/seed_1234.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=5 | seed=12345
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=5 seed=12345 epoch=001 loss=0.701327 val_auc=0.501314 best=0.501314@1 wait=1/25
+hidden=64 C=5 seed=12345 epoch=002 loss=0.682618 val_auc=0.529837 best=0.529837@2 wait=1/25
+hidden=64 C=5 seed=12345 epoch=003 loss=0.668760 val_auc=0.527020 best=0.529837@2 wait=2/25
+hidden=64 C=5 seed=12345 epoch=004 loss=0.660242 val_auc=0.524119 best=0.529837@2 wait=3/25
+hidden=64 C=5 seed=12345 epoch=005 loss=0.654336 val_auc=0.519763 best=0.529837@2 wait=4/25
+hidden=64 C=5 seed=12345 epoch=006 loss=0.647512 val_auc=0.516336 best=0.529837@2 wait=5/25
+hidden=64 C=5 seed=12345 epoch=007 loss=0.641585 val_auc=0.517759 best=0.529837@2 wait=6/25
+hidden=64 C=5 seed=12345 epoch=008 loss=0.636902 val_auc=0.519115 best=0.529837@2 wait=7/25
+hidden=64 C=5 seed=12345 epoch=009 loss=0.633235 val_auc=0.522598 best=0.529837@2 wait=8/25
+hidden=64 C=5 seed=12345 epoch=010 loss=0.628789 val_auc=0.541263 best=0.541263@10 wait=1/25
+hidden=64 C=5 seed=12345 epoch=011 loss=0.625668 val_auc=0.541019 best=0.541263@10 wait=2/25
+hidden=64 C=5 seed=12345 epoch=012 loss=0.622310 val_auc=0.542549 best=0.542549@12 wait=1/25
+hidden=64 C=5 seed=12345 epoch=013 loss=0.618418 val_auc=0.547159 best=0.547159@13 wait=1/25
+hidden=64 C=5 seed=12345 epoch=014 loss=0.614921 val_auc=0.541714 best=0.547159@13 wait=2/25
+hidden=64 C=5 seed=12345 epoch=015 loss=0.612342 val_auc=0.550351 best=0.550351@15 wait=1/25
+hidden=64 C=5 seed=12345 epoch=016 loss=0.612205 val_auc=0.537564 best=0.550351@15 wait=2/25
+hidden=64 C=5 seed=12345 epoch=017 loss=0.602956 val_auc=0.532522 best=0.550351@15 wait=3/25
+hidden=64 C=5 seed=12345 epoch=018 loss=0.602821 val_auc=0.541742 best=0.550351@15 wait=4/25
+hidden=64 C=5 seed=12345 epoch=019 loss=0.597863 val_auc=0.542230 best=0.550351@15 wait=5/25
+hidden=64 C=5 seed=12345 epoch=020 loss=0.593282 val_auc=0.534663 best=0.550351@15 wait=6/25
+hidden=64 C=5 seed=12345 epoch=021 loss=0.590260 val_auc=0.542174 best=0.550351@15 wait=7/25
+hidden=64 C=5 seed=12345 epoch=022 loss=0.583449 val_auc=0.557299 best=0.557299@22 wait=1/25
+hidden=64 C=5 seed=12345 epoch=023 loss=0.581648 val_auc=0.563570 best=0.563570@23 wait=1/25
+hidden=64 C=5 seed=12345 epoch=024 loss=0.576223 val_auc=0.566969 best=0.566969@24 wait=1/25
+hidden=64 C=5 seed=12345 epoch=025 loss=0.570205 val_auc=0.559129 best=0.566969@24 wait=2/25
+hidden=64 C=5 seed=12345 epoch=026 loss=0.565567 val_auc=0.550116 best=0.566969@24 wait=3/25
+hidden=64 C=5 seed=12345 epoch=027 loss=0.562131 val_auc=0.555825 best=0.566969@24 wait=4/25
+hidden=64 C=5 seed=12345 epoch=028 loss=0.566928 val_auc=0.561261 best=0.566969@24 wait=5/25
+hidden=64 C=5 seed=12345 epoch=029 loss=0.562119 val_auc=0.560420 best=0.566969@24 wait=6/25
+hidden=64 C=5 seed=12345 epoch=030 loss=0.549894 val_auc=0.565533 best=0.566969@24 wait=7/25
+hidden=64 C=5 seed=12345 epoch=031 loss=0.549706 val_auc=0.560087 best=0.566969@24 wait=8/25
+hidden=64 C=5 seed=12345 epoch=032 loss=0.544930 val_auc=0.566049 best=0.566969@24 wait=9/25
+hidden=64 C=5 seed=12345 epoch=033 loss=0.538406 val_auc=0.556473 best=0.566969@24 wait=10/25
+hidden=64 C=5 seed=12345 epoch=034 loss=0.538585 val_auc=0.568537 best=0.568537@34 wait=1/25
+hidden=64 C=5 seed=12345 epoch=035 loss=0.531366 val_auc=0.569955 best=0.569955@35 wait=1/25
+hidden=64 C=5 seed=12345 epoch=036 loss=0.527360 val_auc=0.570170 best=0.570170@36 wait=1/25
+hidden=64 C=5 seed=12345 epoch=037 loss=0.527351 val_auc=0.569617 best=0.570170@36 wait=2/25
+hidden=64 C=5 seed=12345 epoch=038 loss=0.523648 val_auc=0.563974 best=0.570170@36 wait=3/25
+hidden=64 C=5 seed=12345 epoch=039 loss=0.517212 val_auc=0.575625 best=0.575625@39 wait=1/25
+hidden=64 C=5 seed=12345 epoch=040 loss=0.513883 val_auc=0.569025 best=0.575625@39 wait=2/25
+hidden=64 C=5 seed=12345 epoch=041 loss=0.513503 val_auc=0.579944 best=0.579944@41 wait=1/25
+hidden=64 C=5 seed=12345 epoch=042 loss=0.511929 val_auc=0.578864 best=0.579944@41 wait=2/25
+hidden=64 C=5 seed=12345 epoch=043 loss=0.506653 val_auc=0.576799 best=0.579944@41 wait=3/25
+hidden=64 C=5 seed=12345 epoch=044 loss=0.501808 val_auc=0.575832 best=0.579944@41 wait=4/25
+hidden=64 C=5 seed=12345 epoch=045 loss=0.498171 val_auc=0.563453 best=0.579944@41 wait=5/25
+hidden=64 C=5 seed=12345 epoch=046 loss=0.498770 val_auc=0.573841 best=0.579944@41 wait=6/25
+hidden=64 C=5 seed=12345 epoch=047 loss=0.499096 val_auc=0.559374 best=0.579944@41 wait=7/25
+hidden=64 C=5 seed=12345 epoch=048 loss=0.495844 val_auc=0.575062 best=0.579944@41 wait=8/25
+hidden=64 C=5 seed=12345 epoch=049 loss=0.485764 val_auc=0.581606 best=0.581606@49 wait=1/25
+hidden=64 C=5 seed=12345 epoch=050 loss=0.484452 val_auc=0.566931 best=0.581606@49 wait=2/25
+hidden=64 C=5 seed=12345 epoch=051 loss=0.483476 val_auc=0.576480 best=0.581606@49 wait=3/25
+hidden=64 C=5 seed=12345 epoch=052 loss=0.480838 val_auc=0.587314 best=0.587314@52 wait=1/25
+hidden=64 C=5 seed=12345 epoch=053 loss=0.473196 val_auc=0.580188 best=0.587314@52 wait=2/25
+hidden=64 C=5 seed=12345 epoch=054 loss=0.469953 val_auc=0.587511 best=0.587511@54 wait=1/25
+hidden=64 C=5 seed=12345 epoch=055 loss=0.472610 val_auc=0.562847 best=0.587511@54 wait=2/25
+hidden=64 C=5 seed=12345 epoch=056 loss=0.467317 val_auc=0.580611 best=0.587511@54 wait=3/25
+hidden=64 C=5 seed=12345 epoch=057 loss=0.462824 val_auc=0.579916 best=0.587511@54 wait=4/25
+hidden=64 C=5 seed=12345 epoch=058 loss=0.455485 val_auc=0.570391 best=0.587511@54 wait=5/25
+hidden=64 C=5 seed=12345 epoch=059 loss=0.455447 val_auc=0.586648 best=0.587511@54 wait=6/25
+hidden=64 C=5 seed=12345 epoch=060 loss=0.453866 val_auc=0.581559 best=0.587511@54 wait=7/25
+hidden=64 C=5 seed=12345 epoch=061 loss=0.461000 val_auc=0.619719 best=0.619719@61 wait=1/25
+hidden=64 C=5 seed=12345 epoch=062 loss=0.501575 val_auc=0.585864 best=0.619719@61 wait=2/25
+hidden=64 C=5 seed=12345 epoch=063 loss=0.472576 val_auc=0.566401 best=0.619719@61 wait=3/25
+hidden=64 C=5 seed=12345 epoch=064 loss=0.475905 val_auc=0.575804 best=0.619719@61 wait=4/25
+hidden=64 C=5 seed=12345 epoch=065 loss=0.466134 val_auc=0.598407 best=0.619719@61 wait=5/25
+hidden=64 C=5 seed=12345 epoch=066 loss=0.466925 val_auc=0.584596 best=0.619719@61 wait=6/25
+hidden=64 C=5 seed=12345 epoch=067 loss=0.455995 val_auc=0.565622 best=0.619719@61 wait=7/25
+hidden=64 C=5 seed=12345 epoch=068 loss=0.457371 val_auc=0.574132 best=0.619719@61 wait=8/25
+hidden=64 C=5 seed=12345 epoch=069 loss=0.451831 val_auc=0.577625 best=0.619719@61 wait=9/25
+hidden=64 C=5 seed=12345 epoch=070 loss=0.448125 val_auc=0.577794 best=0.619719@61 wait=10/25
+hidden=64 C=5 seed=12345 epoch=071 loss=0.445356 val_auc=0.572461 best=0.619719@61 wait=11/25
+hidden=64 C=5 seed=12345 epoch=072 loss=0.441610 val_auc=0.558378 best=0.619719@61 wait=12/25
+hidden=64 C=5 seed=12345 epoch=073 loss=0.439327 val_auc=0.564246 best=0.619719@61 wait=13/25
+hidden=64 C=5 seed=12345 epoch=074 loss=0.436874 val_auc=0.567706 best=0.619719@61 wait=14/25
+hidden=64 C=5 seed=12345 epoch=075 loss=0.433591 val_auc=0.552806 best=0.619719@61 wait=15/25
+hidden=64 C=5 seed=12345 epoch=076 loss=0.430935 val_auc=0.553285 best=0.619719@61 wait=16/25
+hidden=64 C=5 seed=12345 epoch=077 loss=0.427560 val_auc=0.571302 best=0.619719@61 wait=17/25
+hidden=64 C=5 seed=12345 epoch=078 loss=0.424597 val_auc=0.573414 best=0.619719@61 wait=18/25
+hidden=64 C=5 seed=12345 epoch=079 loss=0.421101 val_auc=0.567894 best=0.619719@61 wait=19/25
+hidden=64 C=5 seed=12345 epoch=080 loss=0.418861 val_auc=0.571968 best=0.619719@61 wait=20/25
+hidden=64 C=5 seed=12345 epoch=081 loss=0.422756 val_auc=0.564880 best=0.619719@61 wait=21/25
+hidden=64 C=5 seed=12345 epoch=082 loss=0.414508 val_auc=0.583207 best=0.619719@61 wait=22/25
+hidden=64 C=5 seed=12345 epoch=083 loss=0.411257 val_auc=0.574456 best=0.619719@61 wait=23/25
+hidden=64 C=5 seed=12345 epoch=084 loss=0.407527 val_auc=0.565490 best=0.619719@61 wait=24/25
+hidden=64 C=5 seed=12345 epoch=085 loss=0.406920 val_auc=0.577423 best=0.619719@61 wait=25/25
+Early stopping at epoch 85.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_5/seed_12345.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=5 | seed=123456
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=5 seed=123456 epoch=001 loss=0.698559 val_auc=0.600360 best=0.600360@1 wait=1/25
+hidden=64 C=5 seed=123456 epoch=002 loss=0.686209 val_auc=0.601909 best=0.601909@2 wait=1/25
+hidden=64 C=5 seed=123456 epoch=003 loss=0.689494 val_auc=0.593271 best=0.601909@2 wait=2/25
+hidden=64 C=5 seed=123456 epoch=004 loss=0.673616 val_auc=0.594515 best=0.601909@2 wait=3/25
+hidden=64 C=5 seed=123456 epoch=005 loss=0.671487 val_auc=0.582916 best=0.601909@2 wait=4/25
+hidden=64 C=5 seed=123456 epoch=006 loss=0.665201 val_auc=0.580057 best=0.601909@2 wait=5/25
+hidden=64 C=5 seed=123456 epoch=007 loss=0.659761 val_auc=0.551567 best=0.601909@2 wait=6/25
+hidden=64 C=5 seed=123456 epoch=008 loss=0.654546 val_auc=0.551295 best=0.601909@2 wait=7/25
+hidden=64 C=5 seed=123456 epoch=009 loss=0.649491 val_auc=0.564777 best=0.601909@2 wait=8/25
+hidden=64 C=5 seed=123456 epoch=010 loss=0.642712 val_auc=0.559007 best=0.601909@2 wait=9/25
+hidden=64 C=5 seed=123456 epoch=011 loss=0.636226 val_auc=0.530593 best=0.601909@2 wait=10/25
+hidden=64 C=5 seed=123456 epoch=012 loss=0.631666 val_auc=0.545324 best=0.601909@2 wait=11/25
+hidden=64 C=5 seed=123456 epoch=013 loss=0.625407 val_auc=0.535869 best=0.601909@2 wait=12/25
+hidden=64 C=5 seed=123456 epoch=014 loss=0.619167 val_auc=0.537174 best=0.601909@2 wait=13/25
+hidden=64 C=5 seed=123456 epoch=015 loss=0.614538 val_auc=0.542648 best=0.601909@2 wait=14/25
+hidden=64 C=5 seed=123456 epoch=016 loss=0.611424 val_auc=0.534095 best=0.601909@2 wait=15/25
+hidden=64 C=5 seed=123456 epoch=017 loss=0.609964 val_auc=0.553332 best=0.601909@2 wait=16/25
+hidden=64 C=5 seed=123456 epoch=018 loss=0.600352 val_auc=0.552750 best=0.601909@2 wait=17/25
+hidden=64 C=5 seed=123456 epoch=019 loss=0.597558 val_auc=0.544826 best=0.601909@2 wait=18/25
+hidden=64 C=5 seed=123456 epoch=020 loss=0.592463 val_auc=0.553341 best=0.601909@2 wait=19/25
+hidden=64 C=5 seed=123456 epoch=021 loss=0.587610 val_auc=0.566946 best=0.601909@2 wait=20/25
+hidden=64 C=5 seed=123456 epoch=022 loss=0.582547 val_auc=0.555050 best=0.601909@2 wait=21/25
+hidden=64 C=5 seed=123456 epoch=023 loss=0.578801 val_auc=0.569818 best=0.601909@2 wait=22/25
+hidden=64 C=5 seed=123456 epoch=024 loss=0.571010 val_auc=0.567452 best=0.601909@2 wait=23/25
+hidden=64 C=5 seed=123456 epoch=025 loss=0.566931 val_auc=0.560449 best=0.601909@2 wait=24/25
+hidden=64 C=5 seed=123456 epoch=026 loss=0.561431 val_auc=0.567668 best=0.601909@2 wait=25/25
+Early stopping at epoch 26.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_5/seed_123456.json
+======================================================================
+SEC-GFD FDCompCN TUNING | hidden=64 | C=5 | seed=1234567
+======================================================================
+Train=2126 Validation=1063
+hidden=64 C=5 seed=1234567 epoch=001 loss=0.695286 val_auc=0.556050 best=0.556050@1 wait=1/25
+hidden=64 C=5 seed=1234567 epoch=002 loss=0.675314 val_auc=0.582211 best=0.582211@2 wait=1/25
+hidden=64 C=5 seed=1234567 epoch=003 loss=0.667317 val_auc=0.535034 best=0.582211@2 wait=2/25
+hidden=64 C=5 seed=1234567 epoch=004 loss=0.753521 val_auc=0.549567 best=0.582211@2 wait=3/25
+hidden=64 C=5 seed=1234567 epoch=005 loss=0.655649 val_auc=0.556618 best=0.582211@2 wait=4/25
+hidden=64 C=5 seed=1234567 epoch=006 loss=0.688727 val_auc=0.547398 best=0.582211@2 wait=5/25
+hidden=64 C=5 seed=1234567 epoch=007 loss=0.670548 val_auc=0.544845 best=0.582211@2 wait=6/25
+hidden=64 C=5 seed=1234567 epoch=008 loss=0.652619 val_auc=0.527255 best=0.582211@2 wait=7/25
+hidden=64 C=5 seed=1234567 epoch=009 loss=0.647161 val_auc=0.518345 best=0.582211@2 wait=8/25
+hidden=64 C=5 seed=1234567 epoch=010 loss=0.646589 val_auc=0.517698 best=0.582211@2 wait=9/25
+hidden=64 C=5 seed=1234567 epoch=011 loss=0.646415 val_auc=0.542460 best=0.582211@2 wait=10/25
+hidden=64 C=5 seed=1234567 epoch=012 loss=0.642593 val_auc=0.549483 best=0.582211@2 wait=11/25
+hidden=64 C=5 seed=1234567 epoch=013 loss=0.636973 val_auc=0.555886 best=0.582211@2 wait=12/25
+hidden=64 C=5 seed=1234567 epoch=014 loss=0.631382 val_auc=0.553069 best=0.582211@2 wait=13/25
+hidden=64 C=5 seed=1234567 epoch=015 loss=0.627010 val_auc=0.558167 best=0.582211@2 wait=14/25
+hidden=64 C=5 seed=1234567 epoch=016 loss=0.623871 val_auc=0.558111 best=0.582211@2 wait=15/25
+hidden=64 C=5 seed=1234567 epoch=017 loss=0.620600 val_auc=0.551605 best=0.582211@2 wait=16/25
+hidden=64 C=5 seed=1234567 epoch=018 loss=0.617163 val_auc=0.543380 best=0.582211@2 wait=17/25
+hidden=64 C=5 seed=1234567 epoch=019 loss=0.613280 val_auc=0.539859 best=0.582211@2 wait=18/25
+hidden=64 C=5 seed=1234567 epoch=020 loss=0.608959 val_auc=0.545089 best=0.582211@2 wait=19/25
+hidden=64 C=5 seed=1234567 epoch=021 loss=0.604978 val_auc=0.541887 best=0.582211@2 wait=20/25
+hidden=64 C=5 seed=1234567 epoch=022 loss=0.601011 val_auc=0.534790 best=0.582211@2 wait=21/25
+hidden=64 C=5 seed=1234567 epoch=023 loss=0.596135 val_auc=0.533597 best=0.582211@2 wait=22/25
+hidden=64 C=5 seed=1234567 epoch=024 loss=0.591444 val_auc=0.544253 best=0.582211@2 wait=23/25
+hidden=64 C=5 seed=1234567 epoch=025 loss=0.586028 val_auc=0.555013 best=0.582211@2 wait=24/25
+hidden=64 C=5 seed=1234567 epoch=026 loss=0.580757 val_auc=0.567668 best=0.582211@2 wait=25/25
+Early stopping at epoch 26.
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn/hidden_64/C_5/seed_1234567.json
+======================================================================
+VALIDATION-ONLY TUNING COMPLETE
+======================================================================
+hidden=64 C=2 | mean val AUROC=0.629646 std=0.026207
+hidden=64 C=5 | mean val AUROC=0.623019 std=0.031122
+hidden=16 C=2 | mean val AUROC=0.578066 std=0.023536
+hidden=16 C=5 | mean val AUROC=0.567804 std=0.030209
+
+SELECTED: hidden_dim=64 C=2
+Test set accessed: False
+Saved: /root/Graph-Fraud-WK/tuning/SEC_GFD/fdcompcn

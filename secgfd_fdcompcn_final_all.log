@@ -1,0 +1,1562 @@
+SKIP complete: fdcompcn seed=123 train_ratio=0.1
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234 | train_ratio=0.1
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=531 Val=1063 Test=2128 Discarded=1595
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.691090 | CE 0.693040 | Env -0.009750 | Val AUROC 0.567213 | Best 0.567213 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.690089 | CE 0.701108 | Env -0.055095 | Val AUROC 0.553698 | Best 0.567213 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.668005 | CE 0.681417 | Env -0.067063 | Val AUROC 0.542962 | Best 0.567213 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.667105 | CE 0.683227 | Env -0.080607 | Val AUROC 0.553116 | Best 0.567213 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.657930 | CE 0.677009 | Env -0.095392 | Val AUROC 0.574696 | Best 0.574696 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.646768 | CE 0.668756 | Env -0.109940 | Val AUROC 0.563899 | Best 0.574696 @ 5 | Wait 2/25
+Epoch 007 | Loss 0.637596 | CE 0.662259 | Env -0.123315 | Val AUROC 0.551065 | Best 0.574696 @ 5 | Wait 3/25
+Epoch 008 | Loss 0.629611 | CE 0.656499 | Env -0.134437 | Val AUROC 0.545910 | Best 0.574696 @ 5 | Wait 4/25
+Epoch 009 | Loss 0.620119 | CE 0.648744 | Env -0.143122 | Val AUROC 0.518092 | Best 0.574696 @ 5 | Wait 5/25
+Epoch 010 | Loss 0.614915 | CE 0.645118 | Env -0.151017 | Val AUROC 0.533297 | Best 0.574696 @ 5 | Wait 6/25
+Epoch 011 | Loss 0.610017 | CE 0.641736 | Env -0.158594 | Val AUROC 0.535836 | Best 0.574696 @ 5 | Wait 7/25
+Epoch 012 | Loss 0.601835 | CE 0.635072 | Env -0.166186 | Val AUROC 0.538127 | Best 0.574696 @ 5 | Wait 8/25
+Epoch 013 | Loss 0.594890 | CE 0.629595 | Env -0.173526 | Val AUROC 0.537320 | Best 0.574696 @ 5 | Wait 9/25
+Epoch 014 | Loss 0.586294 | CE 0.622374 | Env -0.180397 | Val AUROC 0.529443 | Best 0.574696 @ 5 | Wait 10/25
+Epoch 015 | Loss 0.579644 | CE 0.616885 | Env -0.186206 | Val AUROC 0.527462 | Best 0.574696 @ 5 | Wait 11/25
+Epoch 016 | Loss 0.570915 | CE 0.609081 | Env -0.190832 | Val AUROC 0.522120 | Best 0.574696 @ 5 | Wait 12/25
+Epoch 017 | Loss 0.562426 | CE 0.601383 | Env -0.194788 | Val AUROC 0.516749 | Best 0.574696 @ 5 | Wait 13/25
+Epoch 018 | Loss 0.556728 | CE 0.596373 | Env -0.198225 | Val AUROC 0.521162 | Best 0.574696 @ 5 | Wait 14/25
+Epoch 019 | Loss 0.551349 | CE 0.591620 | Env -0.201358 | Val AUROC 0.519923 | Best 0.574696 @ 5 | Wait 15/25
+Epoch 020 | Loss 0.547478 | CE 0.588358 | Env -0.204398 | Val AUROC 0.518064 | Best 0.574696 @ 5 | Wait 16/25
+Epoch 021 | Loss 0.535367 | CE 0.576838 | Env -0.207356 | Val AUROC 0.522382 | Best 0.574696 @ 5 | Wait 17/25
+Epoch 022 | Loss 0.536000 | CE 0.578026 | Env -0.210129 | Val AUROC 0.526795 | Best 0.574696 @ 5 | Wait 18/25
+Epoch 023 | Loss 0.523622 | CE 0.566155 | Env -0.212664 | Val AUROC 0.531264 | Best 0.574696 @ 5 | Wait 19/25
+Epoch 024 | Loss 0.521700 | CE 0.564722 | Env -0.215111 | Val AUROC 0.530166 | Best 0.574696 @ 5 | Wait 20/25
+Epoch 025 | Loss 0.515385 | CE 0.558918 | Env -0.217662 | Val AUROC 0.525866 | Best 0.574696 @ 5 | Wait 21/25
+Epoch 026 | Loss 0.505795 | CE 0.549837 | Env -0.220210 | Val AUROC 0.523096 | Best 0.574696 @ 5 | Wait 22/25
+Epoch 027 | Loss 0.501861 | CE 0.546404 | Env -0.222715 | Val AUROC 0.520242 | Best 0.574696 @ 5 | Wait 23/25
+Epoch 028 | Loss 0.497757 | CE 0.542761 | Env -0.225020 | Val AUROC 0.530551 | Best 0.574696 @ 5 | Wait 24/25
+Epoch 029 | Loss 0.491540 | CE 0.537003 | Env -0.227315 | Val AUROC 0.530438 | Best 0.574696 @ 5 | Wait 25/25
+Early stopping at epoch 29.
+complexity: {'train_time_sec': 1.3802323979325593, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_10
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.595014
+auprc                    : 0.135925
+g_mean                   : 0.493356
+f1_macro                 : 0.327339
+f1_micro                 : 0.346805
+f1_weighted              : 0.417784
+precision_macro          : 0.531006
+recall_macro             : 0.565882
+accuracy                 : 0.346805
+best_val_auroc           : 0.574696
+best_epoch               : 5
+epochs_executed          : 29
+train_time_seconds       : 1.380232
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_10
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=12345 | train_ratio=0.1
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=531 Val=1063 Test=2128 Discarded=1595
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.691892 | CE 0.693285 | Env -0.006967 | Val AUROC 0.510144 | Best 0.510144 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.670604 | CE 0.685926 | Env -0.076613 | Val AUROC 0.507708 | Best 0.510144 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.651663 | CE 0.673039 | Env -0.106879 | Val AUROC 0.509436 | Best 0.510144 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.633354 | CE 0.660305 | Env -0.134755 | Val AUROC 0.501821 | Best 0.510144 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.632153 | CE 0.664226 | Env -0.160363 | Val AUROC 0.507398 | Best 0.510144 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.620158 | CE 0.656886 | Env -0.183642 | Val AUROC 0.503680 | Best 0.510144 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.599857 | CE 0.640623 | Env -0.203830 | Val AUROC 0.499427 | Best 0.510144 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.591574 | CE 0.635838 | Env -0.221320 | Val AUROC 0.497456 | Best 0.510144 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.583338 | CE 0.630717 | Env -0.236891 | Val AUROC 0.488781 | Best 0.510144 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.573874 | CE 0.624158 | Env -0.251420 | Val AUROC 0.491428 | Best 0.510144 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.569589 | CE 0.622813 | Env -0.266122 | Val AUROC 0.490780 | Best 0.510144 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.558288 | CE 0.614405 | Env -0.280586 | Val AUROC 0.491992 | Best 0.510144 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.551467 | CE 0.610213 | Env -0.293726 | Val AUROC 0.503868 | Best 0.510144 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.541302 | CE 0.602220 | Env -0.304591 | Val AUROC 0.515867 | Best 0.515867 @ 14 | Wait 1/25
+Epoch 015 | Loss 0.535943 | CE 0.598608 | Env -0.313323 | Val AUROC 0.513360 | Best 0.515867 @ 14 | Wait 2/25
+Epoch 016 | Loss 0.524720 | CE 0.588683 | Env -0.319812 | Val AUROC 0.516364 | Best 0.516364 @ 16 | Wait 1/25
+Epoch 017 | Loss 0.519408 | CE 0.584440 | Env -0.325159 | Val AUROC 0.520176 | Best 0.520176 @ 17 | Wait 1/25
+Epoch 018 | Loss 0.509776 | CE 0.575890 | Env -0.330573 | Val AUROC 0.530889 | Best 0.530889 @ 18 | Wait 1/25
+Epoch 019 | Loss 0.503250 | CE 0.570551 | Env -0.336503 | Val AUROC 0.523087 | Best 0.530889 @ 18 | Wait 2/25
+Epoch 020 | Loss 0.492588 | CE 0.561144 | Env -0.342778 | Val AUROC 0.514862 | Best 0.530889 @ 18 | Wait 3/25
+Epoch 021 | Loss 0.485662 | CE 0.555466 | Env -0.349018 | Val AUROC 0.547976 | Best 0.547976 @ 21 | Wait 1/25
+Epoch 022 | Loss 0.475763 | CE 0.546753 | Env -0.354948 | Val AUROC 0.550257 | Best 0.550257 @ 22 | Wait 1/25
+Epoch 023 | Loss 0.467733 | CE 0.539894 | Env -0.360803 | Val AUROC 0.523143 | Best 0.550257 @ 22 | Wait 2/25
+Epoch 024 | Loss 0.464791 | CE 0.538139 | Env -0.366742 | Val AUROC 0.548295 | Best 0.550257 @ 22 | Wait 3/25
+Epoch 025 | Loss 0.459406 | CE 0.533846 | Env -0.372199 | Val AUROC 0.546042 | Best 0.550257 @ 22 | Wait 4/25
+Epoch 026 | Loss 0.492393 | CE 0.567714 | Env -0.376605 | Val AUROC 0.510055 | Best 0.550257 @ 22 | Wait 5/25
+Epoch 027 | Loss 0.515968 | CE 0.592049 | Env -0.380406 | Val AUROC 0.509126 | Best 0.550257 @ 22 | Wait 6/25
+Epoch 028 | Loss 0.462908 | CE 0.539692 | Env -0.383921 | Val AUROC 0.521115 | Best 0.550257 @ 22 | Wait 7/25
+Epoch 029 | Loss 0.465953 | CE 0.543406 | Env -0.387264 | Val AUROC 0.559796 | Best 0.559796 @ 29 | Wait 1/25
+Epoch 030 | Loss 0.453127 | CE 0.531235 | Env -0.390540 | Val AUROC 0.547056 | Best 0.559796 @ 29 | Wait 2/25
+Epoch 031 | Loss 0.441818 | CE 0.520421 | Env -0.393011 | Val AUROC 0.538766 | Best 0.559796 @ 29 | Wait 3/25
+Epoch 032 | Loss 0.443568 | CE 0.522591 | Env -0.395114 | Val AUROC 0.513998 | Best 0.559796 @ 29 | Wait 4/25
+Epoch 033 | Loss 0.429146 | CE 0.508518 | Env -0.396861 | Val AUROC 0.522692 | Best 0.559796 @ 29 | Wait 5/25
+Epoch 034 | Loss 0.435628 | CE 0.515291 | Env -0.398318 | Val AUROC 0.529978 | Best 0.559796 @ 29 | Wait 6/25
+Epoch 035 | Loss 0.421156 | CE 0.501170 | Env -0.400069 | Val AUROC 0.549431 | Best 0.559796 @ 29 | Wait 7/25
+Epoch 036 | Loss 0.417710 | CE 0.498071 | Env -0.401806 | Val AUROC 0.549206 | Best 0.559796 @ 29 | Wait 8/25
+Epoch 037 | Loss 0.418781 | CE 0.499507 | Env -0.403631 | Val AUROC 0.542587 | Best 0.559796 @ 29 | Wait 9/25
+Epoch 038 | Loss 0.409280 | CE 0.490317 | Env -0.405185 | Val AUROC 0.523800 | Best 0.559796 @ 29 | Wait 10/25
+Epoch 039 | Loss 0.401476 | CE 0.482745 | Env -0.406343 | Val AUROC 0.525612 | Best 0.559796 @ 29 | Wait 11/25
+Epoch 040 | Loss 0.406305 | CE 0.487757 | Env -0.407263 | Val AUROC 0.527499 | Best 0.559796 @ 29 | Wait 12/25
+Epoch 041 | Loss 0.392964 | CE 0.474613 | Env -0.408245 | Val AUROC 0.552248 | Best 0.559796 @ 29 | Wait 13/25
+Epoch 042 | Loss 0.390943 | CE 0.472834 | Env -0.409452 | Val AUROC 0.558688 | Best 0.559796 @ 29 | Wait 14/25
+Epoch 043 | Loss 0.391113 | CE 0.473266 | Env -0.410766 | Val AUROC 0.548811 | Best 0.559796 @ 29 | Wait 15/25
+Epoch 044 | Loss 0.380783 | CE 0.463184 | Env -0.412004 | Val AUROC 0.531367 | Best 0.559796 @ 29 | Wait 16/25
+Epoch 045 | Loss 0.381010 | CE 0.463604 | Env -0.412969 | Val AUROC 0.532100 | Best 0.559796 @ 29 | Wait 17/25
+Epoch 046 | Loss 0.374485 | CE 0.457286 | Env -0.414000 | Val AUROC 0.553346 | Best 0.559796 @ 29 | Wait 18/25
+Epoch 047 | Loss 0.372603 | CE 0.455584 | Env -0.414905 | Val AUROC 0.560941 | Best 0.560941 @ 47 | Wait 1/25
+Epoch 048 | Loss 0.369523 | CE 0.452697 | Env -0.415871 | Val AUROC 0.553064 | Best 0.560941 @ 47 | Wait 2/25
+Epoch 049 | Loss 0.366566 | CE 0.449947 | Env -0.416905 | Val AUROC 0.536860 | Best 0.560941 @ 47 | Wait 3/25
+Epoch 050 | Loss 0.361416 | CE 0.445032 | Env -0.418083 | Val AUROC 0.538456 | Best 0.560941 @ 47 | Wait 4/25
+Epoch 051 | Loss 0.359918 | CE 0.443741 | Env -0.419114 | Val AUROC 0.544840 | Best 0.560941 @ 47 | Wait 5/25
+Epoch 052 | Loss 0.355247 | CE 0.439223 | Env -0.419880 | Val AUROC 0.549619 | Best 0.560941 @ 47 | Wait 6/25
+Epoch 053 | Loss 0.352737 | CE 0.436830 | Env -0.420464 | Val AUROC 0.539320 | Best 0.560941 @ 47 | Wait 7/25
+Epoch 054 | Loss 0.349912 | CE 0.432772 | Env -0.414302 | Val AUROC 0.536259 | Best 0.560941 @ 47 | Wait 8/25
+Epoch 055 | Loss 0.347241 | CE 0.431162 | Env -0.419606 | Val AUROC 0.538381 | Best 0.560941 @ 47 | Wait 9/25
+Epoch 056 | Loss 0.343664 | CE 0.427186 | Env -0.417606 | Val AUROC 0.546962 | Best 0.560941 @ 47 | Wait 10/25
+Epoch 057 | Loss 0.340584 | CE 0.424471 | Env -0.419439 | Val AUROC 0.549863 | Best 0.560941 @ 47 | Wait 11/25
+Epoch 058 | Loss 0.338212 | CE 0.422314 | Env -0.420512 | Val AUROC 0.544502 | Best 0.560941 @ 47 | Wait 12/25
+Epoch 059 | Loss 0.334023 | CE 0.418177 | Env -0.420767 | Val AUROC 0.543629 | Best 0.560941 @ 47 | Wait 13/25
+Epoch 060 | Loss 0.330150 | CE 0.414871 | Env -0.423602 | Val AUROC 0.541976 | Best 0.560941 @ 47 | Wait 14/25
+Epoch 061 | Loss 0.327154 | CE 0.411798 | Env -0.423220 | Val AUROC 0.546690 | Best 0.560941 @ 47 | Wait 15/25
+Epoch 062 | Loss 0.323589 | CE 0.408650 | Env -0.425307 | Val AUROC 0.548774 | Best 0.560941 @ 47 | Wait 16/25
+Epoch 063 | Loss 0.321383 | CE 0.406357 | Env -0.424871 | Val AUROC 0.548849 | Best 0.560941 @ 47 | Wait 17/25
+Epoch 064 | Loss 0.320326 | CE 0.405673 | Env -0.426730 | Val AUROC 0.554266 | Best 0.560941 @ 47 | Wait 18/25
+Epoch 065 | Loss 0.327140 | CE 0.412508 | Env -0.426842 | Val AUROC 0.541596 | Best 0.560941 @ 47 | Wait 19/25
+Epoch 066 | Loss 0.346417 | CE 0.432011 | Env -0.427969 | Val AUROC 0.553355 | Best 0.560941 @ 47 | Wait 20/25
+Epoch 067 | Loss 0.367280 | CE 0.453146 | Env -0.429331 | Val AUROC 0.556153 | Best 0.560941 @ 47 | Wait 21/25
+Epoch 068 | Loss 0.316223 | CE 0.402242 | Env -0.430095 | Val AUROC 0.552398 | Best 0.560941 @ 47 | Wait 22/25
+Epoch 069 | Loss 0.331501 | CE 0.417725 | Env -0.431123 | Val AUROC 0.551478 | Best 0.560941 @ 47 | Wait 23/25
+Epoch 070 | Loss 0.333808 | CE 0.420095 | Env -0.431438 | Val AUROC 0.542155 | Best 0.560941 @ 47 | Wait 24/25
+Epoch 071 | Loss 0.307479 | CE 0.394028 | Env -0.432742 | Val AUROC 0.544502 | Best 0.560941 @ 47 | Wait 25/25
+Early stopping at epoch 71.
+complexity: {'train_time_sec': 1.2731493823230267, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_10
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.539316
+auprc                    : 0.121908
+g_mean                   : 0.480575
+f1_macro                 : 0.480591
+f1_micro                 : 0.665883
+f1_weighted              : 0.725801
+precision_macro          : 0.507370
+recall_macro             : 0.516433
+accuracy                 : 0.665883
+best_val_auroc           : 0.560941
+best_epoch               : 47
+epochs_executed          : 71
+train_time_seconds       : 1.273149
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_10
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123456 | train_ratio=0.1
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=531 Val=1063 Test=2128 Discarded=1595
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.691681 | CE 0.693769 | Env -0.010443 | Val AUROC 0.583714 | Best 0.583714 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.684961 | CE 0.695625 | Env -0.053323 | Val AUROC 0.583136 | Best 0.583714 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.669925 | CE 0.682525 | Env -0.063000 | Val AUROC 0.567659 | Best 0.583714 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.661854 | CE 0.676477 | Env -0.073117 | Val AUROC 0.563749 | Best 0.583714 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.653836 | CE 0.670538 | Env -0.083510 | Val AUROC 0.577235 | Best 0.583714 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.651842 | CE 0.670754 | Env -0.094559 | Val AUROC 0.579414 | Best 0.583714 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.642346 | CE 0.663524 | Env -0.105891 | Val AUROC 0.573461 | Best 0.583714 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.634262 | CE 0.657717 | Env -0.117274 | Val AUROC 0.574973 | Best 0.583714 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.628363 | CE 0.654023 | Env -0.128302 | Val AUROC 0.570832 | Best 0.583714 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.621538 | CE 0.649343 | Env -0.139026 | Val AUROC 0.542723 | Best 0.583714 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.615755 | CE 0.645643 | Env -0.149438 | Val AUROC 0.531175 | Best 0.583714 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.609948 | CE 0.641852 | Env -0.159519 | Val AUROC 0.520369 | Best 0.583714 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.603917 | CE 0.637736 | Env -0.169098 | Val AUROC 0.505018 | Best 0.583714 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.599269 | CE 0.634948 | Env -0.178393 | Val AUROC 0.496916 | Best 0.583714 @ 1 | Wait 14/25
+Epoch 015 | Loss 0.592507 | CE 0.629947 | Env -0.187198 | Val AUROC 0.500230 | Best 0.583714 @ 1 | Wait 15/25
+Epoch 016 | Loss 0.586485 | CE 0.625686 | Env -0.196004 | Val AUROC 0.511140 | Best 0.583714 @ 1 | Wait 16/25
+Epoch 017 | Loss 0.581974 | CE 0.622967 | Env -0.204967 | Val AUROC 0.506365 | Best 0.583714 @ 1 | Wait 17/25
+Epoch 018 | Loss 0.574655 | CE 0.617424 | Env -0.213842 | Val AUROC 0.503159 | Best 0.583714 @ 1 | Wait 18/25
+Epoch 019 | Loss 0.568126 | CE 0.612625 | Env -0.222493 | Val AUROC 0.502803 | Best 0.583714 @ 1 | Wait 19/25
+Epoch 020 | Loss 0.563408 | CE 0.609400 | Env -0.229961 | Val AUROC 0.491837 | Best 0.583714 @ 1 | Wait 20/25
+Epoch 021 | Loss 0.556868 | CE 0.604086 | Env -0.236090 | Val AUROC 0.504145 | Best 0.583714 @ 1 | Wait 21/25
+Epoch 022 | Loss 0.548299 | CE 0.596618 | Env -0.241596 | Val AUROC 0.509619 | Best 0.583714 @ 1 | Wait 22/25
+Epoch 023 | Loss 0.543029 | CE 0.592467 | Env -0.247190 | Val AUROC 0.512726 | Best 0.583714 @ 1 | Wait 23/25
+Epoch 024 | Loss 0.541888 | CE 0.592513 | Env -0.253126 | Val AUROC 0.525326 | Best 0.583714 @ 1 | Wait 24/25
+Epoch 025 | Loss 0.542542 | CE 0.594242 | Env -0.258501 | Val AUROC 0.518557 | Best 0.583714 @ 1 | Wait 25/25
+Early stopping at epoch 25.
+complexity: {'train_time_sec': 0.4321059538051486, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_10
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.557146
+auprc                    : 0.129716
+g_mean                   : 0.000000
+f1_macro                 : 0.472353
+f1_micro                 : 0.895207
+f1_weighted              : 0.845707
+precision_macro          : 0.447603
+recall_macro             : 0.500000
+accuracy                 : 0.895207
+best_val_auroc           : 0.583714
+best_epoch               : 1
+epochs_executed          : 25
+train_time_seconds       : 0.432106
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_10
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234567 | train_ratio=0.1
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=531 Val=1063 Test=2128 Discarded=1595
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.697554 | CE 0.696275 | Env 0.006392 | Val AUROC 0.518186 | Best 0.518186 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.684767 | CE 0.689753 | Env -0.024930 | Val AUROC 0.502657 | Best 0.518186 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.675123 | CE 0.683829 | Env -0.043527 | Val AUROC 0.538245 | Best 0.538245 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.658153 | CE 0.670434 | Env -0.061404 | Val AUROC 0.550126 | Best 0.550126 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.640512 | CE 0.656303 | Env -0.078954 | Val AUROC 0.531485 | Best 0.550126 @ 4 | Wait 2/25
+Epoch 006 | Loss 0.628754 | CE 0.647601 | Env -0.094232 | Val AUROC 0.530058 | Best 0.550126 @ 4 | Wait 3/25
+Epoch 007 | Loss 0.630555 | CE 0.651672 | Env -0.105585 | Val AUROC 0.526255 | Best 0.550126 @ 4 | Wait 4/25
+Epoch 008 | Loss 0.601600 | CE 0.624230 | Env -0.113151 | Val AUROC 0.533353 | Best 0.550126 @ 4 | Wait 5/25
+Epoch 009 | Loss 0.600149 | CE 0.623774 | Env -0.118125 | Val AUROC 0.527767 | Best 0.550126 @ 4 | Wait 6/25
+Epoch 010 | Loss 0.587037 | CE 0.611379 | Env -0.121712 | Val AUROC 0.525945 | Best 0.550126 @ 4 | Wait 7/25
+Epoch 011 | Loss 0.585013 | CE 0.609921 | Env -0.124537 | Val AUROC 0.539446 | Best 0.550126 @ 4 | Wait 8/25
+Epoch 012 | Loss 0.573249 | CE 0.598671 | Env -0.127112 | Val AUROC 0.533560 | Best 0.550126 @ 4 | Wait 9/25
+Epoch 013 | Loss 0.570574 | CE 0.596516 | Env -0.129708 | Val AUROC 0.542413 | Best 0.550126 @ 4 | Wait 10/25
+Epoch 014 | Loss 0.563940 | CE 0.590421 | Env -0.132405 | Val AUROC 0.542188 | Best 0.550126 @ 4 | Wait 11/25
+Epoch 015 | Loss 0.554040 | CE 0.581076 | Env -0.135182 | Val AUROC 0.533391 | Best 0.550126 @ 4 | Wait 12/25
+Epoch 016 | Loss 0.549754 | CE 0.577359 | Env -0.138026 | Val AUROC 0.533719 | Best 0.550126 @ 4 | Wait 13/25
+Epoch 017 | Loss 0.542493 | CE 0.570620 | Env -0.140635 | Val AUROC 0.533240 | Best 0.550126 @ 4 | Wait 14/25
+Epoch 018 | Loss 0.534665 | CE 0.563258 | Env -0.142962 | Val AUROC 0.529175 | Best 0.550126 @ 4 | Wait 15/25
+Epoch 019 | Loss 0.530058 | CE 0.559095 | Env -0.145185 | Val AUROC 0.536827 | Best 0.550126 @ 4 | Wait 16/25
+Epoch 020 | Loss 0.520768 | CE 0.550215 | Env -0.147234 | Val AUROC 0.524040 | Best 0.550126 @ 4 | Wait 17/25
+Epoch 021 | Loss 0.512858 | CE 0.542694 | Env -0.149182 | Val AUROC 0.520162 | Best 0.550126 @ 4 | Wait 18/25
+Epoch 022 | Loss 0.510772 | CE 0.540979 | Env -0.151035 | Val AUROC 0.530978 | Best 0.550126 @ 4 | Wait 19/25
+Epoch 023 | Loss 0.517559 | CE 0.548148 | Env -0.152945 | Val AUROC 0.528405 | Best 0.550126 @ 4 | Wait 20/25
+Epoch 024 | Loss 0.494942 | CE 0.525890 | Env -0.154737 | Val AUROC 0.529851 | Best 0.550126 @ 4 | Wait 21/25
+Epoch 025 | Loss 0.511023 | CE 0.542311 | Env -0.156439 | Val AUROC 0.544300 | Best 0.550126 @ 4 | Wait 22/25
+Epoch 026 | Loss 0.510404 | CE 0.542022 | Env -0.158093 | Val AUROC 0.533935 | Best 0.550126 @ 4 | Wait 23/25
+Epoch 027 | Loss 0.512163 | CE 0.544115 | Env -0.159761 | Val AUROC 0.518942 | Best 0.550126 @ 4 | Wait 24/25
+Epoch 028 | Loss 0.478981 | CE 0.511261 | Env -0.161399 | Val AUROC 0.516125 | Best 0.550126 @ 4 | Wait 25/25
+Early stopping at epoch 28.
+complexity: {'train_time_sec': 0.48717743810266256, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_10
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.564636
+auprc                    : 0.118716
+g_mean                   : 0.471471
+f1_macro                 : 0.308445
+f1_micro                 : 0.322838
+f1_weighted              : 0.387303
+precision_macro          : 0.528317
+recall_macro             : 0.556455
+accuracy                 : 0.322838
+best_val_auroc           : 0.550126
+best_epoch               : 4
+epochs_executed          : 28
+train_time_seconds       : 0.487177
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_10
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123 | train_ratio=0.2
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1062 Val=1063 Test=2128 Discarded=1064
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.697734 | CE 0.693772 | Env 0.019810 | Val AUROC 0.548131 | Best 0.548131 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.689910 | CE 0.695037 | Env -0.025635 | Val AUROC 0.515059 | Best 0.548131 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.679636 | CE 0.686790 | Env -0.035769 | Val AUROC 0.529297 | Best 0.548131 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.676095 | CE 0.684443 | Env -0.041742 | Val AUROC 0.533132 | Best 0.548131 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.669283 | CE 0.678726 | Env -0.047214 | Val AUROC 0.538080 | Best 0.548131 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.665211 | CE 0.675754 | Env -0.052717 | Val AUROC 0.529292 | Best 0.548131 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.659601 | CE 0.671317 | Env -0.058581 | Val AUROC 0.525002 | Best 0.548131 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.654284 | CE 0.667240 | Env -0.064782 | Val AUROC 0.520993 | Best 0.548131 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.649567 | CE 0.663799 | Env -0.071156 | Val AUROC 0.522570 | Best 0.548131 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.643198 | CE 0.658762 | Env -0.077818 | Val AUROC 0.519801 | Best 0.548131 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.638094 | CE 0.655007 | Env -0.084566 | Val AUROC 0.522251 | Best 0.548131 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.633360 | CE 0.651561 | Env -0.091006 | Val AUROC 0.512825 | Best 0.548131 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.627519 | CE 0.646848 | Env -0.096646 | Val AUROC 0.502854 | Best 0.548131 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.622721 | CE 0.642956 | Env -0.101176 | Val AUROC 0.502939 | Best 0.548131 @ 1 | Wait 14/25
+Epoch 015 | Loss 0.617317 | CE 0.638219 | Env -0.104507 | Val AUROC 0.516787 | Best 0.548131 @ 1 | Wait 15/25
+Epoch 016 | Loss 0.612354 | CE 0.633727 | Env -0.106865 | Val AUROC 0.517726 | Best 0.548131 @ 1 | Wait 16/25
+Epoch 017 | Loss 0.605691 | CE 0.627439 | Env -0.108738 | Val AUROC 0.518787 | Best 0.548131 @ 1 | Wait 17/25
+Epoch 018 | Loss 0.600618 | CE 0.622729 | Env -0.110556 | Val AUROC 0.535404 | Best 0.548131 @ 1 | Wait 18/25
+Epoch 019 | Loss 0.597245 | CE 0.619735 | Env -0.112448 | Val AUROC 0.534315 | Best 0.548131 @ 1 | Wait 19/25
+Epoch 020 | Loss 0.594177 | CE 0.617060 | Env -0.114419 | Val AUROC 0.545122 | Best 0.548131 @ 1 | Wait 20/25
+Epoch 021 | Loss 0.588945 | CE 0.612226 | Env -0.116403 | Val AUROC 0.534959 | Best 0.548131 @ 1 | Wait 21/25
+Epoch 022 | Loss 0.581808 | CE 0.605457 | Env -0.118245 | Val AUROC 0.536048 | Best 0.548131 @ 1 | Wait 22/25
+Epoch 023 | Loss 0.575843 | CE 0.599830 | Env -0.119937 | Val AUROC 0.543957 | Best 0.548131 @ 1 | Wait 23/25
+Epoch 024 | Loss 0.573710 | CE 0.597999 | Env -0.121443 | Val AUROC 0.532053 | Best 0.548131 @ 1 | Wait 24/25
+Epoch 025 | Loss 0.571603 | CE 0.596185 | Env -0.122910 | Val AUROC 0.545723 | Best 0.548131 @ 1 | Wait 25/25
+Early stopping at epoch 25.
+complexity: {'train_time_sec': 0.4337088125757873, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_20
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.521785
+auprc                    : 0.105579
+g_mean                   : 0.125491
+f1_macro                 : 0.111583
+f1_micro                 : 0.118891
+f1_weighted              : 0.047895
+precision_macro          : 0.553146
+recall_macro             : 0.507874
+accuracy                 : 0.118891
+best_val_auroc           : 0.548131
+best_epoch               : 1
+epochs_executed          : 25
+train_time_seconds       : 0.433709
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_20
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234 | train_ratio=0.2
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1062 Val=1063 Test=2128 Discarded=1064
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.692069 | CE 0.693045 | Env -0.004878 | Val AUROC 0.571701 | Best 0.571701 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.702099 | CE 0.712687 | Env -0.052944 | Val AUROC 0.558407 | Best 0.571701 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.671334 | CE 0.683983 | Env -0.063244 | Val AUROC 0.569612 | Best 0.571701 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.672897 | CE 0.687740 | Env -0.074212 | Val AUROC 0.572734 | Best 0.572734 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.668888 | CE 0.686074 | Env -0.085931 | Val AUROC 0.575292 | Best 0.575292 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.662131 | CE 0.681623 | Env -0.097458 | Val AUROC 0.576846 | Best 0.576846 @ 6 | Wait 1/25
+Epoch 007 | Loss 0.654635 | CE 0.676139 | Env -0.107521 | Val AUROC 0.574048 | Best 0.576846 @ 6 | Wait 2/25
+Epoch 008 | Loss 0.649818 | CE 0.672869 | Env -0.115253 | Val AUROC 0.574255 | Best 0.576846 @ 6 | Wait 3/25
+Epoch 009 | Loss 0.646868 | CE 0.671048 | Env -0.120903 | Val AUROC 0.570696 | Best 0.576846 @ 6 | Wait 4/25
+Epoch 010 | Loss 0.640665 | CE 0.665761 | Env -0.125480 | Val AUROC 0.539075 | Best 0.576846 @ 6 | Wait 5/25
+Epoch 011 | Loss 0.635407 | CE 0.661337 | Env -0.129653 | Val AUROC 0.526532 | Best 0.576846 @ 6 | Wait 6/25
+Epoch 012 | Loss 0.634023 | CE 0.660781 | Env -0.133789 | Val AUROC 0.536080 | Best 0.576846 @ 6 | Wait 7/25
+Epoch 013 | Loss 0.627749 | CE 0.655351 | Env -0.138009 | Val AUROC 0.545995 | Best 0.576846 @ 6 | Wait 8/25
+Epoch 014 | Loss 0.623503 | CE 0.651942 | Env -0.142195 | Val AUROC 0.555665 | Best 0.576846 @ 6 | Wait 9/25
+Epoch 015 | Loss 0.619822 | CE 0.649064 | Env -0.146211 | Val AUROC 0.543047 | Best 0.576846 @ 6 | Wait 10/25
+Epoch 016 | Loss 0.615539 | CE 0.645525 | Env -0.149931 | Val AUROC 0.534240 | Best 0.576846 @ 6 | Wait 11/25
+Epoch 017 | Loss 0.611724 | CE 0.642390 | Env -0.153333 | Val AUROC 0.531959 | Best 0.576846 @ 6 | Wait 12/25
+Epoch 018 | Loss 0.607193 | CE 0.638471 | Env -0.156393 | Val AUROC 0.532095 | Best 0.576846 @ 6 | Wait 13/25
+Epoch 019 | Loss 0.602357 | CE 0.634181 | Env -0.159121 | Val AUROC 0.537827 | Best 0.576846 @ 6 | Wait 14/25
+Epoch 020 | Loss 0.596122 | CE 0.628481 | Env -0.161798 | Val AUROC 0.537404 | Best 0.576846 @ 6 | Wait 15/25
+Epoch 021 | Loss 0.591498 | CE 0.624401 | Env -0.164513 | Val AUROC 0.538475 | Best 0.576846 @ 6 | Wait 16/25
+Epoch 022 | Loss 0.585626 | CE 0.619078 | Env -0.167262 | Val AUROC 0.540625 | Best 0.576846 @ 6 | Wait 17/25
+Epoch 023 | Loss 0.579871 | CE 0.613862 | Env -0.169955 | Val AUROC 0.539611 | Best 0.576846 @ 6 | Wait 18/25
+Epoch 024 | Loss 0.574653 | CE 0.609159 | Env -0.172527 | Val AUROC 0.542990 | Best 0.576846 @ 6 | Wait 19/25
+Epoch 025 | Loss 0.569822 | CE 0.604786 | Env -0.174819 | Val AUROC 0.544943 | Best 0.576846 @ 6 | Wait 20/25
+Epoch 026 | Loss 0.565428 | CE 0.600797 | Env -0.176847 | Val AUROC 0.547412 | Best 0.576846 @ 6 | Wait 21/25
+Epoch 027 | Loss 0.558016 | CE 0.593784 | Env -0.178835 | Val AUROC 0.547150 | Best 0.576846 @ 6 | Wait 22/25
+Epoch 028 | Loss 0.550764 | CE 0.586913 | Env -0.180744 | Val AUROC 0.552229 | Best 0.576846 @ 6 | Wait 23/25
+Epoch 029 | Loss 0.544271 | CE 0.580787 | Env -0.182577 | Val AUROC 0.554360 | Best 0.576846 @ 6 | Wait 24/25
+Epoch 030 | Loss 0.541009 | CE 0.577883 | Env -0.184369 | Val AUROC 0.551863 | Best 0.576846 @ 6 | Wait 25/25
+Early stopping at epoch 30.
+complexity: {'train_time_sec': 0.5226057698018849, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_20
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.586287
+auprc                    : 0.136632
+g_mean                   : 0.488067
+f1_macro                 : 0.324435
+f1_micro                 : 0.343985
+f1_weighted              : 0.415271
+precision_macro          : 0.527470
+recall_macro             : 0.558368
+accuracy                 : 0.343985
+best_val_auroc           : 0.576846
+best_epoch               : 6
+epochs_executed          : 30
+train_time_seconds       : 0.522606
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_20
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=12345 | train_ratio=0.2
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1062 Val=1063 Test=2128 Discarded=1064
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.690570 | CE 0.693195 | Env -0.013123 | Val AUROC 0.525255 | Best 0.525255 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.670415 | CE 0.688404 | Env -0.089941 | Val AUROC 0.515186 | Best 0.525255 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.654655 | CE 0.678894 | Env -0.121197 | Val AUROC 0.524795 | Best 0.525255 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.642086 | CE 0.672636 | Env -0.152753 | Val AUROC 0.521444 | Best 0.525255 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.631104 | CE 0.666859 | Env -0.178771 | Val AUROC 0.514984 | Best 0.525255 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.620071 | CE 0.659571 | Env -0.197501 | Val AUROC 0.507520 | Best 0.525255 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.610305 | CE 0.652714 | Env -0.212045 | Val AUROC 0.503075 | Best 0.525255 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.605718 | CE 0.650369 | Env -0.223255 | Val AUROC 0.502732 | Best 0.525255 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.602015 | CE 0.648416 | Env -0.232002 | Val AUROC 0.492883 | Best 0.525255 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.594662 | CE 0.642535 | Env -0.239366 | Val AUROC 0.502648 | Best 0.525255 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.585325 | CE 0.634557 | Env -0.246160 | Val AUROC 0.510018 | Best 0.525255 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.581754 | CE 0.632309 | Env -0.252773 | Val AUROC 0.508853 | Best 0.525255 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.577072 | CE 0.628902 | Env -0.259152 | Val AUROC 0.517106 | Best 0.525255 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.567596 | CE 0.620654 | Env -0.265291 | Val AUROC 0.520786 | Best 0.525255 @ 1 | Wait 14/25
+Epoch 015 | Loss 0.564758 | CE 0.619016 | Env -0.271293 | Val AUROC 0.519744 | Best 0.525255 @ 1 | Wait 15/25
+Epoch 016 | Loss 0.561646 | CE 0.617108 | Env -0.277309 | Val AUROC 0.524363 | Best 0.525255 @ 1 | Wait 16/25
+Epoch 017 | Loss 0.552517 | CE 0.609138 | Env -0.283103 | Val AUROC 0.523575 | Best 0.525255 @ 1 | Wait 17/25
+Epoch 018 | Loss 0.547257 | CE 0.605011 | Env -0.288772 | Val AUROC 0.523190 | Best 0.525255 @ 1 | Wait 18/25
+Epoch 019 | Loss 0.544556 | CE 0.603404 | Env -0.294244 | Val AUROC 0.524875 | Best 0.525255 @ 1 | Wait 19/25
+Epoch 020 | Loss 0.536404 | CE 0.596302 | Env -0.299489 | Val AUROC 0.527105 | Best 0.527105 @ 20 | Wait 1/25
+Epoch 021 | Loss 0.532150 | CE 0.593060 | Env -0.304554 | Val AUROC 0.533405 | Best 0.533405 @ 21 | Wait 1/25
+Epoch 022 | Loss 0.531359 | CE 0.593237 | Env -0.309390 | Val AUROC 0.534578 | Best 0.534578 @ 22 | Wait 1/25
+Epoch 023 | Loss 0.520421 | CE 0.583210 | Env -0.313947 | Val AUROC 0.539658 | Best 0.539658 @ 23 | Wait 1/25
+Epoch 024 | Loss 0.512983 | CE 0.576641 | Env -0.318288 | Val AUROC 0.540859 | Best 0.540859 @ 24 | Wait 1/25
+Epoch 025 | Loss 0.513750 | CE 0.578236 | Env -0.322429 | Val AUROC 0.541197 | Best 0.541197 @ 25 | Wait 1/25
+Epoch 026 | Loss 0.514692 | CE 0.579950 | Env -0.326290 | Val AUROC 0.541432 | Best 0.541432 @ 26 | Wait 1/25
+Epoch 027 | Loss 0.508502 | CE 0.574464 | Env -0.329809 | Val AUROC 0.544399 | Best 0.544399 @ 27 | Wait 1/25
+Epoch 028 | Loss 0.492906 | CE 0.559499 | Env -0.332968 | Val AUROC 0.549562 | Best 0.549562 @ 28 | Wait 1/25
+Epoch 029 | Loss 0.504335 | CE 0.571501 | Env -0.335829 | Val AUROC 0.544042 | Best 0.549562 @ 28 | Wait 2/25
+Epoch 030 | Loss 0.500595 | CE 0.568293 | Env -0.338489 | Val AUROC 0.542108 | Best 0.549562 @ 28 | Wait 3/25
+Epoch 031 | Loss 0.484568 | CE 0.552766 | Env -0.340988 | Val AUROC 0.549262 | Best 0.549562 @ 28 | Wait 4/25
+Epoch 032 | Loss 0.495029 | CE 0.563664 | Env -0.343173 | Val AUROC 0.552680 | Best 0.552680 @ 32 | Wait 1/25
+Epoch 033 | Loss 0.477548 | CE 0.546543 | Env -0.344975 | Val AUROC 0.551215 | Best 0.552680 @ 32 | Wait 2/25
+Epoch 034 | Loss 0.479216 | CE 0.548497 | Env -0.346409 | Val AUROC 0.551234 | Best 0.552680 @ 32 | Wait 3/25
+Epoch 035 | Loss 0.467402 | CE 0.536920 | Env -0.347592 | Val AUROC 0.550980 | Best 0.552680 @ 32 | Wait 4/25
+Epoch 036 | Loss 0.470146 | CE 0.539926 | Env -0.348897 | Val AUROC 0.553205 | Best 0.553205 @ 36 | Wait 1/25
+Epoch 037 | Loss 0.466454 | CE 0.536533 | Env -0.350399 | Val AUROC 0.558594 | Best 0.558594 @ 37 | Wait 1/25
+Epoch 038 | Loss 0.454440 | CE 0.524795 | Env -0.351776 | Val AUROC 0.551046 | Best 0.558594 @ 37 | Wait 2/25
+Epoch 039 | Loss 0.465155 | CE 0.535779 | Env -0.353118 | Val AUROC 0.550295 | Best 0.558594 @ 37 | Wait 3/25
+Epoch 040 | Loss 0.468791 | CE 0.539711 | Env -0.354599 | Val AUROC 0.563702 | Best 0.563702 @ 40 | Wait 1/25
+Epoch 041 | Loss 0.448870 | CE 0.520121 | Env -0.356258 | Val AUROC 0.576996 | Best 0.576996 @ 41 | Wait 1/25
+Epoch 042 | Loss 0.466859 | CE 0.538499 | Env -0.358200 | Val AUROC 0.560012 | Best 0.576996 @ 41 | Wait 2/25
+Epoch 043 | Loss 0.432057 | CE 0.504153 | Env -0.360477 | Val AUROC 0.547319 | Best 0.576996 @ 41 | Wait 3/25
+Epoch 044 | Loss 0.450083 | CE 0.522530 | Env -0.362237 | Val AUROC 0.554623 | Best 0.576996 @ 41 | Wait 4/25
+Epoch 045 | Loss 0.425898 | CE 0.498639 | Env -0.363704 | Val AUROC 0.562444 | Best 0.576996 @ 41 | Wait 5/25
+Epoch 046 | Loss 0.449058 | CE 0.522129 | Env -0.365357 | Val AUROC 0.572405 | Best 0.576996 @ 41 | Wait 6/25
+Epoch 047 | Loss 0.425797 | CE 0.499065 | Env -0.366338 | Val AUROC 0.559608 | Best 0.576996 @ 41 | Wait 7/25
+Epoch 048 | Loss 0.431808 | CE 0.505242 | Env -0.367171 | Val AUROC 0.556585 | Best 0.576996 @ 41 | Wait 8/25
+Epoch 049 | Loss 0.419892 | CE 0.493561 | Env -0.368345 | Val AUROC 0.568415 | Best 0.576996 @ 41 | Wait 9/25
+Epoch 050 | Loss 0.416719 | CE 0.490588 | Env -0.369347 | Val AUROC 0.573062 | Best 0.576996 @ 41 | Wait 10/25
+Epoch 051 | Loss 0.412503 | CE 0.486531 | Env -0.370140 | Val AUROC 0.556538 | Best 0.576996 @ 41 | Wait 11/25
+Epoch 052 | Loss 0.399877 | CE 0.474164 | Env -0.371438 | Val AUROC 0.551694 | Best 0.576996 @ 41 | Wait 12/25
+Epoch 053 | Loss 0.406244 | CE 0.480714 | Env -0.372347 | Val AUROC 0.566152 | Best 0.576996 @ 41 | Wait 13/25
+Epoch 054 | Loss 0.394417 | CE 0.469087 | Env -0.373350 | Val AUROC 0.568931 | Best 0.576996 @ 41 | Wait 14/25
+Epoch 055 | Loss 0.391351 | CE 0.466163 | Env -0.374062 | Val AUROC 0.563204 | Best 0.576996 @ 41 | Wait 15/25
+Epoch 056 | Loss 0.382988 | CE 0.457932 | Env -0.374720 | Val AUROC 0.560294 | Best 0.576996 @ 41 | Wait 16/25
+Epoch 057 | Loss 0.382917 | CE 0.458014 | Env -0.375486 | Val AUROC 0.549929 | Best 0.576996 @ 41 | Wait 17/25
+Epoch 058 | Loss 0.387909 | CE 0.463165 | Env -0.376280 | Val AUROC 0.563495 | Best 0.576996 @ 41 | Wait 18/25
+Epoch 059 | Loss 0.425325 | CE 0.500696 | Env -0.376853 | Val AUROC 0.560632 | Best 0.576996 @ 41 | Wait 19/25
+Epoch 060 | Loss 0.382504 | CE 0.458023 | Env -0.377599 | Val AUROC 0.558970 | Best 0.576996 @ 41 | Wait 20/25
+Epoch 061 | Loss 0.372523 | CE 0.448163 | Env -0.378198 | Val AUROC 0.564495 | Best 0.576996 @ 41 | Wait 21/25
+Epoch 062 | Loss 0.405084 | CE 0.480784 | Env -0.378502 | Val AUROC 0.566593 | Best 0.576996 @ 41 | Wait 22/25
+Epoch 063 | Loss 0.359077 | CE 0.434910 | Env -0.379162 | Val AUROC 0.563073 | Best 0.576996 @ 41 | Wait 23/25
+Epoch 064 | Loss 0.390516 | CE 0.466482 | Env -0.379828 | Val AUROC 0.565899 | Best 0.576996 @ 41 | Wait 24/25
+Epoch 065 | Loss 0.399535 | CE 0.475612 | Env -0.380388 | Val AUROC 0.558838 | Best 0.576996 @ 41 | Wait 25/25
+Early stopping at epoch 65.
+complexity: {'train_time_sec': 1.2466803062707186, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_20
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.545580
+auprc                    : 0.127566
+g_mean                   : 0.325112
+f1_macro                 : 0.511922
+f1_micro                 : 0.823778
+f1_weighted              : 0.820295
+precision_macro          : 0.512530
+recall_macro             : 0.511577
+accuracy                 : 0.823778
+best_val_auroc           : 0.576996
+best_epoch               : 41
+epochs_executed          : 65
+train_time_seconds       : 1.246680
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_20
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123456 | train_ratio=0.2
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1062 Val=1063 Test=2128 Discarded=1064
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.691189 | CE 0.693678 | Env -0.012446 | Val AUROC 0.590304 | Best 0.590304 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.682573 | CE 0.692303 | Env -0.048652 | Val AUROC 0.589614 | Best 0.590304 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.670230 | CE 0.683204 | Env -0.064872 | Val AUROC 0.612213 | Best 0.612213 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.662972 | CE 0.678357 | Env -0.076927 | Val AUROC 0.615644 | Best 0.615644 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.656595 | CE 0.674017 | Env -0.087107 | Val AUROC 0.619484 | Best 0.619484 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.651203 | CE 0.670466 | Env -0.096315 | Val AUROC 0.615133 | Best 0.619484 @ 5 | Wait 2/25
+Epoch 007 | Loss 0.642887 | CE 0.663757 | Env -0.104349 | Val AUROC 0.618517 | Best 0.619484 @ 5 | Wait 3/25
+Epoch 008 | Loss 0.639345 | CE 0.661583 | Env -0.111187 | Val AUROC 0.598595 | Best 0.619484 @ 5 | Wait 4/25
+Epoch 009 | Loss 0.633747 | CE 0.657119 | Env -0.116860 | Val AUROC 0.591553 | Best 0.619484 @ 5 | Wait 5/25
+Epoch 010 | Loss 0.628892 | CE 0.653191 | Env -0.121495 | Val AUROC 0.585469 | Best 0.619484 @ 5 | Wait 6/25
+Epoch 011 | Loss 0.620949 | CE 0.646007 | Env -0.125289 | Val AUROC 0.575020 | Best 0.619484 @ 5 | Wait 7/25
+Epoch 012 | Loss 0.615838 | CE 0.641520 | Env -0.128411 | Val AUROC 0.563040 | Best 0.619484 @ 5 | Wait 8/25
+Epoch 013 | Loss 0.608970 | CE 0.635196 | Env -0.131125 | Val AUROC 0.556862 | Best 0.619484 @ 5 | Wait 9/25
+Epoch 014 | Loss 0.603201 | CE 0.629917 | Env -0.133581 | Val AUROC 0.536461 | Best 0.619484 @ 5 | Wait 10/25
+Epoch 015 | Loss 0.597961 | CE 0.625099 | Env -0.135692 | Val AUROC 0.528527 | Best 0.619484 @ 5 | Wait 11/25
+Epoch 016 | Loss 0.592471 | CE 0.619962 | Env -0.137457 | Val AUROC 0.536498 | Best 0.619484 @ 5 | Wait 12/25
+Epoch 017 | Loss 0.588492 | CE 0.616299 | Env -0.139038 | Val AUROC 0.525861 | Best 0.619484 @ 5 | Wait 13/25
+Epoch 018 | Loss 0.584490 | CE 0.612609 | Env -0.140597 | Val AUROC 0.530311 | Best 0.619484 @ 5 | Wait 14/25
+Epoch 019 | Loss 0.580651 | CE 0.609088 | Env -0.142184 | Val AUROC 0.538357 | Best 0.619484 @ 5 | Wait 15/25
+Epoch 020 | Loss 0.576360 | CE 0.605137 | Env -0.143882 | Val AUROC 0.532949 | Best 0.619484 @ 5 | Wait 16/25
+Epoch 021 | Loss 0.570515 | CE 0.599639 | Env -0.145619 | Val AUROC 0.532546 | Best 0.619484 @ 5 | Wait 17/25
+Epoch 022 | Loss 0.565566 | CE 0.595023 | Env -0.147285 | Val AUROC 0.540028 | Best 0.619484 @ 5 | Wait 18/25
+Epoch 023 | Loss 0.563097 | CE 0.592871 | Env -0.148872 | Val AUROC 0.531879 | Best 0.619484 @ 5 | Wait 19/25
+Epoch 024 | Loss 0.563285 | CE 0.593339 | Env -0.150273 | Val AUROC 0.542516 | Best 0.619484 @ 5 | Wait 20/25
+Epoch 025 | Loss 0.551450 | CE 0.581781 | Env -0.151656 | Val AUROC 0.549877 | Best 0.619484 @ 5 | Wait 21/25
+Epoch 026 | Loss 0.547422 | CE 0.578035 | Env -0.153064 | Val AUROC 0.542141 | Best 0.619484 @ 5 | Wait 22/25
+Epoch 027 | Loss 0.542642 | CE 0.573550 | Env -0.154537 | Val AUROC 0.541812 | Best 0.619484 @ 5 | Wait 23/25
+Epoch 028 | Loss 0.533865 | CE 0.565051 | Env -0.155932 | Val AUROC 0.549708 | Best 0.619484 @ 5 | Wait 24/25
+Epoch 029 | Loss 0.530954 | CE 0.562416 | Env -0.157311 | Val AUROC 0.534667 | Best 0.619484 @ 5 | Wait 25/25
+Early stopping at epoch 29.
+complexity: {'train_time_sec': 0.5435253167524934, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_20
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.559818
+auprc                    : 0.121789
+g_mean                   : 0.488330
+f1_macro                 : 0.497090
+f1_micro                 : 0.695019
+f1_weighted              : 0.746466
+precision_macro          : 0.514698
+recall_macro             : 0.530726
+accuracy                 : 0.695019
+best_val_auroc           : 0.619484
+best_epoch               : 5
+epochs_executed          : 29
+train_time_seconds       : 0.543525
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_20
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234567 | train_ratio=0.2
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1062 Val=1063 Test=2128 Discarded=1064
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.697363 | CE 0.696392 | Env 0.004856 | Val AUROC 0.544089 | Best 0.544089 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.683209 | CE 0.689373 | Env -0.030819 | Val AUROC 0.528584 | Best 0.544089 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.673414 | CE 0.682828 | Env -0.047072 | Val AUROC 0.544878 | Best 0.544878 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.657694 | CE 0.670171 | Env -0.062385 | Val AUROC 0.551464 | Best 0.551464 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.643307 | CE 0.658830 | Env -0.077617 | Val AUROC 0.555135 | Best 0.555135 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.633368 | CE 0.651962 | Env -0.092967 | Val AUROC 0.547924 | Best 0.555135 @ 5 | Wait 2/25
+Epoch 007 | Loss 0.623018 | CE 0.644435 | Env -0.107084 | Val AUROC 0.543896 | Best 0.555135 @ 5 | Wait 3/25
+Epoch 008 | Loss 0.614456 | CE 0.638230 | Env -0.118869 | Val AUROC 0.541108 | Best 0.555135 @ 5 | Wait 4/25
+Epoch 009 | Loss 0.644577 | CE 0.670061 | Env -0.127419 | Val AUROC 0.548675 | Best 0.555135 @ 5 | Wait 5/25
+Epoch 010 | Loss 0.602182 | CE 0.628719 | Env -0.132685 | Val AUROC 0.549229 | Best 0.555135 @ 5 | Wait 6/25
+Epoch 011 | Loss 0.625856 | CE 0.653034 | Env -0.135893 | Val AUROC 0.552018 | Best 0.555135 @ 5 | Wait 7/25
+Epoch 012 | Loss 0.603154 | CE 0.630845 | Env -0.138454 | Val AUROC 0.545971 | Best 0.555135 @ 5 | Wait 8/25
+Epoch 013 | Loss 0.594145 | CE 0.622407 | Env -0.141308 | Val AUROC 0.538010 | Best 0.555135 @ 5 | Wait 9/25
+Epoch 014 | Loss 0.600443 | CE 0.629379 | Env -0.144684 | Val AUROC 0.538911 | Best 0.555135 @ 5 | Wait 10/25
+Epoch 015 | Loss 0.590526 | CE 0.620191 | Env -0.148325 | Val AUROC 0.542188 | Best 0.555135 @ 5 | Wait 11/25
+Epoch 016 | Loss 0.582630 | CE 0.613012 | Env -0.151909 | Val AUROC 0.539709 | Best 0.555135 @ 5 | Wait 12/25
+Epoch 017 | Loss 0.584797 | CE 0.615875 | Env -0.155392 | Val AUROC 0.537822 | Best 0.555135 @ 5 | Wait 13/25
+Epoch 018 | Loss 0.577679 | CE 0.609422 | Env -0.158717 | Val AUROC 0.536048 | Best 0.555135 @ 5 | Wait 14/25
+Epoch 019 | Loss 0.570986 | CE 0.603355 | Env -0.161842 | Val AUROC 0.533447 | Best 0.555135 @ 5 | Wait 15/25
+Epoch 020 | Loss 0.573181 | CE 0.606118 | Env -0.164686 | Val AUROC 0.531860 | Best 0.555135 @ 5 | Wait 16/25
+Epoch 021 | Loss 0.562590 | CE 0.596033 | Env -0.167215 | Val AUROC 0.538141 | Best 0.555135 @ 5 | Wait 17/25
+Epoch 022 | Loss 0.560891 | CE 0.594796 | Env -0.169524 | Val AUROC 0.539503 | Best 0.555135 @ 5 | Wait 18/25
+Epoch 023 | Loss 0.555719 | CE 0.590063 | Env -0.171721 | Val AUROC 0.540798 | Best 0.555135 @ 5 | Wait 19/25
+Epoch 024 | Loss 0.549173 | CE 0.583941 | Env -0.173836 | Val AUROC 0.537146 | Best 0.555135 @ 5 | Wait 20/25
+Epoch 025 | Loss 0.545288 | CE 0.580474 | Env -0.175927 | Val AUROC 0.532837 | Best 0.555135 @ 5 | Wait 21/25
+Epoch 026 | Loss 0.536923 | CE 0.572534 | Env -0.178053 | Val AUROC 0.531729 | Best 0.555135 @ 5 | Wait 22/25
+Epoch 027 | Loss 0.531572 | CE 0.567591 | Env -0.180096 | Val AUROC 0.529006 | Best 0.555135 @ 5 | Wait 23/25
+Epoch 028 | Loss 0.526776 | CE 0.563200 | Env -0.182121 | Val AUROC 0.536066 | Best 0.555135 @ 5 | Wait 24/25
+Epoch 029 | Loss 0.522043 | CE 0.558867 | Env -0.184117 | Val AUROC 0.537634 | Best 0.555135 @ 5 | Wait 25/25
+Early stopping at epoch 29.
+complexity: {'train_time_sec': 0.5377391260117292, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_20
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.564063
+auprc                    : 0.124513
+g_mean                   : 0.493079
+f1_macro                 : 0.488358
+f1_micro                 : 0.674342
+f1_weighted              : 0.732181
+precision_macro          : 0.512288
+recall_macro             : 0.527097
+accuracy                 : 0.674342
+best_val_auroc           : 0.555135
+best_epoch               : 5
+epochs_executed          : 29
+train_time_seconds       : 0.537739
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_20
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123 | train_ratio=0.3
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1594 Val=1063 Test=2128 Discarded=532
+Cross-entropy fraud weight: 8.488095
+Epoch 001 | Loss 0.696505 | CE 0.693705 | Env 0.013999 | Val AUROC 0.548492 | Best 0.548492 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.688375 | CE 0.694193 | Env -0.029089 | Val AUROC 0.520749 | Best 0.548492 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.677345 | CE 0.685205 | Env -0.039303 | Val AUROC 0.529842 | Best 0.548492 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.673600 | CE 0.682767 | Env -0.045833 | Val AUROC 0.528823 | Best 0.548492 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.665471 | CE 0.675758 | Env -0.051436 | Val AUROC 0.529311 | Best 0.548492 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.662357 | CE 0.673721 | Env -0.056820 | Val AUROC 0.526316 | Best 0.548492 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.656954 | CE 0.669434 | Env -0.062397 | Val AUROC 0.519848 | Best 0.548492 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.653241 | CE 0.666846 | Env -0.068024 | Val AUROC 0.514027 | Best 0.548492 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.650335 | CE 0.665033 | Env -0.073493 | Val AUROC 0.517895 | Best 0.548492 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.645731 | CE 0.661483 | Env -0.078763 | Val AUROC 0.526110 | Best 0.548492 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.641527 | CE 0.658292 | Env -0.083822 | Val AUROC 0.530044 | Best 0.548492 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.637808 | CE 0.655547 | Env -0.088693 | Val AUROC 0.529086 | Best 0.548492 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.633382 | CE 0.652021 | Env -0.093193 | Val AUROC 0.521500 | Best 0.548492 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.628722 | CE 0.648131 | Env -0.097042 | Val AUROC 0.510168 | Best 0.548492 @ 1 | Wait 14/25
+Epoch 015 | Loss 0.624575 | CE 0.644615 | Env -0.100199 | Val AUROC 0.521275 | Best 0.548492 @ 1 | Wait 15/25
+Epoch 016 | Loss 0.619816 | CE 0.640357 | Env -0.102706 | Val AUROC 0.529349 | Best 0.548492 @ 1 | Wait 16/25
+Epoch 017 | Loss 0.616379 | CE 0.637325 | Env -0.104729 | Val AUROC 0.521575 | Best 0.548492 @ 1 | Wait 17/25
+Epoch 018 | Loss 0.612016 | CE 0.633305 | Env -0.106447 | Val AUROC 0.526607 | Best 0.548492 @ 1 | Wait 18/25
+Epoch 019 | Loss 0.610767 | CE 0.632369 | Env -0.108010 | Val AUROC 0.523697 | Best 0.548492 @ 1 | Wait 19/25
+Epoch 020 | Loss 0.611212 | CE 0.633103 | Env -0.109453 | Val AUROC 0.545582 | Best 0.548492 @ 1 | Wait 20/25
+Epoch 021 | Loss 0.603222 | CE 0.625390 | Env -0.110839 | Val AUROC 0.543075 | Best 0.548492 @ 1 | Wait 21/25
+Epoch 022 | Loss 0.597015 | CE 0.619455 | Env -0.112202 | Val AUROC 0.527396 | Best 0.548492 @ 1 | Wait 22/25
+Epoch 023 | Loss 0.597803 | CE 0.620511 | Env -0.113539 | Val AUROC 0.534963 | Best 0.548492 @ 1 | Wait 23/25
+Epoch 024 | Loss 0.590789 | CE 0.613762 | Env -0.114863 | Val AUROC 0.539639 | Best 0.548492 @ 1 | Wait 24/25
+Epoch 025 | Loss 0.587141 | CE 0.610372 | Env -0.116156 | Val AUROC 0.535301 | Best 0.548492 @ 1 | Wait 25/25
+Early stopping at epoch 25.
+complexity: {'train_time_sec': 0.4628479229286313, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_30
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.527240
+auprc                    : 0.107558
+g_mean                   : 0.178542
+f1_macro                 : 0.127997
+f1_micro                 : 0.132989
+f1_weighted              : 0.075851
+precision_macro          : 0.545662
+recall_macro             : 0.513768
+accuracy                 : 0.132989
+best_val_auroc           : 0.548492
+best_epoch               : 1
+epochs_executed          : 25
+train_time_seconds       : 0.462848
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_30
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234 | train_ratio=0.3
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1594 Val=1063 Test=2128 Discarded=532
+Cross-entropy fraud weight: 8.488095
+Epoch 001 | Loss 0.691536 | CE 0.692955 | Env -0.007091 | Val AUROC 0.568354 | Best 0.568354 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.705255 | CE 0.716495 | Env -0.056198 | Val AUROC 0.573654 | Best 0.573654 @ 2 | Wait 1/25
+Epoch 003 | Loss 0.671946 | CE 0.685372 | Env -0.067131 | Val AUROC 0.578235 | Best 0.578235 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.672963 | CE 0.688572 | Env -0.078045 | Val AUROC 0.578616 | Best 0.578616 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.668595 | CE 0.686216 | Env -0.088102 | Val AUROC 0.577287 | Best 0.578616 @ 4 | Wait 2/25
+Epoch 006 | Loss 0.661921 | CE 0.681233 | Env -0.096556 | Val AUROC 0.575306 | Best 0.578616 @ 4 | Wait 3/25
+Epoch 007 | Loss 0.656033 | CE 0.676687 | Env -0.103271 | Val AUROC 0.573607 | Best 0.578616 @ 4 | Wait 4/25
+Epoch 008 | Loss 0.653943 | CE 0.675689 | Env -0.108728 | Val AUROC 0.578066 | Best 0.578616 @ 4 | Wait 5/25
+Epoch 009 | Loss 0.650410 | CE 0.673045 | Env -0.113175 | Val AUROC 0.585155 | Best 0.585155 @ 9 | Wait 1/25
+Epoch 010 | Loss 0.645766 | CE 0.669135 | Env -0.116845 | Val AUROC 0.578573 | Best 0.585155 @ 9 | Wait 2/25
+Epoch 011 | Loss 0.644278 | CE 0.668341 | Env -0.120316 | Val AUROC 0.566913 | Best 0.585155 @ 9 | Wait 3/25
+Epoch 012 | Loss 0.641580 | CE 0.666338 | Env -0.123788 | Val AUROC 0.566124 | Best 0.585155 @ 9 | Wait 4/25
+Epoch 013 | Loss 0.636907 | CE 0.662365 | Env -0.127292 | Val AUROC 0.575391 | Best 0.585155 @ 9 | Wait 5/25
+Epoch 014 | Loss 0.633416 | CE 0.659562 | Env -0.130729 | Val AUROC 0.563138 | Best 0.585155 @ 9 | Wait 6/25
+Epoch 015 | Loss 0.629676 | CE 0.656491 | Env -0.134075 | Val AUROC 0.574865 | Best 0.585155 @ 9 | Wait 7/25
+Epoch 016 | Loss 0.624944 | CE 0.652391 | Env -0.137233 | Val AUROC 0.556181 | Best 0.585155 @ 9 | Wait 8/25
+Epoch 017 | Loss 0.620422 | CE 0.648448 | Env -0.140131 | Val AUROC 0.539845 | Best 0.585155 @ 9 | Wait 9/25
+Epoch 018 | Loss 0.616177 | CE 0.644740 | Env -0.142814 | Val AUROC 0.545234 | Best 0.585155 @ 9 | Wait 10/25
+Epoch 019 | Loss 0.610752 | CE 0.639833 | Env -0.145405 | Val AUROC 0.547412 | Best 0.585155 @ 9 | Wait 11/25
+Epoch 020 | Loss 0.606127 | CE 0.635720 | Env -0.147964 | Val AUROC 0.548699 | Best 0.585155 @ 9 | Wait 12/25
+Epoch 021 | Loss 0.600219 | CE 0.630307 | Env -0.150438 | Val AUROC 0.539282 | Best 0.585155 @ 9 | Wait 13/25
+Epoch 022 | Loss 0.595699 | CE 0.626256 | Env -0.152783 | Val AUROC 0.546333 | Best 0.585155 @ 9 | Wait 14/25
+Epoch 023 | Loss 0.590375 | CE 0.621374 | Env -0.154995 | Val AUROC 0.543788 | Best 0.585155 @ 9 | Wait 15/25
+Epoch 024 | Loss 0.589550 | CE 0.620955 | Env -0.157021 | Val AUROC 0.539573 | Best 0.585155 @ 9 | Wait 16/25
+Epoch 025 | Loss 0.586444 | CE 0.618218 | Env -0.158873 | Val AUROC 0.537569 | Best 0.585155 @ 9 | Wait 17/25
+Epoch 026 | Loss 0.577538 | CE 0.609651 | Env -0.160564 | Val AUROC 0.551684 | Best 0.585155 @ 9 | Wait 18/25
+Epoch 027 | Loss 0.572538 | CE 0.604973 | Env -0.162175 | Val AUROC 0.558172 | Best 0.585155 @ 9 | Wait 19/25
+Epoch 028 | Loss 0.570306 | CE 0.603065 | Env -0.163800 | Val AUROC 0.548595 | Best 0.585155 @ 9 | Wait 20/25
+Epoch 029 | Loss 0.562495 | CE 0.595581 | Env -0.165431 | Val AUROC 0.548661 | Best 0.585155 @ 9 | Wait 21/25
+Epoch 030 | Loss 0.560452 | CE 0.593854 | Env -0.167010 | Val AUROC 0.559111 | Best 0.585155 @ 9 | Wait 22/25
+Epoch 031 | Loss 0.556090 | CE 0.589802 | Env -0.168562 | Val AUROC 0.554830 | Best 0.585155 @ 9 | Wait 23/25
+Epoch 032 | Loss 0.549229 | CE 0.583244 | Env -0.170076 | Val AUROC 0.539958 | Best 0.585155 @ 9 | Wait 24/25
+Epoch 033 | Loss 0.547531 | CE 0.581843 | Env -0.171560 | Val AUROC 0.541826 | Best 0.585155 @ 9 | Wait 25/25
+Early stopping at epoch 33.
+complexity: {'train_time_sec': 0.608400225173682, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_30
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.572955
+auprc                    : 0.149842
+g_mean                   : 0.476087
+f1_macro                 : 0.494544
+f1_micro                 : 0.697368
+f1_weighted              : 0.747623
+precision_macro          : 0.511710
+recall_macro             : 0.524120
+accuracy                 : 0.697368
+best_val_auroc           : 0.585155
+best_epoch               : 9
+epochs_executed          : 33
+train_time_seconds       : 0.608400
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_30
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=12345 | train_ratio=0.3
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1594 Val=1063 Test=2128 Discarded=532
+Cross-entropy fraud weight: 8.488095
+Epoch 001 | Loss 0.691193 | CE 0.693217 | Env -0.010119 | Val AUROC 0.527185 | Best 0.527185 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.676492 | CE 0.689975 | Env -0.067415 | Val AUROC 0.515374 | Best 0.527185 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.667503 | CE 0.685019 | Env -0.087583 | Val AUROC 0.518280 | Best 0.527185 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.657673 | CE 0.678958 | Env -0.106426 | Val AUROC 0.523242 | Best 0.527185 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.649085 | CE 0.673894 | Env -0.124046 | Val AUROC 0.523903 | Best 0.527185 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.649319 | CE 0.677275 | Env -0.139782 | Val AUROC 0.523162 | Best 0.527185 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.639757 | CE 0.670349 | Env -0.152957 | Val AUROC 0.514656 | Best 0.527185 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.635023 | CE 0.667770 | Env -0.163733 | Val AUROC 0.509285 | Best 0.527185 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.632407 | CE 0.666907 | Env -0.172501 | Val AUROC 0.503521 | Best 0.527185 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.627939 | CE 0.663830 | Env -0.179451 | Val AUROC 0.506469 | Best 0.527185 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.623518 | CE 0.660542 | Env -0.185121 | Val AUROC 0.510440 | Best 0.527185 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.620027 | CE 0.658099 | Env -0.190359 | Val AUROC 0.508422 | Best 0.527185 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.615927 | CE 0.655019 | Env -0.195460 | Val AUROC 0.505211 | Best 0.527185 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.610175 | CE 0.650272 | Env -0.200481 | Val AUROC 0.515163 | Best 0.527185 @ 1 | Wait 14/25
+Epoch 015 | Loss 0.606717 | CE 0.647774 | Env -0.205287 | Val AUROC 0.529706 | Best 0.529706 @ 15 | Wait 1/25
+Epoch 016 | Loss 0.603762 | CE 0.645606 | Env -0.209221 | Val AUROC 0.523387 | Best 0.529706 @ 15 | Wait 2/25
+Epoch 017 | Loss 0.596785 | CE 0.639270 | Env -0.212422 | Val AUROC 0.521293 | Best 0.529706 @ 15 | Wait 3/25
+Epoch 018 | Loss 0.591785 | CE 0.634786 | Env -0.215002 | Val AUROC 0.523819 | Best 0.529706 @ 15 | Wait 4/25
+Epoch 019 | Loss 0.588564 | CE 0.632024 | Env -0.217303 | Val AUROC 0.524288 | Best 0.529706 @ 15 | Wait 5/25
+Epoch 020 | Loss 0.586311 | CE 0.630270 | Env -0.219792 | Val AUROC 0.535742 | Best 0.535742 @ 20 | Wait 1/25
+Epoch 021 | Loss 0.589115 | CE 0.633614 | Env -0.222492 | Val AUROC 0.526804 | Best 0.535742 @ 20 | Wait 2/25
+Epoch 022 | Loss 0.577619 | CE 0.622653 | Env -0.225170 | Val AUROC 0.525330 | Best 0.535742 @ 20 | Wait 3/25
+Epoch 023 | Loss 0.571152 | CE 0.616688 | Env -0.227678 | Val AUROC 0.534217 | Best 0.535742 @ 20 | Wait 4/25
+Epoch 024 | Loss 0.571195 | CE 0.617192 | Env -0.229988 | Val AUROC 0.533677 | Best 0.535742 @ 20 | Wait 5/25
+Epoch 025 | Loss 0.563132 | CE 0.609519 | Env -0.231934 | Val AUROC 0.532156 | Best 0.535742 @ 20 | Wait 6/25
+Epoch 026 | Loss 0.563520 | CE 0.610257 | Env -0.233685 | Val AUROC 0.540690 | Best 0.540690 @ 26 | Wait 1/25
+Epoch 027 | Loss 0.559650 | CE 0.606714 | Env -0.235323 | Val AUROC 0.542042 | Best 0.542042 @ 27 | Wait 1/25
+Epoch 028 | Loss 0.550580 | CE 0.597963 | Env -0.236917 | Val AUROC 0.532072 | Best 0.542042 @ 27 | Wait 2/25
+Epoch 029 | Loss 0.554189 | CE 0.601899 | Env -0.238551 | Val AUROC 0.551515 | Best 0.551515 @ 29 | Wait 1/25
+Epoch 030 | Loss 0.554406 | CE 0.602452 | Env -0.240229 | Val AUROC 0.564068 | Best 0.564068 @ 30 | Wait 1/25
+Epoch 031 | Loss 0.541991 | CE 0.590363 | Env -0.241857 | Val AUROC 0.546643 | Best 0.564068 @ 30 | Wait 2/25
+Epoch 032 | Loss 0.549250 | CE 0.597957 | Env -0.243539 | Val AUROC 0.556210 | Best 0.564068 @ 30 | Wait 3/25
+Epoch 033 | Loss 0.536619 | CE 0.585672 | Env -0.245265 | Val AUROC 0.553938 | Best 0.564068 @ 30 | Wait 4/25
+Epoch 034 | Loss 0.536193 | CE 0.585588 | Env -0.246974 | Val AUROC 0.540146 | Best 0.564068 @ 30 | Wait 5/25
+Epoch 035 | Loss 0.533844 | CE 0.583583 | Env -0.248695 | Val AUROC 0.543995 | Best 0.564068 @ 30 | Wait 6/25
+Epoch 036 | Loss 0.523772 | CE 0.573854 | Env -0.250412 | Val AUROC 0.553787 | Best 0.564068 @ 30 | Wait 7/25
+Epoch 037 | Loss 0.524464 | CE 0.574894 | Env -0.252152 | Val AUROC 0.544802 | Best 0.564068 @ 30 | Wait 8/25
+Epoch 038 | Loss 0.516451 | CE 0.567227 | Env -0.253882 | Val AUROC 0.539423 | Best 0.564068 @ 30 | Wait 9/25
+Epoch 039 | Loss 0.513097 | CE 0.564223 | Env -0.255627 | Val AUROC 0.544108 | Best 0.564068 @ 30 | Wait 10/25
+Epoch 040 | Loss 0.512621 | CE 0.564089 | Env -0.257340 | Val AUROC 0.537780 | Best 0.564068 @ 30 | Wait 11/25
+Epoch 041 | Loss 0.503283 | CE 0.555089 | Env -0.259028 | Val AUROC 0.532804 | Best 0.564068 @ 30 | Wait 12/25
+Epoch 042 | Loss 0.504486 | CE 0.556625 | Env -0.260691 | Val AUROC 0.543695 | Best 0.564068 @ 30 | Wait 13/25
+Epoch 043 | Loss 0.505081 | CE 0.557542 | Env -0.262305 | Val AUROC 0.538090 | Best 0.564068 @ 30 | Wait 14/25
+Epoch 044 | Loss 0.495613 | CE 0.548385 | Env -0.263862 | Val AUROC 0.535658 | Best 0.564068 @ 30 | Wait 15/25
+Epoch 045 | Loss 0.496049 | CE 0.549136 | Env -0.265434 | Val AUROC 0.552323 | Best 0.564068 @ 30 | Wait 16/25
+Epoch 046 | Loss 0.497003 | CE 0.550386 | Env -0.266916 | Val AUROC 0.538465 | Best 0.564068 @ 30 | Wait 17/25
+Epoch 047 | Loss 0.481392 | CE 0.535040 | Env -0.268237 | Val AUROC 0.521303 | Best 0.564068 @ 30 | Wait 18/25
+Epoch 048 | Loss 0.486340 | CE 0.540234 | Env -0.269471 | Val AUROC 0.539160 | Best 0.564068 @ 30 | Wait 19/25
+Epoch 049 | Loss 0.482275 | CE 0.536414 | Env -0.270698 | Val AUROC 0.545901 | Best 0.564068 @ 30 | Wait 20/25
+Epoch 050 | Loss 0.474943 | CE 0.529324 | Env -0.271903 | Val AUROC 0.530654 | Best 0.564068 @ 30 | Wait 21/25
+Epoch 051 | Loss 0.476241 | CE 0.530868 | Env -0.273138 | Val AUROC 0.525762 | Best 0.564068 @ 30 | Wait 22/25
+Epoch 052 | Loss 0.473687 | CE 0.528552 | Env -0.274326 | Val AUROC 0.544699 | Best 0.564068 @ 30 | Wait 23/25
+Epoch 053 | Loss 0.471927 | CE 0.527028 | Env -0.275508 | Val AUROC 0.551177 | Best 0.564068 @ 30 | Wait 24/25
+Epoch 054 | Loss 0.463177 | CE 0.518527 | Env -0.276748 | Val AUROC 0.536681 | Best 0.564068 @ 30 | Wait 25/25
+Early stopping at epoch 54.
+complexity: {'train_time_sec': 0.9981762319803238, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_30
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.581002
+auprc                    : 0.139682
+g_mean                   : 0.525505
+f1_macro                 : 0.370192
+f1_micro                 : 0.411654
+f1_weighted              : 0.497919
+precision_macro          : 0.522995
+recall_macro             : 0.556569
+accuracy                 : 0.411654
+best_val_auroc           : 0.564068
+best_epoch               : 30
+epochs_executed          : 54
+train_time_seconds       : 0.998176
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_30
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123456 | train_ratio=0.3
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1594 Val=1063 Test=2128 Discarded=532
+Cross-entropy fraud weight: 8.488095
+Epoch 001 | Loss 0.691110 | CE 0.693867 | Env -0.013784 | Val AUROC 0.588586 | Best 0.588586 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.690693 | CE 0.698003 | Env -0.036547 | Val AUROC 0.583568 | Best 0.588586 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.676593 | CE 0.686503 | Env -0.049548 | Val AUROC 0.591088 | Best 0.591088 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.672387 | CE 0.684478 | Env -0.060456 | Val AUROC 0.600111 | Best 0.600111 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.667450 | CE 0.681361 | Env -0.069554 | Val AUROC 0.604129 | Best 0.604129 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.665600 | CE 0.681176 | Env -0.077878 | Val AUROC 0.601744 | Best 0.604129 @ 5 | Wait 2/25
+Epoch 007 | Loss 0.660484 | CE 0.677653 | Env -0.085847 | Val AUROC 0.601881 | Best 0.604129 @ 5 | Wait 3/25
+Epoch 008 | Loss 0.655913 | CE 0.674581 | Env -0.093340 | Val AUROC 0.596210 | Best 0.604129 @ 5 | Wait 4/25
+Epoch 009 | Loss 0.652653 | CE 0.672702 | Env -0.100246 | Val AUROC 0.588708 | Best 0.604129 @ 5 | Wait 5/25
+Epoch 010 | Loss 0.649039 | CE 0.670288 | Env -0.106247 | Val AUROC 0.582840 | Best 0.604129 @ 5 | Wait 6/25
+Epoch 011 | Loss 0.645793 | CE 0.667977 | Env -0.110919 | Val AUROC 0.583948 | Best 0.604129 @ 5 | Wait 7/25
+Epoch 012 | Loss 0.641404 | CE 0.664193 | Env -0.113945 | Val AUROC 0.570767 | Best 0.604129 @ 5 | Wait 8/25
+Epoch 013 | Loss 0.637822 | CE 0.660961 | Env -0.115693 | Val AUROC 0.556890 | Best 0.604129 @ 5 | Wait 9/25
+Epoch 014 | Loss 0.634221 | CE 0.657587 | Env -0.116832 | Val AUROC 0.538864 | Best 0.604129 @ 5 | Wait 10/25
+Epoch 015 | Loss 0.630605 | CE 0.654191 | Env -0.117934 | Val AUROC 0.510454 | Best 0.604129 @ 5 | Wait 11/25
+Epoch 016 | Loss 0.627885 | CE 0.651736 | Env -0.119259 | Val AUROC 0.515487 | Best 0.604129 @ 5 | Wait 12/25
+Epoch 017 | Loss 0.625585 | CE 0.649734 | Env -0.120746 | Val AUROC 0.526762 | Best 0.604129 @ 5 | Wait 13/25
+Epoch 018 | Loss 0.623103 | CE 0.647554 | Env -0.122255 | Val AUROC 0.524547 | Best 0.604129 @ 5 | Wait 14/25
+Epoch 019 | Loss 0.620410 | CE 0.645146 | Env -0.123679 | Val AUROC 0.514632 | Best 0.604129 @ 5 | Wait 15/25
+Epoch 020 | Loss 0.618082 | CE 0.643065 | Env -0.124915 | Val AUROC 0.505413 | Best 0.604129 @ 5 | Wait 16/25
+Epoch 021 | Loss 0.615421 | CE 0.640628 | Env -0.126033 | Val AUROC 0.506361 | Best 0.604129 @ 5 | Wait 17/25
+Epoch 022 | Loss 0.612548 | CE 0.637960 | Env -0.127060 | Val AUROC 0.507065 | Best 0.604129 @ 5 | Wait 18/25
+Epoch 023 | Loss 0.609185 | CE 0.634793 | Env -0.128042 | Val AUROC 0.512247 | Best 0.604129 @ 5 | Wait 19/25
+Epoch 024 | Loss 0.606815 | CE 0.632615 | Env -0.128999 | Val AUROC 0.505131 | Best 0.604129 @ 5 | Wait 20/25
+Epoch 025 | Loss 0.603936 | CE 0.629929 | Env -0.129963 | Val AUROC 0.508943 | Best 0.604129 @ 5 | Wait 21/25
+Epoch 026 | Loss 0.599713 | CE 0.625892 | Env -0.130896 | Val AUROC 0.507609 | Best 0.604129 @ 5 | Wait 22/25
+Epoch 027 | Loss 0.595224 | CE 0.621585 | Env -0.131804 | Val AUROC 0.510867 | Best 0.604129 @ 5 | Wait 23/25
+Epoch 028 | Loss 0.591738 | CE 0.618280 | Env -0.132711 | Val AUROC 0.520688 | Best 0.604129 @ 5 | Wait 24/25
+Epoch 029 | Loss 0.590111 | CE 0.616837 | Env -0.133627 | Val AUROC 0.506605 | Best 0.604129 @ 5 | Wait 25/25
+Early stopping at epoch 29.
+complexity: {'train_time_sec': 0.5387564706616104, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_30
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.556849
+auprc                    : 0.122490
+g_mean                   : 0.488091
+f1_macro                 : 0.331131
+f1_micro                 : 0.356203
+f1_weighted              : 0.433489
+precision_macro          : 0.518567
+recall_macro             : 0.541436
+accuracy                 : 0.356203
+best_val_auroc           : 0.604129
+best_epoch               : 5
+epochs_executed          : 29
+train_time_seconds       : 0.538756
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_30
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234567 | train_ratio=0.3
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=1594 Val=1063 Test=2128 Discarded=532
+Cross-entropy fraud weight: 8.488095
+Epoch 001 | Loss 0.697582 | CE 0.696297 | Env 0.006425 | Val AUROC 0.562444 | Best 0.562444 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.684658 | CE 0.691895 | Env -0.036185 | Val AUROC 0.518327 | Best 0.562444 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.676760 | CE 0.687031 | Env -0.051356 | Val AUROC 0.532086 | Best 0.562444 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.665700 | CE 0.678749 | Env -0.065246 | Val AUROC 0.553482 | Best 0.562444 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.655574 | CE 0.671361 | Env -0.078934 | Val AUROC 0.553557 | Best 0.562444 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.647888 | CE 0.666438 | Env -0.092749 | Val AUROC 0.548595 | Best 0.562444 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.643742 | CE 0.664870 | Env -0.105637 | Val AUROC 0.543882 | Best 0.562444 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.642293 | CE 0.665565 | Env -0.116364 | Val AUROC 0.545558 | Best 0.562444 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.630499 | CE 0.655389 | Env -0.124449 | Val AUROC 0.551886 | Best 0.562444 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.629809 | CE 0.655796 | Env -0.129938 | Val AUROC 0.553351 | Best 0.562444 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.624491 | CE 0.651140 | Env -0.133246 | Val AUROC 0.548694 | Best 0.562444 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.620665 | CE 0.647686 | Env -0.135103 | Val AUROC 0.554628 | Best 0.562444 @ 1 | Wait 12/25
+Epoch 013 | Loss 0.616049 | CE 0.643300 | Env -0.136255 | Val AUROC 0.553914 | Best 0.562444 @ 1 | Wait 13/25
+Epoch 014 | Loss 0.613836 | CE 0.641299 | Env -0.137317 | Val AUROC 0.555266 | Best 0.562444 @ 1 | Wait 14/25
+Epoch 015 | Loss 0.609745 | CE 0.637476 | Env -0.138654 | Val AUROC 0.553539 | Best 0.562444 @ 1 | Wait 15/25
+Epoch 016 | Loss 0.605526 | CE 0.633577 | Env -0.140252 | Val AUROC 0.551191 | Best 0.562444 @ 1 | Wait 16/25
+Epoch 017 | Loss 0.601214 | CE 0.629600 | Env -0.141933 | Val AUROC 0.546215 | Best 0.562444 @ 1 | Wait 17/25
+Epoch 018 | Loss 0.596477 | CE 0.625197 | Env -0.143601 | Val AUROC 0.541944 | Best 0.562444 @ 1 | Wait 18/25
+Epoch 019 | Loss 0.592736 | CE 0.621787 | Env -0.145256 | Val AUROC 0.546751 | Best 0.562444 @ 1 | Wait 19/25
+Epoch 020 | Loss 0.589402 | CE 0.618786 | Env -0.146919 | Val AUROC 0.545352 | Best 0.562444 @ 1 | Wait 20/25
+Epoch 021 | Loss 0.590601 | CE 0.620317 | Env -0.148582 | Val AUROC 0.552919 | Best 0.562444 @ 1 | Wait 21/25
+Epoch 022 | Loss 0.585812 | CE 0.615861 | Env -0.150243 | Val AUROC 0.548178 | Best 0.562444 @ 1 | Wait 22/25
+Epoch 023 | Loss 0.579395 | CE 0.609777 | Env -0.151908 | Val AUROC 0.542873 | Best 0.562444 @ 1 | Wait 23/25
+Epoch 024 | Loss 0.576698 | CE 0.607403 | Env -0.153522 | Val AUROC 0.536949 | Best 0.562444 @ 1 | Wait 24/25
+Epoch 025 | Loss 0.570333 | CE 0.601347 | Env -0.155072 | Val AUROC 0.542347 | Best 0.562444 @ 1 | Wait 25/25
+Early stopping at epoch 25.
+complexity: {'train_time_sec': 0.4652884751558304, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_30
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.552848
+auprc                    : 0.122784
+g_mean                   : 0.159814
+f1_macro                 : 0.120051
+f1_micro                 : 0.125470
+f1_weighted              : 0.065468
+precision_macro          : 0.498793
+recall_macro             : 0.499670
+accuracy                 : 0.125470
+best_val_auroc           : 0.562444
+best_epoch               : 1
+epochs_executed          : 25
+train_time_seconds       : 0.465288
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_30
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123 | train_ratio=0.4
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=2126 Val=1063 Test=2128 Discarded=0
+Cross-entropy fraud weight: 8.491071
+Epoch 001 | Loss 0.697139 | CE 0.693776 | Env 0.016814 | Val AUROC 0.552154 | Best 0.552154 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.692510 | CE 0.696177 | Env -0.018333 | Val AUROC 0.516252 | Best 0.552154 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.681713 | CE 0.687461 | Env -0.028738 | Val AUROC 0.532062 | Best 0.552154 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.679680 | CE 0.686781 | Env -0.035506 | Val AUROC 0.533039 | Best 0.552154 @ 1 | Wait 4/25
+Epoch 005 | Loss 0.674381 | CE 0.682680 | Env -0.041494 | Val AUROC 0.530748 | Best 0.552154 @ 1 | Wait 5/25
+Epoch 006 | Loss 0.670125 | CE 0.679581 | Env -0.047280 | Val AUROC 0.532701 | Best 0.552154 @ 1 | Wait 6/25
+Epoch 007 | Loss 0.665518 | CE 0.676179 | Env -0.053305 | Val AUROC 0.533264 | Best 0.552154 @ 1 | Wait 7/25
+Epoch 008 | Loss 0.661509 | CE 0.673402 | Env -0.059464 | Val AUROC 0.527415 | Best 0.552154 @ 1 | Wait 8/25
+Epoch 009 | Loss 0.658568 | CE 0.671712 | Env -0.065720 | Val AUROC 0.529039 | Best 0.552154 @ 1 | Wait 9/25
+Epoch 010 | Loss 0.654778 | CE 0.669139 | Env -0.071807 | Val AUROC 0.540136 | Best 0.552154 @ 1 | Wait 10/25
+Epoch 011 | Loss 0.650130 | CE 0.665618 | Env -0.077441 | Val AUROC 0.550032 | Best 0.552154 @ 1 | Wait 11/25
+Epoch 012 | Loss 0.646959 | CE 0.663444 | Env -0.082421 | Val AUROC 0.553384 | Best 0.553384 @ 12 | Wait 1/25
+Epoch 013 | Loss 0.643130 | CE 0.660459 | Env -0.086641 | Val AUROC 0.549121 | Best 0.553384 @ 12 | Wait 2/25
+Epoch 014 | Loss 0.638794 | CE 0.656797 | Env -0.090015 | Val AUROC 0.546361 | Best 0.553384 @ 12 | Wait 3/25
+Epoch 015 | Loss 0.634391 | CE 0.652949 | Env -0.092788 | Val AUROC 0.535217 | Best 0.553384 @ 12 | Wait 4/25
+Epoch 016 | Loss 0.630049 | CE 0.649074 | Env -0.095124 | Val AUROC 0.539498 | Best 0.553384 @ 12 | Wait 5/25
+Epoch 017 | Loss 0.624691 | CE 0.644118 | Env -0.097134 | Val AUROC 0.533949 | Best 0.553384 @ 12 | Wait 6/25
+Epoch 018 | Loss 0.620378 | CE 0.640172 | Env -0.098968 | Val AUROC 0.562782 | Best 0.562782 @ 18 | Wait 1/25
+Epoch 019 | Loss 0.625652 | CE 0.645788 | Env -0.100682 | Val AUROC 0.515810 | Best 0.562782 @ 18 | Wait 2/25
+Epoch 020 | Loss 0.643083 | CE 0.663540 | Env -0.102288 | Val AUROC 0.550520 | Best 0.562782 @ 18 | Wait 3/25
+Epoch 021 | Loss 0.610665 | CE 0.631420 | Env -0.103777 | Val AUROC 0.569814 | Best 0.569814 @ 21 | Wait 1/25
+Epoch 022 | Loss 0.630772 | CE 0.651798 | Env -0.105130 | Val AUROC 0.557768 | Best 0.569814 @ 21 | Wait 2/25
+Epoch 023 | Loss 0.608684 | CE 0.629945 | Env -0.106302 | Val AUROC 0.521397 | Best 0.569814 @ 21 | Wait 3/25
+Epoch 024 | Loss 0.612294 | CE 0.633762 | Env -0.107341 | Val AUROC 0.515425 | Best 0.569814 @ 21 | Wait 4/25
+Epoch 025 | Loss 0.611880 | CE 0.633534 | Env -0.108273 | Val AUROC 0.540249 | Best 0.569814 @ 21 | Wait 5/25
+Epoch 026 | Loss 0.602577 | CE 0.624406 | Env -0.109146 | Val AUROC 0.544324 | Best 0.569814 @ 21 | Wait 6/25
+Epoch 027 | Loss 0.603828 | CE 0.625834 | Env -0.110028 | Val AUROC 0.557806 | Best 0.569814 @ 21 | Wait 7/25
+Epoch 028 | Loss 0.600052 | CE 0.622232 | Env -0.110902 | Val AUROC 0.540596 | Best 0.569814 @ 21 | Wait 8/25
+Epoch 029 | Loss 0.594512 | CE 0.616868 | Env -0.111784 | Val AUROC 0.529837 | Best 0.569814 @ 21 | Wait 9/25
+Epoch 030 | Loss 0.593734 | CE 0.616262 | Env -0.112643 | Val AUROC 0.541404 | Best 0.569814 @ 21 | Wait 10/25
+Epoch 031 | Loss 0.589604 | CE 0.612296 | Env -0.113457 | Val AUROC 0.569955 | Best 0.569955 @ 31 | Wait 1/25
+Epoch 032 | Loss 0.587778 | CE 0.610622 | Env -0.114222 | Val AUROC 0.555900 | Best 0.569955 @ 31 | Wait 2/25
+Epoch 033 | Loss 0.585376 | CE 0.608363 | Env -0.114935 | Val AUROC 0.527659 | Best 0.569955 @ 31 | Wait 3/25
+Epoch 034 | Loss 0.582068 | CE 0.605190 | Env -0.115611 | Val AUROC 0.528203 | Best 0.569955 @ 31 | Wait 4/25
+Epoch 035 | Loss 0.577850 | CE 0.601106 | Env -0.116284 | Val AUROC 0.558134 | Best 0.569955 @ 31 | Wait 5/25
+Epoch 036 | Loss 0.574247 | CE 0.597646 | Env -0.116999 | Val AUROC 0.564688 | Best 0.569955 @ 31 | Wait 6/25
+Epoch 037 | Loss 0.572708 | CE 0.596263 | Env -0.117772 | Val AUROC 0.543695 | Best 0.569955 @ 31 | Wait 7/25
+Epoch 038 | Loss 0.566472 | CE 0.590187 | Env -0.118578 | Val AUROC 0.548070 | Best 0.569955 @ 31 | Wait 8/25
+Epoch 039 | Loss 0.564414 | CE 0.588296 | Env -0.119411 | Val AUROC 0.565035 | Best 0.569955 @ 31 | Wait 9/25
+Epoch 040 | Loss 0.560037 | CE 0.584082 | Env -0.120226 | Val AUROC 0.558247 | Best 0.569955 @ 31 | Wait 10/25
+Epoch 041 | Loss 0.556538 | CE 0.580745 | Env -0.121034 | Val AUROC 0.558979 | Best 0.569955 @ 31 | Wait 11/25
+Epoch 042 | Loss 0.558317 | CE 0.582682 | Env -0.121827 | Val AUROC 0.570114 | Best 0.570114 @ 42 | Wait 1/25
+Epoch 043 | Loss 0.545328 | CE 0.569851 | Env -0.122614 | Val AUROC 0.569879 | Best 0.570114 @ 42 | Wait 2/25
+Epoch 044 | Loss 0.545925 | CE 0.570616 | Env -0.123454 | Val AUROC 0.566035 | Best 0.570114 @ 42 | Wait 3/25
+Epoch 045 | Loss 0.547821 | CE 0.572688 | Env -0.124337 | Val AUROC 0.595754 | Best 0.595754 @ 45 | Wait 1/25
+Epoch 046 | Loss 0.535125 | CE 0.560160 | Env -0.125176 | Val AUROC 0.586563 | Best 0.595754 @ 45 | Wait 2/25
+Epoch 047 | Loss 0.546014 | CE 0.571235 | Env -0.126106 | Val AUROC 0.581014 | Best 0.595754 @ 45 | Wait 3/25
+Epoch 048 | Loss 0.553750 | CE 0.579155 | Env -0.127024 | Val AUROC 0.585615 | Best 0.595754 @ 45 | Wait 4/25
+Epoch 049 | Loss 0.535576 | CE 0.561169 | Env -0.127968 | Val AUROC 0.597782 | Best 0.597782 @ 49 | Wait 1/25
+Epoch 050 | Loss 0.538002 | CE 0.563790 | Env -0.128937 | Val AUROC 0.587830 | Best 0.597782 @ 49 | Wait 2/25
+Epoch 051 | Loss 0.536204 | CE 0.562189 | Env -0.129924 | Val AUROC 0.598984 | Best 0.598984 @ 51 | Wait 1/25
+Epoch 052 | Loss 0.527017 | CE 0.553208 | Env -0.130952 | Val AUROC 0.579653 | Best 0.598984 @ 51 | Wait 2/25
+Epoch 053 | Loss 0.527536 | CE 0.553933 | Env -0.131985 | Val AUROC 0.579390 | Best 0.598984 @ 51 | Wait 3/25
+Epoch 054 | Loss 0.518702 | CE 0.545301 | Env -0.132993 | Val AUROC 0.588272 | Best 0.598984 @ 51 | Wait 4/25
+Epoch 055 | Loss 0.527836 | CE 0.554662 | Env -0.134132 | Val AUROC 0.587009 | Best 0.598984 @ 51 | Wait 5/25
+Epoch 056 | Loss 0.530609 | CE 0.557677 | Env -0.135340 | Val AUROC 0.621836 | Best 0.621836 @ 56 | Wait 1/25
+Epoch 057 | Loss 0.527387 | CE 0.554689 | Env -0.136510 | Val AUROC 0.622606 | Best 0.622606 @ 57 | Wait 1/25
+Epoch 058 | Loss 0.524304 | CE 0.551851 | Env -0.137736 | Val AUROC 0.612588 | Best 0.622606 @ 57 | Wait 2/25
+Epoch 059 | Loss 0.521512 | CE 0.549320 | Env -0.139042 | Val AUROC 0.612016 | Best 0.622606 @ 57 | Wait 3/25
+Epoch 060 | Loss 0.503744 | CE 0.531819 | Env -0.140378 | Val AUROC 0.602984 | Best 0.622606 @ 57 | Wait 4/25
+Epoch 061 | Loss 0.513475 | CE 0.541829 | Env -0.141769 | Val AUROC 0.589661 | Best 0.622606 @ 57 | Wait 5/25
+Epoch 062 | Loss 0.507543 | CE 0.536175 | Env -0.143163 | Val AUROC 0.606364 | Best 0.622606 @ 57 | Wait 6/25
+Epoch 063 | Loss 0.497789 | CE 0.526714 | Env -0.144623 | Val AUROC 0.623995 | Best 0.623995 @ 63 | Wait 1/25
+Epoch 064 | Loss 0.490809 | CE 0.520033 | Env -0.146124 | Val AUROC 0.616954 | Best 0.623995 @ 63 | Wait 2/25
+Epoch 065 | Loss 0.493220 | CE 0.522752 | Env -0.147662 | Val AUROC 0.635393 | Best 0.635393 @ 65 | Wait 1/25
+Epoch 066 | Loss 0.488245 | CE 0.518079 | Env -0.149171 | Val AUROC 0.604683 | Best 0.635393 @ 65 | Wait 2/25
+Epoch 067 | Loss 0.480150 | CE 0.510282 | Env -0.150657 | Val AUROC 0.592609 | Best 0.635393 @ 65 | Wait 3/25
+Epoch 068 | Loss 0.478526 | CE 0.508959 | Env -0.152167 | Val AUROC 0.589389 | Best 0.635393 @ 65 | Wait 4/25
+Epoch 069 | Loss 0.477546 | CE 0.508278 | Env -0.153661 | Val AUROC 0.617761 | Best 0.635393 @ 65 | Wait 5/25
+Epoch 070 | Loss 0.470711 | CE 0.501723 | Env -0.155061 | Val AUROC 0.631131 | Best 0.635393 @ 65 | Wait 6/25
+Epoch 071 | Loss 0.472693 | CE 0.503988 | Env -0.156475 | Val AUROC 0.615330 | Best 0.635393 @ 65 | Wait 7/25
+Epoch 072 | Loss 0.475854 | CE 0.507437 | Env -0.157915 | Val AUROC 0.631779 | Best 0.635393 @ 65 | Wait 8/25
+Epoch 073 | Loss 0.463974 | CE 0.495818 | Env -0.159219 | Val AUROC 0.614109 | Best 0.635393 @ 65 | Wait 9/25
+Epoch 074 | Loss 0.462430 | CE 0.494448 | Env -0.160092 | Val AUROC 0.609199 | Best 0.635393 @ 65 | Wait 10/25
+Epoch 075 | Loss 0.486529 | CE 0.518608 | Env -0.160393 | Val AUROC 0.614964 | Best 0.635393 @ 65 | Wait 11/25
+Epoch 076 | Loss 0.496460 | CE 0.528954 | Env -0.162470 | Val AUROC 0.614344 | Best 0.635393 @ 65 | Wait 12/25
+Epoch 077 | Loss 0.483804 | CE 0.516526 | Env -0.163610 | Val AUROC 0.625310 | Best 0.635393 @ 65 | Wait 13/25
+Epoch 078 | Loss 0.463526 | CE 0.496372 | Env -0.164232 | Val AUROC 0.653053 | Best 0.653053 @ 78 | Wait 1/25
+Epoch 079 | Loss 0.487439 | CE 0.520635 | Env -0.165981 | Val AUROC 0.629394 | Best 0.653053 @ 78 | Wait 2/25
+Epoch 080 | Loss 0.447977 | CE 0.481348 | Env -0.166856 | Val AUROC 0.592309 | Best 0.653053 @ 78 | Wait 3/25
+Epoch 081 | Loss 0.467594 | CE 0.501182 | Env -0.167942 | Val AUROC 0.608598 | Best 0.653053 @ 78 | Wait 4/25
+Epoch 082 | Loss 0.442778 | CE 0.476625 | Env -0.169237 | Val AUROC 0.636614 | Best 0.653053 @ 78 | Wait 5/25
+Epoch 083 | Loss 0.454231 | CE 0.488283 | Env -0.170260 | Val AUROC 0.645589 | Best 0.653053 @ 78 | Wait 6/25
+Epoch 084 | Loss 0.437206 | CE 0.471525 | Env -0.171594 | Val AUROC 0.634642 | Best 0.653053 @ 78 | Wait 7/25
+Epoch 085 | Loss 0.437327 | CE 0.471880 | Env -0.172766 | Val AUROC 0.633027 | Best 0.653053 @ 78 | Wait 8/25
+Epoch 086 | Loss 0.433069 | CE 0.467799 | Env -0.173651 | Val AUROC 0.634173 | Best 0.653053 @ 78 | Wait 9/25
+Epoch 087 | Loss 0.474893 | CE 0.509897 | Env -0.175022 | Val AUROC 0.642791 | Best 0.653053 @ 78 | Wait 10/25
+Epoch 088 | Loss 0.428853 | CE 0.464128 | Env -0.176374 | Val AUROC 0.621705 | Best 0.653053 @ 78 | Wait 11/25
+Epoch 089 | Loss 0.442800 | CE 0.478191 | Env -0.176952 | Val AUROC 0.621817 | Best 0.653053 @ 78 | Wait 12/25
+Epoch 090 | Loss 0.466479 | CE 0.502116 | Env -0.178182 | Val AUROC 0.644444 | Best 0.653053 @ 78 | Wait 13/25
+Epoch 091 | Loss 0.424387 | CE 0.460209 | Env -0.179110 | Val AUROC 0.655898 | Best 0.655898 @ 91 | Wait 1/25
+Epoch 092 | Loss 0.464667 | CE 0.500715 | Env -0.180238 | Val AUROC 0.616776 | Best 0.655898 @ 91 | Wait 2/25
+Epoch 093 | Loss 0.416965 | CE 0.453209 | Env -0.181222 | Val AUROC 0.588375 | Best 0.655898 @ 91 | Wait 3/25
+Epoch 094 | Loss 0.441711 | CE 0.478169 | Env -0.182290 | Val AUROC 0.594769 | Best 0.655898 @ 91 | Wait 4/25
+Epoch 095 | Loss 0.435006 | CE 0.471726 | Env -0.183601 | Val AUROC 0.638003 | Best 0.655898 @ 91 | Wait 5/25
+Epoch 096 | Loss 0.416016 | CE 0.452990 | Env -0.184868 | Val AUROC 0.640763 | Best 0.655898 @ 91 | Wait 6/25
+Epoch 097 | Loss 0.435503 | CE 0.472699 | Env -0.185977 | Val AUROC 0.637581 | Best 0.655898 @ 91 | Wait 7/25
+Epoch 098 | Loss 0.420291 | CE 0.457681 | Env -0.186952 | Val AUROC 0.629384 | Best 0.655898 @ 91 | Wait 8/25
+Epoch 099 | Loss 0.412039 | CE 0.449556 | Env -0.187587 | Val AUROC 0.621977 | Best 0.655898 @ 91 | Wait 9/25
+Epoch 100 | Loss 0.408273 | CE 0.445872 | Env -0.187993 | Val AUROC 0.634398 | Best 0.655898 @ 91 | Wait 10/25
+Epoch 101 | Loss 0.393358 | CE 0.431309 | Env -0.189756 | Val AUROC 0.643129 | Best 0.655898 @ 91 | Wait 11/25
+Epoch 102 | Loss 0.394257 | CE 0.432401 | Env -0.190717 | Val AUROC 0.646256 | Best 0.655898 @ 91 | Wait 12/25
+Epoch 103 | Loss 0.426581 | CE 0.464664 | Env -0.190417 | Val AUROC 0.658686 | Best 0.658686 @ 103 | Wait 1/25
+Epoch 104 | Loss 0.419660 | CE 0.458230 | Env -0.192850 | Val AUROC 0.639496 | Best 0.658686 @ 103 | Wait 2/25
+Epoch 105 | Loss 0.422715 | CE 0.461408 | Env -0.193463 | Val AUROC 0.642406 | Best 0.658686 @ 103 | Wait 3/25
+Epoch 106 | Loss 0.381852 | CE 0.420497 | Env -0.193223 | Val AUROC 0.648040 | Best 0.658686 @ 103 | Wait 4/25
+Epoch 107 | Loss 0.414218 | CE 0.453367 | Env -0.195745 | Val AUROC 0.641655 | Best 0.658686 @ 103 | Wait 5/25
+Epoch 108 | Loss 0.405561 | CE 0.444412 | Env -0.194257 | Val AUROC 0.654180 | Best 0.658686 @ 103 | Wait 6/25
+Epoch 109 | Loss 0.382505 | CE 0.421704 | Env -0.195994 | Val AUROC 0.661071 | Best 0.661071 @ 109 | Wait 1/25
+Epoch 110 | Loss 0.400108 | CE 0.439447 | Env -0.196695 | Val AUROC 0.647279 | Best 0.661071 @ 109 | Wait 2/25
+Epoch 111 | Loss 0.369594 | CE 0.409346 | Env -0.198762 | Val AUROC 0.646143 | Best 0.661071 @ 109 | Wait 3/25
+Epoch 112 | Loss 0.403000 | CE 0.442741 | Env -0.198706 | Val AUROC 0.651870 | Best 0.661071 @ 109 | Wait 4/25
+Epoch 113 | Loss 0.379131 | CE 0.419015 | Env -0.199424 | Val AUROC 0.633318 | Best 0.661071 @ 109 | Wait 5/25
+Epoch 114 | Loss 0.403852 | CE 0.443961 | Env -0.200542 | Val AUROC 0.633403 | Best 0.661071 @ 109 | Wait 6/25
+Epoch 115 | Loss 0.422804 | CE 0.463196 | Env -0.201964 | Val AUROC 0.650359 | Best 0.661071 @ 109 | Wait 7/25
+Epoch 116 | Loss 0.376353 | CE 0.416822 | Env -0.202344 | Val AUROC 0.648950 | Best 0.661071 @ 109 | Wait 8/25
+Epoch 117 | Loss 0.395177 | CE 0.435886 | Env -0.203546 | Val AUROC 0.636952 | Best 0.661071 @ 109 | Wait 9/25
+Epoch 118 | Loss 0.405674 | CE 0.446500 | Env -0.204130 | Val AUROC 0.639890 | Best 0.661071 @ 109 | Wait 10/25
+Epoch 119 | Loss 0.359831 | CE 0.400934 | Env -0.205511 | Val AUROC 0.646246 | Best 0.661071 @ 109 | Wait 11/25
+Epoch 120 | Loss 0.407339 | CE 0.448567 | Env -0.206143 | Val AUROC 0.624559 | Best 0.661071 @ 109 | Wait 12/25
+Epoch 121 | Loss 0.359047 | CE 0.400482 | Env -0.207176 | Val AUROC 0.610664 | Best 0.661071 @ 109 | Wait 13/25
+Epoch 122 | Loss 0.378763 | CE 0.420377 | Env -0.208071 | Val AUROC 0.624784 | Best 0.661071 @ 109 | Wait 14/25
+Epoch 123 | Loss 0.370254 | CE 0.412047 | Env -0.208967 | Val AUROC 0.644528 | Best 0.661071 @ 109 | Wait 15/25
+Epoch 124 | Loss 0.347263 | CE 0.389250 | Env -0.209935 | Val AUROC 0.644998 | Best 0.661071 @ 109 | Wait 16/25
+Epoch 125 | Loss 0.361039 | CE 0.403160 | Env -0.210605 | Val AUROC 0.638937 | Best 0.661071 @ 109 | Wait 17/25
+Epoch 126 | Loss 0.341377 | CE 0.383695 | Env -0.211587 | Val AUROC 0.640078 | Best 0.661071 @ 109 | Wait 18/25
+Epoch 127 | Loss 0.357236 | CE 0.399680 | Env -0.212218 | Val AUROC 0.637909 | Best 0.661071 @ 109 | Wait 19/25
+Epoch 128 | Loss 0.346599 | CE 0.389257 | Env -0.213293 | Val AUROC 0.638097 | Best 0.661071 @ 109 | Wait 20/25
+Epoch 129 | Loss 0.334212 | CE 0.377015 | Env -0.214015 | Val AUROC 0.635431 | Best 0.661071 @ 109 | Wait 21/25
+Epoch 130 | Loss 0.346585 | CE 0.389565 | Env -0.214899 | Val AUROC 0.639843 | Best 0.661071 @ 109 | Wait 22/25
+Epoch 131 | Loss 0.360796 | CE 0.403934 | Env -0.215694 | Val AUROC 0.638745 | Best 0.661071 @ 109 | Wait 23/25
+Epoch 132 | Loss 0.334473 | CE 0.377754 | Env -0.216404 | Val AUROC 0.647063 | Best 0.661071 @ 109 | Wait 24/25
+Epoch 133 | Loss 0.352517 | CE 0.395977 | Env -0.217301 | Val AUROC 0.646782 | Best 0.661071 @ 109 | Wait 25/25
+Early stopping at epoch 133.
+complexity: {'train_time_sec': 2.4824049747548997, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_40
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.624792
+auprc                    : 0.167753
+g_mean                   : 0.415001
+f1_macro                 : 0.553199
+f1_micro                 : 0.838346
+f1_weighted              : 0.835327
+precision_macro          : 0.555377
+recall_macro             : 0.551388
+accuracy                 : 0.838346
+best_val_auroc           : 0.661071
+best_epoch               : 109
+epochs_executed          : 133
+train_time_seconds       : 2.482405
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_40
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234 | train_ratio=0.4
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=2126 Val=1063 Test=2128 Discarded=0
+Cross-entropy fraud weight: 8.491071
+Epoch 001 | Loss 0.692382 | CE 0.693226 | Env -0.004219 | Val AUROC 0.565415 | Best 0.565415 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.710098 | CE 0.718769 | Env -0.043352 | Val AUROC 0.562354 | Best 0.565415 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.677281 | CE 0.688077 | Env -0.053977 | Val AUROC 0.545291 | Best 0.565415 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.679677 | CE 0.692562 | Env -0.064426 | Val AUROC 0.565871 | Best 0.565871 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.677227 | CE 0.692048 | Env -0.074105 | Val AUROC 0.564490 | Best 0.565871 @ 4 | Wait 2/25
+Epoch 006 | Loss 0.673482 | CE 0.689939 | Env -0.082285 | Val AUROC 0.593379 | Best 0.593379 @ 6 | Wait 1/25
+Epoch 007 | Loss 0.669175 | CE 0.686892 | Env -0.088584 | Val AUROC 0.560017 | Best 0.593379 @ 6 | Wait 2/25
+Epoch 008 | Loss 0.664890 | CE 0.683480 | Env -0.092950 | Val AUROC 0.563721 | Best 0.593379 @ 6 | Wait 3/25
+Epoch 009 | Loss 0.661193 | CE 0.680419 | Env -0.096133 | Val AUROC 0.583155 | Best 0.593379 @ 6 | Wait 4/25
+Epoch 010 | Loss 0.659343 | CE 0.679095 | Env -0.098756 | Val AUROC 0.584958 | Best 0.593379 @ 6 | Wait 5/25
+Epoch 011 | Loss 0.656062 | CE 0.676303 | Env -0.101207 | Val AUROC 0.580479 | Best 0.593379 @ 6 | Wait 6/25
+Epoch 012 | Loss 0.652299 | CE 0.673050 | Env -0.103756 | Val AUROC 0.564744 | Best 0.593379 @ 6 | Wait 7/25
+Epoch 013 | Loss 0.649535 | CE 0.670807 | Env -0.106359 | Val AUROC 0.557393 | Best 0.593379 @ 6 | Wait 8/25
+Epoch 014 | Loss 0.646631 | CE 0.668403 | Env -0.108860 | Val AUROC 0.551356 | Best 0.593379 @ 6 | Wait 9/25
+Epoch 015 | Loss 0.643552 | CE 0.665805 | Env -0.111265 | Val AUROC 0.552304 | Best 0.593379 @ 6 | Wait 10/25
+Epoch 016 | Loss 0.639225 | CE 0.661939 | Env -0.113569 | Val AUROC 0.548079 | Best 0.593379 @ 6 | Wait 11/25
+Epoch 017 | Loss 0.636467 | CE 0.659603 | Env -0.115680 | Val AUROC 0.551468 | Best 0.593379 @ 6 | Wait 12/25
+Epoch 018 | Loss 0.633162 | CE 0.656686 | Env -0.117615 | Val AUROC 0.540756 | Best 0.593379 @ 6 | Wait 13/25
+Epoch 019 | Loss 0.628961 | CE 0.652849 | Env -0.119443 | Val AUROC 0.524645 | Best 0.593379 @ 6 | Wait 14/25
+Epoch 020 | Loss 0.626416 | CE 0.650640 | Env -0.121123 | Val AUROC 0.532813 | Best 0.593379 @ 6 | Wait 15/25
+Epoch 021 | Loss 0.621622 | CE 0.646189 | Env -0.122837 | Val AUROC 0.534700 | Best 0.593379 @ 6 | Wait 16/25
+Epoch 022 | Loss 0.616575 | CE 0.641470 | Env -0.124476 | Val AUROC 0.528870 | Best 0.593379 @ 6 | Wait 17/25
+Epoch 023 | Loss 0.613518 | CE 0.638726 | Env -0.126040 | Val AUROC 0.536043 | Best 0.593379 @ 6 | Wait 18/25
+Epoch 024 | Loss 0.609512 | CE 0.635061 | Env -0.127746 | Val AUROC 0.530184 | Best 0.593379 @ 6 | Wait 19/25
+Epoch 025 | Loss 0.604201 | CE 0.630107 | Env -0.129527 | Val AUROC 0.534944 | Best 0.593379 @ 6 | Wait 20/25
+Epoch 026 | Loss 0.599379 | CE 0.625623 | Env -0.131219 | Val AUROC 0.540277 | Best 0.593379 @ 6 | Wait 21/25
+Epoch 027 | Loss 0.595748 | CE 0.622307 | Env -0.132799 | Val AUROC 0.533818 | Best 0.593379 @ 6 | Wait 22/25
+Epoch 028 | Loss 0.591039 | CE 0.617887 | Env -0.134241 | Val AUROC 0.535451 | Best 0.593379 @ 6 | Wait 23/25
+Epoch 029 | Loss 0.594360 | CE 0.621493 | Env -0.135666 | Val AUROC 0.528438 | Best 0.593379 @ 6 | Wait 24/25
+Epoch 030 | Loss 0.598880 | CE 0.626294 | Env -0.137069 | Val AUROC 0.547197 | Best 0.593379 @ 6 | Wait 25/25
+Early stopping at epoch 30.
+complexity: {'train_time_sec': 0.5648372289724648, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_40
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.564800
+auprc                    : 0.142040
+g_mean                   : 0.369038
+f1_macro                 : 0.228177
+f1_micro                 : 0.229323
+f1_weighted              : 0.251685
+precision_macro          : 0.522891
+recall_macro             : 0.529960
+accuracy                 : 0.229323
+best_val_auroc           : 0.593379
+best_epoch               : 6
+epochs_executed          : 30
+train_time_seconds       : 0.564837
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234/train_40
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=12345 | train_ratio=0.4
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=2126 Val=1063 Test=2128 Discarded=0
+Cross-entropy fraud weight: 8.491071
+Epoch 001 | Loss 0.691689 | CE 0.693280 | Env -0.007952 | Val AUROC 0.523504 | Best 0.523504 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.676011 | CE 0.689610 | Env -0.067997 | Val AUROC 0.520387 | Best 0.523504 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.665861 | CE 0.683602 | Env -0.088701 | Val AUROC 0.519472 | Best 0.523504 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.658017 | CE 0.679517 | Env -0.107502 | Val AUROC 0.527790 | Best 0.527790 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.649799 | CE 0.674720 | Env -0.124600 | Val AUROC 0.519294 | Best 0.527790 @ 4 | Wait 2/25
+Epoch 006 | Loss 0.644927 | CE 0.673024 | Env -0.140483 | Val AUROC 0.527049 | Best 0.527790 @ 4 | Wait 3/25
+Epoch 007 | Loss 0.640036 | CE 0.670886 | Env -0.154246 | Val AUROC 0.528926 | Best 0.528926 @ 7 | Wait 1/25
+Epoch 008 | Loss 0.633702 | CE 0.666781 | Env -0.165399 | Val AUROC 0.541385 | Best 0.541385 @ 8 | Wait 1/25
+Epoch 009 | Loss 0.630634 | CE 0.665489 | Env -0.174277 | Val AUROC 0.545169 | Best 0.545169 @ 9 | Wait 1/25
+Epoch 010 | Loss 0.626393 | CE 0.662673 | Env -0.181401 | Val AUROC 0.544802 | Best 0.545169 @ 9 | Wait 2/25
+Epoch 011 | Loss 0.622459 | CE 0.659846 | Env -0.186937 | Val AUROC 0.543037 | Best 0.545169 @ 9 | Wait 3/25
+Epoch 012 | Loss 0.619850 | CE 0.658078 | Env -0.191139 | Val AUROC 0.538550 | Best 0.545169 @ 9 | Wait 4/25
+Epoch 013 | Loss 0.615580 | CE 0.654533 | Env -0.194764 | Val AUROC 0.531471 | Best 0.545169 @ 9 | Wait 5/25
+Epoch 014 | Loss 0.612762 | CE 0.652460 | Env -0.198491 | Val AUROC 0.532879 | Best 0.545169 @ 9 | Wait 6/25
+Epoch 015 | Loss 0.611109 | CE 0.651632 | Env -0.202612 | Val AUROC 0.524110 | Best 0.545169 @ 9 | Wait 7/25
+Epoch 016 | Loss 0.606086 | CE 0.647515 | Env -0.207148 | Val AUROC 0.524814 | Best 0.545169 @ 9 | Wait 8/25
+Epoch 017 | Loss 0.601090 | CE 0.643375 | Env -0.211424 | Val AUROC 0.527377 | Best 0.545169 @ 9 | Wait 9/25
+Epoch 018 | Loss 0.598600 | CE 0.641604 | Env -0.215023 | Val AUROC 0.531611 | Best 0.545169 @ 9 | Wait 10/25
+Epoch 019 | Loss 0.594006 | CE 0.637590 | Env -0.217920 | Val AUROC 0.535883 | Best 0.545169 @ 9 | Wait 11/25
+Epoch 020 | Loss 0.589458 | CE 0.633518 | Env -0.220302 | Val AUROC 0.536616 | Best 0.545169 @ 9 | Wait 12/25
+Epoch 021 | Loss 0.586378 | CE 0.630856 | Env -0.222394 | Val AUROC 0.540765 | Best 0.545169 @ 9 | Wait 13/25
+Epoch 022 | Loss 0.589880 | CE 0.634756 | Env -0.224381 | Val AUROC 0.530513 | Best 0.545169 @ 9 | Wait 14/25
+Epoch 023 | Loss 0.584840 | CE 0.630115 | Env -0.226373 | Val AUROC 0.547281 | Best 0.547281 @ 23 | Wait 1/25
+Epoch 024 | Loss 0.574724 | CE 0.620425 | Env -0.228506 | Val AUROC 0.543911 | Best 0.547281 @ 23 | Wait 2/25
+Epoch 025 | Loss 0.575965 | CE 0.622102 | Env -0.230682 | Val AUROC 0.548943 | Best 0.548943 @ 25 | Wait 1/25
+Epoch 026 | Loss 0.568240 | CE 0.614818 | Env -0.232893 | Val AUROC 0.552313 | Best 0.552313 @ 26 | Wait 1/25
+Epoch 027 | Loss 0.564758 | CE 0.611770 | Env -0.235057 | Val AUROC 0.545225 | Best 0.552313 @ 26 | Wait 2/25
+Epoch 028 | Loss 0.563102 | CE 0.610522 | Env -0.237101 | Val AUROC 0.560369 | Best 0.560369 @ 28 | Wait 1/25
+Epoch 029 | Loss 0.556370 | CE 0.604173 | Env -0.239014 | Val AUROC 0.568349 | Best 0.568349 @ 29 | Wait 1/25
+Epoch 030 | Loss 0.555977 | CE 0.604120 | Env -0.240710 | Val AUROC 0.564434 | Best 0.568349 @ 29 | Wait 2/25
+Epoch 031 | Loss 0.554157 | CE 0.602589 | Env -0.242157 | Val AUROC 0.567429 | Best 0.568349 @ 29 | Wait 3/25
+Epoch 032 | Loss 0.549736 | CE 0.598440 | Env -0.243522 | Val AUROC 0.562350 | Best 0.568349 @ 29 | Wait 4/25
+Epoch 033 | Loss 0.544937 | CE 0.593916 | Env -0.244898 | Val AUROC 0.565335 | Best 0.568349 @ 29 | Wait 5/25
+Epoch 034 | Loss 0.541533 | CE 0.590795 | Env -0.246308 | Val AUROC 0.566866 | Best 0.568349 @ 29 | Wait 6/25
+Epoch 035 | Loss 0.540933 | CE 0.590464 | Env -0.247655 | Val AUROC 0.551008 | Best 0.568349 @ 29 | Wait 7/25
+Epoch 036 | Loss 0.542242 | CE 0.592030 | Env -0.248941 | Val AUROC 0.551562 | Best 0.568349 @ 29 | Wait 8/25
+Epoch 037 | Loss 0.537752 | CE 0.587784 | Env -0.250157 | Val AUROC 0.568204 | Best 0.568349 @ 29 | Wait 9/25
+Epoch 038 | Loss 0.530533 | CE 0.580799 | Env -0.251330 | Val AUROC 0.572912 | Best 0.572912 @ 38 | Wait 1/25
+Epoch 039 | Loss 0.527259 | CE 0.577763 | Env -0.252523 | Val AUROC 0.583174 | Best 0.583174 @ 39 | Wait 1/25
+Epoch 040 | Loss 0.526937 | CE 0.577685 | Env -0.253741 | Val AUROC 0.570180 | Best 0.583174 @ 39 | Wait 2/25
+Epoch 041 | Loss 0.530133 | CE 0.581119 | Env -0.254931 | Val AUROC 0.574433 | Best 0.583174 @ 39 | Wait 3/25
+Epoch 042 | Loss 0.519818 | CE 0.571039 | Env -0.256106 | Val AUROC 0.569466 | Best 0.583174 @ 39 | Wait 4/25
+Epoch 043 | Loss 0.521934 | CE 0.573389 | Env -0.257274 | Val AUROC 0.559167 | Best 0.583174 @ 39 | Wait 5/25
+Epoch 044 | Loss 0.523653 | CE 0.575348 | Env -0.258477 | Val AUROC 0.544831 | Best 0.583174 @ 39 | Wait 6/25
+Epoch 045 | Loss 0.520186 | CE 0.572116 | Env -0.259648 | Val AUROC 0.568481 | Best 0.583174 @ 39 | Wait 7/25
+Epoch 046 | Loss 0.509776 | CE 0.561937 | Env -0.260805 | Val AUROC 0.569692 | Best 0.583174 @ 39 | Wait 8/25
+Epoch 047 | Loss 0.515102 | CE 0.567492 | Env -0.261949 | Val AUROC 0.546802 | Best 0.583174 @ 39 | Wait 9/25
+Epoch 048 | Loss 0.510104 | CE 0.562733 | Env -0.263141 | Val AUROC 0.567955 | Best 0.583174 @ 39 | Wait 10/25
+Epoch 049 | Loss 0.510839 | CE 0.563704 | Env -0.264322 | Val AUROC 0.577606 | Best 0.583174 @ 39 | Wait 11/25
+Epoch 050 | Loss 0.505144 | CE 0.558237 | Env -0.265466 | Val AUROC 0.577343 | Best 0.583174 @ 39 | Wait 12/25
+Epoch 051 | Loss 0.511939 | CE 0.565258 | Env -0.266597 | Val AUROC 0.566978 | Best 0.583174 @ 39 | Wait 13/25
+Epoch 052 | Loss 0.514517 | CE 0.568053 | Env -0.267682 | Val AUROC 0.548802 | Best 0.583174 @ 39 | Wait 14/25
+Epoch 053 | Loss 0.510258 | CE 0.564013 | Env -0.268775 | Val AUROC 0.554754 | Best 0.583174 @ 39 | Wait 15/25
+Epoch 054 | Loss 0.506956 | CE 0.560926 | Env -0.269849 | Val AUROC 0.583146 | Best 0.583174 @ 39 | Wait 16/25
+Epoch 055 | Loss 0.495507 | CE 0.549681 | Env -0.270870 | Val AUROC 0.561702 | Best 0.583174 @ 39 | Wait 17/25
+Epoch 056 | Loss 0.502707 | CE 0.557074 | Env -0.271836 | Val AUROC 0.541460 | Best 0.583174 @ 39 | Wait 18/25
+Epoch 057 | Loss 0.491114 | CE 0.545661 | Env -0.272733 | Val AUROC 0.552022 | Best 0.583174 @ 39 | Wait 19/25
+Epoch 058 | Loss 0.492326 | CE 0.547034 | Env -0.273541 | Val AUROC 0.579930 | Best 0.583174 @ 39 | Wait 20/25
+Epoch 059 | Loss 0.490606 | CE 0.545480 | Env -0.274372 | Val AUROC 0.576123 | Best 0.583174 @ 39 | Wait 21/25
+Epoch 060 | Loss 0.486067 | CE 0.541117 | Env -0.275247 | Val AUROC 0.563167 | Best 0.583174 @ 39 | Wait 22/25
+Epoch 061 | Loss 0.483783 | CE 0.539005 | Env -0.276114 | Val AUROC 0.555355 | Best 0.583174 @ 39 | Wait 23/25
+Epoch 062 | Loss 0.481617 | CE 0.537014 | Env -0.276985 | Val AUROC 0.590375 | Best 0.590375 @ 62 | Wait 1/25
+Epoch 063 | Loss 0.476874 | CE 0.532441 | Env -0.277837 | Val AUROC 0.587084 | Best 0.590375 @ 62 | Wait 2/25
+Epoch 064 | Loss 0.476172 | CE 0.531908 | Env -0.278683 | Val AUROC 0.567330 | Best 0.590375 @ 62 | Wait 3/25
+Epoch 065 | Loss 0.471138 | CE 0.527044 | Env -0.279531 | Val AUROC 0.558078 | Best 0.590375 @ 62 | Wait 4/25
+Epoch 066 | Loss 0.472301 | CE 0.528390 | Env -0.280448 | Val AUROC 0.582038 | Best 0.590375 @ 62 | Wait 5/25
+Epoch 067 | Loss 0.465826 | CE 0.522106 | Env -0.281402 | Val AUROC 0.578531 | Best 0.590375 @ 62 | Wait 6/25
+Epoch 068 | Loss 0.468818 | CE 0.525298 | Env -0.282404 | Val AUROC 0.582127 | Best 0.590375 @ 62 | Wait 7/25
+Epoch 069 | Loss 0.469280 | CE 0.525970 | Env -0.283448 | Val AUROC 0.566279 | Best 0.590375 @ 62 | Wait 8/25
+Epoch 070 | Loss 0.467364 | CE 0.524270 | Env -0.284528 | Val AUROC 0.561528 | Best 0.590375 @ 62 | Wait 9/25
+Epoch 071 | Loss 0.458158 | CE 0.515287 | Env -0.285645 | Val AUROC 0.577386 | Best 0.590375 @ 62 | Wait 10/25
+Epoch 072 | Loss 0.463422 | CE 0.520750 | Env -0.286639 | Val AUROC 0.558449 | Best 0.590375 @ 62 | Wait 11/25
+Epoch 073 | Loss 0.460815 | CE 0.518307 | Env -0.287461 | Val AUROC 0.574597 | Best 0.590375 @ 62 | Wait 12/25
+Epoch 074 | Loss 0.463217 | CE 0.520869 | Env -0.288257 | Val AUROC 0.579479 | Best 0.590375 @ 62 | Wait 13/25
+Epoch 075 | Loss 0.450889 | CE 0.508647 | Env -0.288792 | Val AUROC 0.584465 | Best 0.590375 @ 62 | Wait 14/25
+Epoch 076 | Loss 0.470191 | CE 0.528058 | Env -0.289335 | Val AUROC 0.564270 | Best 0.590375 @ 62 | Wait 15/25
+Epoch 077 | Loss 0.498950 | CE 0.556929 | Env -0.289894 | Val AUROC 0.566598 | Best 0.590375 @ 62 | Wait 16/25
+Epoch 078 | Loss 0.484451 | CE 0.542544 | Env -0.290464 | Val AUROC 0.569293 | Best 0.590375 @ 62 | Wait 17/25
+Epoch 079 | Loss 0.500591 | CE 0.558782 | Env -0.290958 | Val AUROC 0.584277 | Best 0.590375 @ 62 | Wait 18/25
+Epoch 080 | Loss 0.468240 | CE 0.526511 | Env -0.291355 | Val AUROC 0.605777 | Best 0.605777 @ 80 | Wait 1/25
+Epoch 081 | Loss 0.480775 | CE 0.539140 | Env -0.291822 | Val AUROC 0.563678 | Best 0.605777 @ 80 | Wait 2/25
+Epoch 082 | Loss 0.460142 | CE 0.518600 | Env -0.292289 | Val AUROC 0.543305 | Best 0.605777 @ 80 | Wait 3/25
+Epoch 083 | Loss 0.472540 | CE 0.531087 | Env -0.292730 | Val AUROC 0.558064 | Best 0.605777 @ 80 | Wait 4/25
+Epoch 084 | Loss 0.460250 | CE 0.518879 | Env -0.293145 | Val AUROC 0.585779 | Best 0.605777 @ 80 | Wait 5/25
+Epoch 085 | Loss 0.459904 | CE 0.518610 | Env -0.293529 | Val AUROC 0.608654 | Best 0.608654 @ 85 | Wait 1/25
+Epoch 086 | Loss 0.453245 | CE 0.512039 | Env -0.293967 | Val AUROC 0.595923 | Best 0.608654 @ 85 | Wait 2/25
+Epoch 087 | Loss 0.454053 | CE 0.512925 | Env -0.294361 | Val AUROC 0.578057 | Best 0.608654 @ 85 | Wait 3/25
+Epoch 088 | Loss 0.449594 | CE 0.508561 | Env -0.294838 | Val AUROC 0.581587 | Best 0.608654 @ 85 | Wait 4/25
+Epoch 089 | Loss 0.440615 | CE 0.499661 | Env -0.295229 | Val AUROC 0.584357 | Best 0.608654 @ 85 | Wait 5/25
+Epoch 090 | Loss 0.442014 | CE 0.501104 | Env -0.295450 | Val AUROC 0.577259 | Best 0.608654 @ 85 | Wait 6/25
+Epoch 091 | Loss 0.439095 | CE 0.498234 | Env -0.295697 | Val AUROC 0.590131 | Best 0.608654 @ 85 | Wait 7/25
+Epoch 092 | Loss 0.433181 | CE 0.492310 | Env -0.295646 | Val AUROC 0.610973 | Best 0.610973 @ 92 | Wait 1/25
+Epoch 093 | Loss 0.432639 | CE 0.491907 | Env -0.296341 | Val AUROC 0.638792 | Best 0.638792 @ 93 | Wait 1/25
+Epoch 094 | Loss 0.429921 | CE 0.489083 | Env -0.295809 | Val AUROC 0.621188 | Best 0.638792 @ 93 | Wait 2/25
+Epoch 095 | Loss 0.425535 | CE 0.484708 | Env -0.295864 | Val AUROC 0.606936 | Best 0.638792 @ 93 | Wait 3/25
+Epoch 096 | Loss 0.422292 | CE 0.481469 | Env -0.295886 | Val AUROC 0.597848 | Best 0.638792 @ 93 | Wait 4/25
+Epoch 097 | Loss 0.421330 | CE 0.480812 | Env -0.297411 | Val AUROC 0.612194 | Best 0.638792 @ 93 | Wait 5/25
+Epoch 098 | Loss 0.415458 | CE 0.474575 | Env -0.295587 | Val AUROC 0.621864 | Best 0.638792 @ 93 | Wait 6/25
+Epoch 099 | Loss 0.414721 | CE 0.474174 | Env -0.297262 | Val AUROC 0.626080 | Best 0.638792 @ 93 | Wait 7/25
+Epoch 100 | Loss 0.412577 | CE 0.471749 | Env -0.295862 | Val AUROC 0.610513 | Best 0.638792 @ 93 | Wait 8/25
+Epoch 101 | Loss 0.407683 | CE 0.467072 | Env -0.296943 | Val AUROC 0.611002 | Best 0.638792 @ 93 | Wait 9/25
+Epoch 102 | Loss 0.404165 | CE 0.463889 | Env -0.298622 | Val AUROC 0.612785 | Best 0.638792 @ 93 | Wait 10/25
+Epoch 103 | Loss 0.403599 | CE 0.462856 | Env -0.296289 | Val AUROC 0.619771 | Best 0.638792 @ 93 | Wait 11/25
+Epoch 104 | Loss 0.399167 | CE 0.458989 | Env -0.299108 | Val AUROC 0.615583 | Best 0.638792 @ 93 | Wait 12/25
+Epoch 105 | Loss 0.398790 | CE 0.458428 | Env -0.298189 | Val AUROC 0.626436 | Best 0.638792 @ 93 | Wait 13/25
+Epoch 106 | Loss 0.401973 | CE 0.461637 | Env -0.298324 | Val AUROC 0.618907 | Best 0.638792 @ 93 | Wait 14/25
+Epoch 107 | Loss 0.433344 | CE 0.493278 | Env -0.299674 | Val AUROC 0.619001 | Best 0.638792 @ 93 | Wait 15/25
+Epoch 108 | Loss 0.439404 | CE 0.499274 | Env -0.299348 | Val AUROC 0.635318 | Best 0.638792 @ 93 | Wait 16/25
+Epoch 109 | Loss 0.405995 | CE 0.466002 | Env -0.300033 | Val AUROC 0.635506 | Best 0.638792 @ 93 | Wait 17/25
+Epoch 110 | Loss 0.398228 | CE 0.458295 | Env -0.300335 | Val AUROC 0.634468 | Best 0.638792 @ 93 | Wait 18/25
+Epoch 111 | Loss 0.417072 | CE 0.477092 | Env -0.300102 | Val AUROC 0.634412 | Best 0.638792 @ 93 | Wait 19/25
+Epoch 112 | Loss 0.391464 | CE 0.451594 | Env -0.300648 | Val AUROC 0.631436 | Best 0.638792 @ 93 | Wait 20/25
+Epoch 113 | Loss 0.400447 | CE 0.460696 | Env -0.301246 | Val AUROC 0.605814 | Best 0.638792 @ 93 | Wait 21/25
+Epoch 114 | Loss 0.400365 | CE 0.460523 | Env -0.300789 | Val AUROC 0.633196 | Best 0.638792 @ 93 | Wait 22/25
+Epoch 115 | Loss 0.380749 | CE 0.441076 | Env -0.301638 | Val AUROC 0.642153 | Best 0.642153 @ 115 | Wait 1/25
+Epoch 116 | Loss 0.401994 | CE 0.462296 | Env -0.301507 | Val AUROC 0.640219 | Best 0.642153 @ 115 | Wait 2/25
+Epoch 117 | Loss 0.384948 | CE 0.445311 | Env -0.301811 | Val AUROC 0.621212 | Best 0.642153 @ 115 | Wait 3/25
+Epoch 118 | Loss 0.402074 | CE 0.462543 | Env -0.302345 | Val AUROC 0.630314 | Best 0.642153 @ 115 | Wait 4/25
+Epoch 119 | Loss 0.389572 | CE 0.450019 | Env -0.302239 | Val AUROC 0.639820 | Best 0.642153 @ 115 | Wait 5/25
+Epoch 120 | Loss 0.380530 | CE 0.441101 | Env -0.302856 | Val AUROC 0.619418 | Best 0.642153 @ 115 | Wait 6/25
+Epoch 121 | Loss 0.404530 | CE 0.465110 | Env -0.302899 | Val AUROC 0.648495 | Best 0.648495 @ 121 | Wait 1/25
+Epoch 122 | Loss 0.399352 | CE 0.459975 | Env -0.303116 | Val AUROC 0.630835 | Best 0.648495 @ 121 | Wait 2/25
+Epoch 123 | Loss 0.401933 | CE 0.462646 | Env -0.303565 | Val AUROC 0.609063 | Best 0.648495 @ 121 | Wait 3/25
+Epoch 124 | Loss 0.414038 | CE 0.474745 | Env -0.303536 | Val AUROC 0.623916 | Best 0.648495 @ 121 | Wait 4/25
+Epoch 125 | Loss 0.392255 | CE 0.453061 | Env -0.304034 | Val AUROC 0.621498 | Best 0.648495 @ 121 | Wait 5/25
+Epoch 126 | Loss 0.390039 | CE 0.450861 | Env -0.304110 | Val AUROC 0.620409 | Best 0.648495 @ 121 | Wait 6/25
+Epoch 127 | Loss 0.388897 | CE 0.449787 | Env -0.304449 | Val AUROC 0.611086 | Best 0.648495 @ 121 | Wait 7/25
+Epoch 128 | Loss 0.375608 | CE 0.436537 | Env -0.304648 | Val AUROC 0.619531 | Best 0.648495 @ 121 | Wait 8/25
+Epoch 129 | Loss 0.373294 | CE 0.434284 | Env -0.304949 | Val AUROC 0.622564 | Best 0.648495 @ 121 | Wait 9/25
+Epoch 130 | Loss 0.372597 | CE 0.433628 | Env -0.305155 | Val AUROC 0.619681 | Best 0.648495 @ 121 | Wait 10/25
+Epoch 131 | Loss 0.368046 | CE 0.429124 | Env -0.305393 | Val AUROC 0.616546 | Best 0.648495 @ 121 | Wait 11/25
+Epoch 132 | Loss 0.364601 | CE 0.425731 | Env -0.305649 | Val AUROC 0.611377 | Best 0.648495 @ 121 | Wait 12/25
+Epoch 133 | Loss 0.366302 | CE 0.427473 | Env -0.305851 | Val AUROC 0.613245 | Best 0.648495 @ 121 | Wait 13/25
+Epoch 134 | Loss 0.360032 | CE 0.421258 | Env -0.306131 | Val AUROC 0.611396 | Best 0.648495 @ 121 | Wait 14/25
+Epoch 135 | Loss 0.358688 | CE 0.419963 | Env -0.306372 | Val AUROC 0.620221 | Best 0.648495 @ 121 | Wait 15/25
+Epoch 136 | Loss 0.357576 | CE 0.418897 | Env -0.306603 | Val AUROC 0.621061 | Best 0.648495 @ 121 | Wait 16/25
+Epoch 137 | Loss 0.352253 | CE 0.413610 | Env -0.306787 | Val AUROC 0.621404 | Best 0.648495 @ 121 | Wait 17/25
+Epoch 138 | Loss 0.351095 | CE 0.412466 | Env -0.306855 | Val AUROC 0.622305 | Best 0.648495 @ 121 | Wait 18/25
+Epoch 139 | Loss 0.350600 | CE 0.412051 | Env -0.307254 | Val AUROC 0.622737 | Best 0.648495 @ 121 | Wait 19/25
+Epoch 140 | Loss 0.347231 | CE 0.408678 | Env -0.307237 | Val AUROC 0.617109 | Best 0.648495 @ 121 | Wait 20/25
+Epoch 141 | Loss 0.345526 | CE 0.407009 | Env -0.307413 | Val AUROC 0.637750 | Best 0.648495 @ 121 | Wait 21/25
+Epoch 142 | Loss 0.346090 | CE 0.407599 | Env -0.307542 | Val AUROC 0.619268 | Best 0.648495 @ 121 | Wait 22/25
+Epoch 143 | Loss 0.341898 | CE 0.403524 | Env -0.308131 | Val AUROC 0.629685 | Best 0.648495 @ 121 | Wait 23/25
+Epoch 144 | Loss 0.337966 | CE 0.399538 | Env -0.307861 | Val AUROC 0.631558 | Best 0.648495 @ 121 | Wait 24/25
+Epoch 145 | Loss 0.336372 | CE 0.398069 | Env -0.308484 | Val AUROC 0.623484 | Best 0.648495 @ 121 | Wait 25/25
+Early stopping at epoch 145.
+complexity: {'train_time_sec': 2.6090485882014036, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_40
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.629906
+auprc                    : 0.163866
+g_mean                   : 0.569966
+f1_macro                 : 0.516720
+f1_micro                 : 0.683741
+f1_weighted              : 0.741283
+precision_macro          : 0.536937
+recall_macro             : 0.583818
+accuracy                 : 0.683741
+best_val_auroc           : 0.648495
+best_epoch               : 121
+epochs_executed          : 145
+train_time_seconds       : 2.609049
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_12345/train_40
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123456 | train_ratio=0.4
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=2126 Val=1063 Test=2128 Discarded=0
+Cross-entropy fraud weight: 8.491071
+Epoch 001 | Loss 0.691076 | CE 0.693893 | Env -0.014085 | Val AUROC 0.593539 | Best 0.593539 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.688395 | CE 0.698312 | Env -0.049586 | Val AUROC 0.591656 | Best 0.593539 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.673751 | CE 0.686376 | Env -0.063127 | Val AUROC 0.594572 | Best 0.594572 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.668918 | CE 0.684097 | Env -0.075894 | Val AUROC 0.604082 | Best 0.604082 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.663616 | CE 0.681160 | Env -0.087722 | Val AUROC 0.606641 | Best 0.606641 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.661603 | CE 0.681416 | Env -0.099069 | Val AUROC 0.605589 | Best 0.606641 @ 5 | Wait 2/25
+Epoch 007 | Loss 0.656264 | CE 0.678141 | Env -0.109385 | Val AUROC 0.606650 | Best 0.606650 @ 7 | Wait 1/25
+Epoch 008 | Loss 0.651968 | CE 0.675544 | Env -0.117881 | Val AUROC 0.607345 | Best 0.607345 @ 8 | Wait 1/25
+Epoch 009 | Loss 0.649114 | CE 0.673935 | Env -0.124104 | Val AUROC 0.604913 | Best 0.607345 @ 8 | Wait 2/25
+Epoch 010 | Loss 0.646133 | CE 0.671720 | Env -0.127935 | Val AUROC 0.605307 | Best 0.607345 @ 8 | Wait 3/25
+Epoch 011 | Loss 0.644248 | CE 0.670178 | Env -0.129649 | Val AUROC 0.591511 | Best 0.607345 @ 8 | Wait 4/25
+Epoch 012 | Loss 0.641581 | CE 0.667632 | Env -0.130254 | Val AUROC 0.582916 | Best 0.607345 @ 8 | Wait 5/25
+Epoch 013 | Loss 0.639617 | CE 0.665782 | Env -0.130826 | Val AUROC 0.575142 | Best 0.607345 @ 8 | Wait 6/25
+Epoch 014 | Loss 0.635967 | CE 0.662392 | Env -0.132126 | Val AUROC 0.553689 | Best 0.607345 @ 8 | Wait 7/25
+Epoch 015 | Loss 0.632667 | CE 0.659465 | Env -0.133991 | Val AUROC 0.521354 | Best 0.607345 @ 8 | Wait 8/25
+Epoch 016 | Loss 0.629690 | CE 0.656899 | Env -0.136045 | Val AUROC 0.512163 | Best 0.607345 @ 8 | Wait 9/25
+Epoch 017 | Loss 0.626930 | CE 0.654524 | Env -0.137971 | Val AUROC 0.515562 | Best 0.607345 @ 8 | Wait 10/25
+Epoch 018 | Loss 0.624835 | CE 0.652753 | Env -0.139592 | Val AUROC 0.509215 | Best 0.607345 @ 8 | Wait 11/25
+Epoch 019 | Loss 0.622212 | CE 0.650380 | Env -0.140836 | Val AUROC 0.508361 | Best 0.607345 @ 8 | Wait 12/25
+Epoch 020 | Loss 0.620132 | CE 0.648491 | Env -0.141797 | Val AUROC 0.511468 | Best 0.607345 @ 8 | Wait 13/25
+Epoch 021 | Loss 0.617727 | CE 0.646239 | Env -0.142563 | Val AUROC 0.508088 | Best 0.607345 @ 8 | Wait 14/25
+Epoch 022 | Loss 0.615120 | CE 0.643766 | Env -0.143229 | Val AUROC 0.507337 | Best 0.607345 @ 8 | Wait 15/25
+Epoch 023 | Loss 0.611971 | CE 0.640745 | Env -0.143871 | Val AUROC 0.516416 | Best 0.607345 @ 8 | Wait 16/25
+Epoch 024 | Loss 0.608390 | CE 0.637297 | Env -0.144538 | Val AUROC 0.515346 | Best 0.607345 @ 8 | Wait 17/25
+Epoch 025 | Loss 0.605884 | CE 0.634932 | Env -0.145237 | Val AUROC 0.536141 | Best 0.607345 @ 8 | Wait 18/25
+Epoch 026 | Loss 0.604439 | CE 0.633634 | Env -0.145976 | Val AUROC 0.529466 | Best 0.607345 @ 8 | Wait 19/25
+Epoch 027 | Loss 0.599134 | CE 0.628482 | Env -0.146737 | Val AUROC 0.533588 | Best 0.607345 @ 8 | Wait 20/25
+Epoch 028 | Loss 0.595260 | CE 0.624753 | Env -0.147465 | Val AUROC 0.546666 | Best 0.607345 @ 8 | Wait 21/25
+Epoch 029 | Loss 0.594921 | CE 0.624547 | Env -0.148129 | Val AUROC 0.539080 | Best 0.607345 @ 8 | Wait 22/25
+Epoch 030 | Loss 0.587718 | CE 0.617475 | Env -0.148786 | Val AUROC 0.532367 | Best 0.607345 @ 8 | Wait 23/25
+Epoch 031 | Loss 0.585190 | CE 0.615073 | Env -0.149417 | Val AUROC 0.541746 | Best 0.607345 @ 8 | Wait 24/25
+Epoch 032 | Loss 0.584205 | CE 0.614202 | Env -0.149985 | Val AUROC 0.534705 | Best 0.607345 @ 8 | Wait 25/25
+Early stopping at epoch 32.
+complexity: {'train_time_sec': 0.5582588026300073, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_40
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.564173
+auprc                    : 0.126928
+g_mean                   : 0.479619
+f1_macro                 : 0.320997
+f1_micro                 : 0.341635
+f1_weighted              : 0.414565
+precision_macro          : 0.520139
+recall_macro             : 0.543198
+accuracy                 : 0.341635
+best_val_auroc           : 0.607345
+best_epoch               : 8
+epochs_executed          : 32
+train_time_seconds       : 0.558259
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123456/train_40
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=1234567 | train_ratio=0.4
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=2126 Val=1063 Test=2128 Discarded=0
+Cross-entropy fraud weight: 8.491071
+Epoch 001 | Loss 0.698080 | CE 0.696290 | Env 0.008951 | Val AUROC 0.538385 | Best 0.538385 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.686809 | CE 0.693253 | Env -0.032224 | Val AUROC 0.526565 | Best 0.538385 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.679536 | CE 0.688154 | Env -0.043092 | Val AUROC 0.528523 | Best 0.538385 @ 1 | Wait 3/25
+Epoch 004 | Loss 0.672782 | CE 0.683344 | Env -0.052806 | Val AUROC 0.540282 | Best 0.540282 @ 4 | Wait 1/25
+Epoch 005 | Loss 0.663376 | CE 0.675962 | Env -0.062930 | Val AUROC 0.541127 | Best 0.541127 @ 5 | Wait 1/25
+Epoch 006 | Loss 0.657584 | CE 0.672303 | Env -0.073595 | Val AUROC 0.551975 | Best 0.551975 @ 6 | Wait 1/25
+Epoch 007 | Loss 0.654244 | CE 0.671106 | Env -0.084312 | Val AUROC 0.542512 | Best 0.551975 @ 6 | Wait 2/25
+Epoch 008 | Loss 0.648815 | CE 0.667632 | Env -0.094088 | Val AUROC 0.538094 | Best 0.551975 @ 6 | Wait 3/25
+Epoch 009 | Loss 0.641617 | CE 0.662197 | Env -0.102899 | Val AUROC 0.541897 | Best 0.551975 @ 6 | Wait 4/25
+Epoch 010 | Loss 0.638567 | CE 0.660659 | Env -0.110459 | Val AUROC 0.551755 | Best 0.551975 @ 6 | Wait 5/25
+Epoch 011 | Loss 0.634117 | CE 0.657374 | Env -0.116286 | Val AUROC 0.547398 | Best 0.551975 @ 6 | Wait 6/25
+Epoch 012 | Loss 0.629897 | CE 0.653938 | Env -0.120206 | Val AUROC 0.551961 | Best 0.551975 @ 6 | Wait 7/25
+Epoch 013 | Loss 0.628199 | CE 0.652702 | Env -0.122516 | Val AUROC 0.553191 | Best 0.553191 @ 13 | Wait 1/25
+Epoch 014 | Loss 0.624018 | CE 0.648800 | Env -0.123913 | Val AUROC 0.553830 | Best 0.553830 @ 14 | Wait 1/25
+Epoch 015 | Loss 0.622046 | CE 0.647064 | Env -0.125092 | Val AUROC 0.554121 | Best 0.554121 @ 15 | Wait 1/25
+Epoch 016 | Loss 0.617812 | CE 0.643098 | Env -0.126428 | Val AUROC 0.551576 | Best 0.554121 @ 15 | Wait 2/25
+Epoch 017 | Loss 0.614685 | CE 0.640288 | Env -0.128015 | Val AUROC 0.542197 | Best 0.554121 @ 15 | Wait 3/25
+Epoch 018 | Loss 0.610963 | CE 0.636925 | Env -0.129810 | Val AUROC 0.542986 | Best 0.554121 @ 15 | Wait 4/25
+Epoch 019 | Loss 0.606541 | CE 0.632890 | Env -0.131743 | Val AUROC 0.546948 | Best 0.554121 @ 15 | Wait 5/25
+Epoch 020 | Loss 0.602659 | CE 0.629399 | Env -0.133701 | Val AUROC 0.542272 | Best 0.554121 @ 15 | Wait 6/25
+Epoch 021 | Loss 0.597605 | CE 0.624713 | Env -0.135542 | Val AUROC 0.541972 | Best 0.554121 @ 15 | Wait 7/25
+Epoch 022 | Loss 0.593102 | CE 0.620542 | Env -0.137200 | Val AUROC 0.548365 | Best 0.554121 @ 15 | Wait 8/25
+Epoch 023 | Loss 0.588527 | CE 0.616254 | Env -0.138637 | Val AUROC 0.556562 | Best 0.556562 @ 23 | Wait 1/25
+Epoch 024 | Loss 0.584634 | CE 0.612634 | Env -0.140001 | Val AUROC 0.539540 | Best 0.556562 @ 23 | Wait 2/25
+Epoch 025 | Loss 0.597914 | CE 0.626191 | Env -0.141387 | Val AUROC 0.568100 | Best 0.568100 @ 25 | Wait 1/25
+Epoch 026 | Loss 0.596538 | CE 0.625087 | Env -0.142748 | Val AUROC 0.563106 | Best 0.568100 @ 25 | Wait 2/25
+Epoch 027 | Loss 0.576953 | CE 0.605781 | Env -0.144140 | Val AUROC 0.550403 | Best 0.568100 @ 25 | Wait 3/25
+Epoch 028 | Loss 0.586066 | CE 0.615168 | Env -0.145512 | Val AUROC 0.563246 | Best 0.568100 @ 25 | Wait 4/25
+Epoch 029 | Loss 0.573902 | CE 0.603282 | Env -0.146897 | Val AUROC 0.571602 | Best 0.571602 @ 29 | Wait 1/25
+Epoch 030 | Loss 0.574047 | CE 0.603697 | Env -0.148248 | Val AUROC 0.572823 | Best 0.572823 @ 30 | Wait 1/25
+Epoch 031 | Loss 0.566400 | CE 0.596309 | Env -0.149544 | Val AUROC 0.547060 | Best 0.572823 @ 30 | Wait 2/25
+Epoch 032 | Loss 0.565831 | CE 0.596004 | Env -0.150864 | Val AUROC 0.543850 | Best 0.572823 @ 30 | Wait 3/25
+Epoch 033 | Loss 0.559807 | CE 0.590249 | Env -0.152211 | Val AUROC 0.562627 | Best 0.572823 @ 30 | Wait 4/25
+Epoch 034 | Loss 0.557273 | CE 0.587979 | Env -0.153530 | Val AUROC 0.569771 | Best 0.572823 @ 30 | Wait 5/25
+Epoch 035 | Loss 0.551427 | CE 0.582391 | Env -0.154816 | Val AUROC 0.556186 | Best 0.572823 @ 30 | Wait 6/25
+Epoch 036 | Loss 0.552344 | CE 0.583569 | Env -0.156125 | Val AUROC 0.575883 | Best 0.575883 @ 36 | Wait 1/25
+Epoch 037 | Loss 0.547204 | CE 0.578690 | Env -0.157430 | Val AUROC 0.568908 | Best 0.575883 @ 36 | Wait 2/25
+Epoch 038 | Loss 0.542078 | CE 0.573809 | Env -0.158657 | Val AUROC 0.549154 | Best 0.575883 @ 36 | Wait 3/25
+Epoch 039 | Loss 0.546953 | CE 0.578919 | Env -0.159829 | Val AUROC 0.579855 | Best 0.579855 @ 39 | Wait 1/25
+Epoch 040 | Loss 0.554381 | CE 0.586597 | Env -0.161077 | Val AUROC 0.582230 | Best 0.582230 @ 40 | Wait 1/25
+Epoch 041 | Loss 0.539604 | CE 0.572082 | Env -0.162387 | Val AUROC 0.564420 | Best 0.582230 @ 40 | Wait 2/25
+Epoch 042 | Loss 0.542801 | CE 0.575532 | Env -0.163651 | Val AUROC 0.565509 | Best 0.582230 @ 40 | Wait 3/25
+Epoch 043 | Loss 0.536732 | CE 0.569702 | Env -0.164853 | Val AUROC 0.585169 | Best 0.585169 @ 43 | Wait 1/25
+Epoch 044 | Loss 0.530050 | CE 0.563262 | Env -0.166062 | Val AUROC 0.575367 | Best 0.585169 @ 43 | Wait 2/25
+Epoch 045 | Loss 0.531686 | CE 0.565140 | Env -0.167272 | Val AUROC 0.561341 | Best 0.585169 @ 43 | Wait 3/25
+Epoch 046 | Loss 0.522102 | CE 0.555797 | Env -0.168476 | Val AUROC 0.560608 | Best 0.585169 @ 43 | Wait 4/25
+Epoch 047 | Loss 0.520889 | CE 0.554831 | Env -0.169710 | Val AUROC 0.578418 | Best 0.585169 @ 43 | Wait 5/25
+Epoch 048 | Loss 0.517445 | CE 0.551634 | Env -0.170945 | Val AUROC 0.577010 | Best 0.585169 @ 43 | Wait 6/25
+Epoch 049 | Loss 0.518308 | CE 0.552747 | Env -0.172194 | Val AUROC 0.575132 | Best 0.585169 @ 43 | Wait 7/25
+Epoch 050 | Loss 0.509921 | CE 0.544602 | Env -0.173406 | Val AUROC 0.562955 | Best 0.585169 @ 43 | Wait 8/25
+Epoch 051 | Loss 0.508447 | CE 0.543359 | Env -0.174562 | Val AUROC 0.567002 | Best 0.585169 @ 43 | Wait 9/25
+Epoch 052 | Loss 0.506080 | CE 0.541221 | Env -0.175707 | Val AUROC 0.570842 | Best 0.585169 @ 43 | Wait 10/25
+Epoch 053 | Loss 0.501770 | CE 0.537147 | Env -0.176888 | Val AUROC 0.562627 | Best 0.585169 @ 43 | Wait 11/25
+Epoch 054 | Loss 0.498393 | CE 0.534010 | Env -0.178086 | Val AUROC 0.590530 | Best 0.590530 @ 54 | Wait 1/25
+Epoch 055 | Loss 0.499716 | CE 0.535582 | Env -0.179327 | Val AUROC 0.560082 | Best 0.590530 @ 54 | Wait 2/25
+Epoch 056 | Loss 0.506322 | CE 0.542443 | Env -0.180605 | Val AUROC 0.592069 | Best 0.592069 @ 56 | Wait 1/25
+Epoch 057 | Loss 0.517212 | CE 0.553590 | Env -0.181890 | Val AUROC 0.590732 | Best 0.592069 @ 56 | Wait 2/25
+Epoch 058 | Loss 0.496038 | CE 0.532678 | Env -0.183200 | Val AUROC 0.566288 | Best 0.592069 @ 56 | Wait 3/25
+Epoch 059 | Loss 0.507726 | CE 0.544628 | Env -0.184510 | Val AUROC 0.583986 | Best 0.592069 @ 56 | Wait 4/25
+Epoch 060 | Loss 0.492737 | CE 0.529893 | Env -0.185780 | Val AUROC 0.586117 | Best 0.592069 @ 56 | Wait 5/25
+Epoch 061 | Loss 0.492636 | CE 0.530046 | Env -0.187049 | Val AUROC 0.569678 | Best 0.592069 @ 56 | Wait 6/25
+Epoch 062 | Loss 0.491493 | CE 0.529156 | Env -0.188313 | Val AUROC 0.583272 | Best 0.592069 @ 56 | Wait 7/25
+Epoch 063 | Loss 0.481812 | CE 0.519728 | Env -0.189578 | Val AUROC 0.591450 | Best 0.592069 @ 56 | Wait 8/25
+Epoch 064 | Loss 0.481510 | CE 0.519679 | Env -0.190841 | Val AUROC 0.565303 | Best 0.592069 @ 56 | Wait 9/25
+Epoch 065 | Loss 0.477543 | CE 0.515963 | Env -0.192097 | Val AUROC 0.582568 | Best 0.592069 @ 56 | Wait 10/25
+Epoch 066 | Loss 0.471621 | CE 0.510289 | Env -0.193339 | Val AUROC 0.593891 | Best 0.593891 @ 66 | Wait 1/25
+Epoch 067 | Loss 0.471004 | CE 0.509921 | Env -0.194586 | Val AUROC 0.581986 | Best 0.593891 @ 66 | Wait 2/25
+Epoch 068 | Loss 0.463085 | CE 0.502253 | Env -0.195840 | Val AUROC 0.576747 | Best 0.593891 @ 66 | Wait 3/25
+Epoch 069 | Loss 0.465086 | CE 0.504507 | Env -0.197105 | Val AUROC 0.603148 | Best 0.603148 @ 69 | Wait 1/25
+Epoch 070 | Loss 0.470632 | CE 0.510315 | Env -0.198414 | Val AUROC 0.568307 | Best 0.603148 @ 69 | Wait 2/25
+Epoch 071 | Loss 0.494771 | CE 0.534718 | Env -0.199738 | Val AUROC 0.605289 | Best 0.605289 @ 71 | Wait 1/25
+Epoch 072 | Loss 0.515821 | CE 0.556015 | Env -0.200967 | Val AUROC 0.602453 | Best 0.605289 @ 71 | Wait 2/25
+Epoch 073 | Loss 0.490850 | CE 0.531294 | Env -0.202216 | Val AUROC 0.604087 | Best 0.605289 @ 71 | Wait 3/25
+Epoch 074 | Loss 0.502456 | CE 0.543146 | Env -0.203449 | Val AUROC 0.601974 | Best 0.605289 @ 71 | Wait 4/25
+Epoch 075 | Loss 0.485522 | CE 0.526458 | Env -0.204677 | Val AUROC 0.581479 | Best 0.605289 @ 71 | Wait 5/25
+Epoch 076 | Loss 0.482369 | CE 0.523547 | Env -0.205887 | Val AUROC 0.583930 | Best 0.605289 @ 71 | Wait 6/25
+Epoch 077 | Loss 0.485345 | CE 0.526766 | Env -0.207109 | Val AUROC 0.579517 | Best 0.605289 @ 71 | Wait 7/25
+Epoch 078 | Loss 0.482439 | CE 0.524080 | Env -0.208205 | Val AUROC 0.595074 | Best 0.605289 @ 71 | Wait 8/25
+Epoch 079 | Loss 0.465031 | CE 0.506904 | Env -0.209366 | Val AUROC 0.616639 | Best 0.616639 @ 79 | Wait 1/25
+Epoch 080 | Loss 0.456468 | CE 0.498549 | Env -0.210406 | Val AUROC 0.607204 | Best 0.616639 @ 79 | Wait 2/25
+Epoch 081 | Loss 0.455419 | CE 0.497708 | Env -0.211443 | Val AUROC 0.601777 | Best 0.616639 @ 79 | Wait 3/25
+Epoch 082 | Loss 0.457340 | CE 0.499839 | Env -0.212498 | Val AUROC 0.604885 | Best 0.616639 @ 79 | Wait 4/25
+Epoch 083 | Loss 0.453527 | CE 0.496236 | Env -0.213545 | Val AUROC 0.613982 | Best 0.616639 @ 79 | Wait 5/25
+Epoch 084 | Loss 0.446667 | CE 0.489567 | Env -0.214502 | Val AUROC 0.617043 | Best 0.617043 @ 84 | Wait 1/25
+Epoch 085 | Loss 0.442544 | CE 0.485652 | Env -0.215538 | Val AUROC 0.601026 | Best 0.617043 @ 84 | Wait 2/25
+Epoch 086 | Loss 0.438760 | CE 0.482052 | Env -0.216461 | Val AUROC 0.601749 | Best 0.617043 @ 84 | Wait 3/25
+Epoch 087 | Loss 0.435880 | CE 0.479356 | Env -0.217380 | Val AUROC 0.604922 | Best 0.617043 @ 84 | Wait 4/25
+Epoch 088 | Loss 0.431760 | CE 0.475431 | Env -0.218354 | Val AUROC 0.612462 | Best 0.617043 @ 84 | Wait 5/25
+Epoch 089 | Loss 0.428630 | CE 0.472491 | Env -0.219302 | Val AUROC 0.615381 | Best 0.617043 @ 84 | Wait 6/25
+Epoch 090 | Loss 0.425594 | CE 0.469629 | Env -0.220176 | Val AUROC 0.611485 | Best 0.617043 @ 84 | Wait 7/25
+Epoch 091 | Loss 0.420514 | CE 0.464736 | Env -0.221111 | Val AUROC 0.606096 | Best 0.617043 @ 84 | Wait 8/25
+Epoch 092 | Loss 0.419674 | CE 0.464062 | Env -0.221940 | Val AUROC 0.626713 | Best 0.626713 @ 92 | Wait 1/25
+Epoch 093 | Loss 0.434445 | CE 0.479000 | Env -0.222772 | Val AUROC 0.596501 | Best 0.626713 @ 92 | Wait 2/25
+Epoch 094 | Loss 0.542435 | CE 0.587158 | Env -0.223612 | Val AUROC 0.618555 | Best 0.626713 @ 92 | Wait 3/25
+Epoch 095 | Loss 0.624474 | CE 0.669353 | Env -0.224395 | Val AUROC 0.602416 | Best 0.626713 @ 92 | Wait 4/25
+Epoch 096 | Loss 0.533460 | CE 0.578491 | Env -0.225155 | Val AUROC 0.595177 | Best 0.626713 @ 92 | Wait 5/25
+Epoch 097 | Loss 0.523827 | CE 0.568955 | Env -0.225639 | Val AUROC 0.585873 | Best 0.626713 @ 92 | Wait 6/25
+Epoch 098 | Loss 0.521874 | CE 0.567052 | Env -0.225892 | Val AUROC 0.592990 | Best 0.626713 @ 92 | Wait 7/25
+Epoch 099 | Loss 0.516057 | CE 0.561403 | Env -0.226732 | Val AUROC 0.583235 | Best 0.626713 @ 92 | Wait 8/25
+Epoch 100 | Loss 0.511405 | CE 0.557054 | Env -0.228246 | Val AUROC 0.581526 | Best 0.626713 @ 92 | Wait 9/25
+Epoch 101 | Loss 0.493680 | CE 0.539424 | Env -0.228721 | Val AUROC 0.591788 | Best 0.626713 @ 92 | Wait 10/25
+Epoch 102 | Loss 0.482504 | CE 0.528325 | Env -0.229108 | Val AUROC 0.595262 | Best 0.626713 @ 92 | Wait 11/25
+Epoch 103 | Loss 0.481539 | CE 0.527632 | Env -0.230467 | Val AUROC 0.583563 | Best 0.626713 @ 92 | Wait 12/25
+Epoch 104 | Loss 0.477481 | CE 0.523722 | Env -0.231205 | Val AUROC 0.584258 | Best 0.626713 @ 92 | Wait 13/25
+Epoch 105 | Loss 0.470053 | CE 0.516380 | Env -0.231630 | Val AUROC 0.588248 | Best 0.626713 @ 92 | Wait 14/25
+Epoch 106 | Loss 0.460556 | CE 0.507089 | Env -0.232665 | Val AUROC 0.588783 | Best 0.626713 @ 92 | Wait 15/25
+Epoch 107 | Loss 0.452262 | CE 0.499020 | Env -0.233789 | Val AUROC 0.584793 | Best 0.626713 @ 92 | Wait 16/25
+Epoch 108 | Loss 0.449336 | CE 0.496197 | Env -0.234308 | Val AUROC 0.587225 | Best 0.626713 @ 92 | Wait 17/25
+Epoch 109 | Loss 0.449239 | CE 0.496238 | Env -0.234995 | Val AUROC 0.597374 | Best 0.626713 @ 92 | Wait 18/25
+Epoch 110 | Loss 0.444195 | CE 0.491374 | Env -0.235894 | Val AUROC 0.599956 | Best 0.626713 @ 92 | Wait 19/25
+Epoch 111 | Loss 0.438437 | CE 0.485793 | Env -0.236781 | Val AUROC 0.592145 | Best 0.626713 @ 92 | Wait 20/25
+Epoch 112 | Loss 0.433513 | CE 0.480953 | Env -0.237199 | Val AUROC 0.591215 | Best 0.626713 @ 92 | Wait 21/25
+Epoch 113 | Loss 0.428374 | CE 0.475896 | Env -0.237613 | Val AUROC 0.598360 | Best 0.626713 @ 92 | Wait 22/25
+Epoch 114 | Loss 0.423736 | CE 0.471441 | Env -0.238522 | Val AUROC 0.602491 | Best 0.626713 @ 92 | Wait 23/25
+Epoch 115 | Loss 0.416997 | CE 0.464855 | Env -0.239288 | Val AUROC 0.607964 | Best 0.626713 @ 92 | Wait 24/25
+Epoch 116 | Loss 0.412814 | CE 0.460779 | Env -0.239822 | Val AUROC 0.613823 | Best 0.626713 @ 92 | Wait 25/25
+Early stopping at epoch 116.
+complexity: {'train_time_sec': 2.016737600788474, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_40
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.640559
+auprc                    : 0.163745
+g_mean                   : 0.598461
+f1_macro                 : 0.434874
+f1_micro                 : 0.500470
+f1_weighted              : 0.587057
+precision_macro          : 0.544080
+recall_macro             : 0.616074
+accuracy                 : 0.500470
+best_val_auroc           : 0.626713
+best_epoch               : 92
+epochs_executed          : 116
+train_time_seconds       : 2.016738
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_1234567/train_40

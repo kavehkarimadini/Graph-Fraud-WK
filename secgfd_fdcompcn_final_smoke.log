@@ -1,0 +1,59 @@
+======================================================================
+SEC-GFD | dataset=fdcompcn | seed=123 | train_ratio=0.1
+======================================================================
+GPU: NVIDIA GB10
+FDCompCN nodes=5317, fraud=559, feat_dim=57, relations: homo=10059, cic=8505, csc=5944, cpc=6244
+Nodes=5317 Edges=10059 Features=57
+Train=531 Val=1063 Test=2128 Discarded=1595
+Cross-entropy fraud weight: 8.482143
+Epoch 001 | Loss 0.699669 | CE 0.694164 | Env 0.027526 | Val AUROC 0.516735 | Best 0.516735 @ 1 | Wait 1/25
+Epoch 002 | Loss 0.689274 | CE 0.695686 | Env -0.032064 | Val AUROC 0.516270 | Best 0.516735 @ 1 | Wait 2/25
+Epoch 003 | Loss 0.677855 | CE 0.688273 | Env -0.052089 | Val AUROC 0.523687 | Best 0.523687 @ 3 | Wait 1/25
+Epoch 004 | Loss 0.673038 | CE 0.686255 | Env -0.066085 | Val AUROC 0.516562 | Best 0.523687 @ 3 | Wait 2/25
+Epoch 005 | Loss 0.663746 | CE 0.679669 | Env -0.079613 | Val AUROC 0.515233 | Best 0.523687 @ 3 | Wait 3/25
+Epoch 006 | Loss 0.654175 | CE 0.673199 | Env -0.095120 | Val AUROC 0.516055 | Best 0.523687 @ 3 | Wait 4/25
+Epoch 007 | Loss 0.643399 | CE 0.666101 | Env -0.113507 | Val AUROC 0.514900 | Best 0.523687 @ 3 | Wait 5/25
+Epoch 008 | Loss 0.630223 | CE 0.656973 | Env -0.133751 | Val AUROC 0.516167 | Best 0.523687 @ 3 | Wait 6/25
+Epoch 009 | Loss 0.617212 | CE 0.648195 | Env -0.154916 | Val AUROC 0.512412 | Best 0.523687 @ 3 | Wait 7/25
+Epoch 010 | Loss 0.607653 | CE 0.642848 | Env -0.175976 | Val AUROC 0.494217 | Best 0.523687 @ 3 | Wait 8/25
+Epoch 011 | Loss 0.614445 | CE 0.653627 | Env -0.195906 | Val AUROC 0.505699 | Best 0.523687 @ 3 | Wait 9/25
+Epoch 012 | Loss 0.592897 | CE 0.635514 | Env -0.213086 | Val AUROC 0.509126 | Best 0.523687 @ 3 | Wait 10/25
+Epoch 013 | Loss 0.586882 | CE 0.632047 | Env -0.225823 | Val AUROC 0.506657 | Best 0.523687 @ 3 | Wait 11/25
+Epoch 014 | Loss 0.574242 | CE 0.620925 | Env -0.233417 | Val AUROC 0.505051 | Best 0.523687 @ 3 | Wait 12/25
+Epoch 015 | Loss 0.574703 | CE 0.621998 | Env -0.236474 | Val AUROC 0.515416 | Best 0.523687 @ 3 | Wait 13/25
+Epoch 016 | Loss 0.561102 | CE 0.608478 | Env -0.236883 | Val AUROC 0.520336 | Best 0.523687 @ 3 | Wait 14/25
+Epoch 017 | Loss 0.562516 | CE 0.609806 | Env -0.236452 | Val AUROC 0.508215 | Best 0.523687 @ 3 | Wait 15/25
+Epoch 018 | Loss 0.549353 | CE 0.596623 | Env -0.236350 | Val AUROC 0.500573 | Best 0.523687 @ 3 | Wait 16/25
+Epoch 019 | Loss 0.548651 | CE 0.596029 | Env -0.236890 | Val AUROC 0.503924 | Best 0.523687 @ 3 | Wait 17/25
+Epoch 020 | Loss 0.536507 | CE 0.584123 | Env -0.238082 | Val AUROC 0.513980 | Best 0.523687 @ 3 | Wait 18/25
+Epoch 021 | Loss 0.536255 | CE 0.584212 | Env -0.239785 | Val AUROC 0.506394 | Best 0.523687 @ 3 | Wait 19/25
+Epoch 022 | Loss 0.524971 | CE 0.573328 | Env -0.241785 | Val AUROC 0.504572 | Best 0.523687 @ 3 | Wait 20/25
+Epoch 023 | Loss 0.520364 | CE 0.569145 | Env -0.243905 | Val AUROC 0.510008 | Best 0.523687 @ 3 | Wait 21/25
+Epoch 024 | Loss 0.514389 | CE 0.563572 | Env -0.245912 | Val AUROC 0.512280 | Best 0.523687 @ 3 | Wait 22/25
+Epoch 025 | Loss 0.504073 | CE 0.553648 | Env -0.247877 | Val AUROC 0.511529 | Best 0.523687 @ 3 | Wait 23/25
+Epoch 026 | Loss 0.502293 | CE 0.552241 | Env -0.249740 | Val AUROC 0.512872 | Best 0.523687 @ 3 | Wait 24/25
+Epoch 027 | Loss 0.495993 | CE 0.546301 | Env -0.251540 | Val AUROC 0.506225 | Best 0.523687 @ 3 | Wait 25/25
+Early stopping at epoch 27.
+complexity: {'train_time_sec': 1.402375030796975, 'num_parameters': 35963, 'num_trainable_parameters': 35963}
+Run saved to: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_10
+  - config.json
+  - metrics.json
+  - split.npz
+  - predictions.npz
+  - checkpoint.pt
+======================================================================
+FINAL TEST RESULTS
+auroc                    : 0.564040
+auprc                    : 0.128468
+g_mean                   : 0.371026
+f1_macro                 : 0.527893
+f1_micro                 : 0.824248
+f1_weighted              : 0.823545
+precision_macro          : 0.528123
+recall_macro             : 0.527677
+accuracy                 : 0.824248
+best_val_auroc           : 0.523687
+best_epoch               : 3
+epochs_executed          : 27
+train_time_seconds       : 1.402375
+Saved: /root/Graph-Fraud-WK/results/SEC_GFD/fdcompcn/seed_123/train_10
