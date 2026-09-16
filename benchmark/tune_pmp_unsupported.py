@@ -43,16 +43,6 @@ CANDIDATES = [
         "source": "PMP paper Table 5 Yelp setting",
     },
     {
-        "name": "release_yelp",
-        "hidden_dim": 48,
-        "dropout": 0.0,
-        "batch_size": 512,
-        "learning_rate": 0.01,
-        "weight_decay": 0.0,
-        "mlp_activation": "relu",
-        "source": "Released Xtra-Computing/PMP yelp.yml",
-    },
-    {
         "name": "paper_amazon",
         "hidden_dim": 128,
         "dropout": 0.6,
