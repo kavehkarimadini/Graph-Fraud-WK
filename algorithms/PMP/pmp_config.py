@@ -71,9 +71,33 @@ PMP_CONFIGS = {
     "eval_batch_size": 4096,
     "weighted_loss": False,
     "source_note": "PMP ICLR 2024 Appendix D.4 Table 5 T-Social setting; unified benchmark stopping protocol applied separately.",
-},
-}
+   },
 
+
+    "fdcompcn": {
+        "hidden_dim": 256,
+        "dropout": 0.6,
+        "num_layers": 1,
+        "batch_size": 128,
+        "learning_rate": 0.01,
+        "weight_decay": 0.0,
+        "num_trans": 1,
+        "aggregation": "mean",
+        "relation_aggregation": "cat",
+        "projection": True,
+        "mlp_activation": "elu",
+        "eval_batch_size": 4096,
+        "weighted_loss": False,
+        "source_note": (
+            "FDCompCN PMP configuration selected by predefined validation-only tuning. "
+            "Five compatible configurations derived from PMP paper/released-code settings "
+            "were evaluated on train_40 across five benchmark seeds using validation AUROC only. "
+            "Selected release_amazon configuration: hidden_dim=256, dropout=0.6, "
+            "batch_size=128, learning_rate=0.01; mean validation AUROC=0.569280, "
+            "std=0.030365. Test set was not accessed during tuning."
+        ),
+    },
+}
 
 def canonical_dataset_name(name):
     name = name.lower().strip()
