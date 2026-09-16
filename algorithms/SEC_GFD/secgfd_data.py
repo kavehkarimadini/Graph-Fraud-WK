@@ -6,8 +6,12 @@ import dgl
 import numpy as np
 import torch
 from dgl.data import FraudAmazonDataset, FraudYelpDataset
-from utils.data_loader import load_tgraph_arrays, load_elliptic_arrays
 
+from utils.data_loader import (
+    load_comp_arrays,
+    load_elliptic_arrays,
+    load_tgraph_arrays,
+)
 
 
 def canonical_dataset_name(name):
@@ -22,12 +26,14 @@ def canonical_dataset_name(name):
         "tsocial": "tsocial",
         "t-social": "tsocial",
         "elliptic": "elliptic",
+        "fdcompcn": "fdcompcn",
     }
 
     if name not in aliases:
         raise ValueError(
             "Unsupported SEC-GFD dataset '{}'. "
-            "Use amazon, yelp/yelpchi, tfinance, or tsocial.".format(name)
+            "Use amazon, yelp/yelpchi, tfinance, tsocial, elliptic, "
+            "or fdcompcn.".format(name)
         )
 
     return aliases[name]
@@ -44,10 +50,14 @@ def _flatten_labels(labels):
 
 def _load_amazon_yelp(dataset_name, dataset_dir):
     if dataset_name == "amazon":
-        dataset = FraudAmazonDataset(raw_dir=dataset_dir)
+        dataset = FraudAmazonDataset(
+            raw_dir=dataset_dir
+        )
         labeled_from = 3305
     else:
-        dataset = FraudYelpDataset(raw_dir=dataset_dir)
+        dataset = FraudYelpDataset(
+            raw_dir=dataset_dir
+        )
         labeled_from = None
 
     graph = dataset[0]
@@ -56,35 +66,74 @@ def _load_amazon_yelp(dataset_name, dataset_dir):
     # convert fraud heterograph to one homogeneous graph.
     graph = dgl.to_homogeneous(
         graph,
-        ndata=["feature", "label", "train_mask", "val_mask", "test_mask"],
+        ndata=[
+            "feature",
+            "label",
+            "train_mask",
+            "val_mask",
+            "test_mask",
+        ],
     )
 
     # Official SEC-GFD loader adds self-loops to Amazon/Yelp.
-    graph = dgl.add_self_loop(graph)
+    graph = dgl.add_self_loop(
+        graph
+    )
 
-    graph.ndata["feature"] = graph.ndata["feature"].float()
-    graph.ndata["label"] = _flatten_labels(graph.ndata["label"])
+    graph.ndata["feature"] = (
+        graph.ndata["feature"].float()
+    )
+
+    graph.ndata["label"] = _flatten_labels(
+        graph.ndata["label"]
+    )
 
     return graph, labeled_from
 
 
-def _load_t_dataset(dataset_name, dataset_dir):
+def _load_t_dataset(
+    dataset_name,
+    dataset_dir,
+):
     features, labels, src, dst = load_tgraph_arrays(
         dataset_name,
         prefix=dataset_dir,
     )
 
-    features = np.ascontiguousarray(features, dtype=np.float32)
-    labels = np.ascontiguousarray(labels, dtype=np.int64)
-    src = np.asarray(src, dtype=np.int64)
-    dst = np.asarray(dst, dtype=np.int64)
+    features = np.ascontiguousarray(
+        features,
+        dtype=np.float32,
+    )
+
+    labels = np.ascontiguousarray(
+        labels,
+        dtype=np.int64,
+    )
+
+    src = np.asarray(
+        src,
+        dtype=np.int64,
+    )
+
+    dst = np.asarray(
+        dst,
+        dtype=np.int64,
+    )
 
     graph = dgl.graph(
         (
-            torch.as_tensor(src, dtype=torch.int64),
-            torch.as_tensor(dst, dtype=torch.int64),
+            torch.as_tensor(
+                src,
+                dtype=torch.int64,
+            ),
+            torch.as_tensor(
+                dst,
+                dtype=torch.int64,
+            ),
         ),
-        num_nodes=int(features.shape[0]),
+        num_nodes=int(
+            features.shape[0]
+        ),
     )
 
     graph.ndata["feature"] = torch.as_tensor(
@@ -101,7 +150,156 @@ def _load_t_dataset(dataset_name, dataset_dir):
     # no self-loop is added to T-Finance/T-Social when del_ratio=0.
     return graph, None
 
-def load_secgfd_dataset(dataset_name, project_root):
+
+def _load_elliptic(
+    dataset_dir,
+):
+    (
+        features_np,
+        labels_np,
+        src,
+        dst,
+    ) = load_elliptic_arrays(
+        prefix=dataset_dir,
+        labeled_only=True,
+    )
+
+    features_np = np.ascontiguousarray(
+        features_np,
+        dtype=np.float32,
+    )
+
+    labels_np = np.ascontiguousarray(
+        labels_np,
+        dtype=np.int64,
+    )
+
+    src = np.asarray(
+        src,
+        dtype=np.int64,
+    )
+
+    dst = np.asarray(
+        dst,
+        dtype=np.int64,
+    )
+
+    graph = dgl.graph(
+        (
+            torch.as_tensor(
+                src,
+                dtype=torch.int64,
+            ),
+            torch.as_tensor(
+                dst,
+                dtype=torch.int64,
+            ),
+        ),
+        num_nodes=int(
+            features_np.shape[0]
+        ),
+    )
+
+    graph.ndata["feature"] = torch.as_tensor(
+        features_np,
+        dtype=torch.float32,
+    )
+
+    graph.ndata["label"] = torch.as_tensor(
+        labels_np,
+        dtype=torch.long,
+    ).view(-1)
+
+    return graph, None
+
+
+def _load_fdcompcn(
+    dataset_dir,
+):
+    """
+    Load FDCompCN for SEC-GFD.
+
+    SEC-GFD requires a single homogeneous graph. The repository's
+    FDCompCN loader exposes a precomputed ``homo`` relation representing
+    the homogeneous union graph, so that relation is used here.
+
+    Raw 57-dimensional FDCompCN features are preserved. No PMP/SplitGNN
+    feature normalization is applied.
+    """
+
+    data = load_comp_arrays(
+        "fdcompcn",
+        prefix=dataset_dir,
+    )
+
+    features_np = np.ascontiguousarray(
+        data["features"],
+        dtype=np.float32,
+    )
+
+    labels_np = np.ascontiguousarray(
+        data["labels"],
+        dtype=np.int64,
+    ).reshape(-1)
+
+    homo_src = None
+    homo_dst = None
+
+    for relation_name, src, dst in data["relations"]:
+        if relation_name == "homo":
+            homo_src = np.asarray(
+                src,
+                dtype=np.int64,
+            )
+
+            homo_dst = np.asarray(
+                dst,
+                dtype=np.int64,
+            )
+
+            break
+
+    if homo_src is None or homo_dst is None:
+        raise RuntimeError(
+            "FDCompCN does not contain the required "
+            "'homo' relation."
+        )
+
+    graph = dgl.graph(
+        (
+            torch.as_tensor(
+                homo_src,
+                dtype=torch.int64,
+            ),
+            torch.as_tensor(
+                homo_dst,
+                dtype=torch.int64,
+            ),
+        ),
+        num_nodes=int(
+            features_np.shape[0]
+        ),
+    )
+
+    graph.ndata["feature"] = torch.as_tensor(
+        features_np,
+        dtype=torch.float32,
+    )
+
+    graph.ndata["label"] = torch.as_tensor(
+        labels_np,
+        dtype=torch.long,
+    ).view(-1)
+
+    # Preserve the supplied FDCompCN homogeneous graph exactly.
+    # No additional self-loops are introduced here.
+    return graph, None
+
+
+def load_secgfd_dataset(
+    dataset_name,
+    project_root,
+):
     """
     Load SEC-GFD data without PMP-specific feature normalization.
 
@@ -109,82 +307,53 @@ def load_secgfd_dataset(dataset_name, project_root):
     -------
     graph
         Homogeneous DGL graph.
+
     features
         Raw SEC-GFD input features as float32 tensor.
+
     labels
         Flat binary label tensor.
+
     eligible
         Nodes eligible for benchmark splitting.
     """
 
-    dataset_name = canonical_dataset_name(dataset_name)
-    dataset_dir = os.path.join(project_root, "dataset")
+    dataset_name = canonical_dataset_name(
+        dataset_name
+    )
 
-    if dataset_name in {"amazon", "yelp"}:
+    dataset_dir = os.path.join(
+        project_root,
+        "dataset",
+    )
+
+    if dataset_name in {
+        "amazon",
+        "yelp",
+    }:
         graph, labeled_from = _load_amazon_yelp(
             dataset_name,
             dataset_dir,
         )
 
-    elif dataset_name in {"tfinance", "tsocial"}:
+    elif dataset_name in {
+        "tfinance",
+        "tsocial",
+    }:
         graph, labeled_from = _load_t_dataset(
             dataset_name,
             dataset_dir,
         )
 
     elif dataset_name == "elliptic":
-        features_np, labels_np, src, dst = load_elliptic_arrays(
-            prefix=dataset_dir,
-            labeled_only=True,
+        graph, labeled_from = _load_elliptic(
+            dataset_dir
         )
 
-        features_np = np.ascontiguousarray(
-            features_np,
-            dtype=np.float32,
+    elif dataset_name == "fdcompcn":
+        graph, labeled_from = _load_fdcompcn(
+            dataset_dir
         )
-
-        labels_np = np.ascontiguousarray(
-            labels_np,
-            dtype=np.int64,
-        )
-
-        src = np.asarray(
-            src,
-            dtype=np.int64,
-        )
-
-        dst = np.asarray(
-            dst,
-            dtype=np.int64,
-        )
-
-        graph = dgl.graph(
-            (
-                torch.as_tensor(
-                    src,
-                    dtype=torch.int64,
-                ),
-                torch.as_tensor(
-                    dst,
-                    dtype=torch.int64,
-                ),
-            ),
-            num_nodes=int(
-                features_np.shape[0]
-            ),
-        )
-
-        graph.ndata["feature"] = torch.as_tensor(
-            features_np,
-            dtype=torch.float32,
-        )
-
-        graph.ndata["label"] = torch.as_tensor(
-            labels_np,
-            dtype=torch.long,
-        ).view(-1)
-
-        labeled_from = None
 
     else:
         raise ValueError(
@@ -193,7 +362,10 @@ def load_secgfd_dataset(dataset_name, project_root):
             )
         )
 
-    features = graph.ndata["feature"].float()
+    features = graph.ndata[
+        "feature"
+    ].float()
+
     labels = _flatten_labels(
         graph.ndata["label"]
     )
@@ -228,4 +400,9 @@ def load_secgfd_dataset(dataset_name, project_root):
             .format(dataset_name)
         )
 
-    return graph, features, labels, eligible
+    return (
+        graph,
+        features,
+        labels,
+        eligible,
+    )

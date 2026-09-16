@@ -13,13 +13,14 @@ def canonical_dataset_name(name):
         "tsocial": "tsocial",
         "t-social": "tsocial",
         "elliptic": "elliptic",
+        "fdcompcn": "fdcompcn",
     }
 
     if name not in aliases:
         raise ValueError(
             "Unsupported SEC-GFD dataset '{}'. "
-            "Use amazon, yelp/yelpchi, tfinance, tsocial, or elliptic."
-            .format(name)
+            "Use amazon, yelp/yelpchi, tfinance, tsocial, elliptic, "
+            "or fdcompcn.".format(name)
         )
 
     return aliases[name]
@@ -58,6 +59,15 @@ def get_secgfd_config(dataset_name):
     dataset_name = canonical_dataset_name(
         dataset_name
     )
+
+    if dataset_name == "fdcompcn":
+        raise ValueError(
+            "FDCompCN does not yet have a fixed SEC-GFD configuration. "
+            "Run the predefined validation-only hyperparameter search "
+            "first, select the configuration using mean validation AUROC "
+            "across the five benchmark seeds, and freeze that configuration "
+            "before final benchmark evaluation."
+        )
 
     cfg = dict(
         SEC_GFD_CONFIG[
