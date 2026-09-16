@@ -1273,6 +1273,7 @@ def parse_args():
             "tfinance",
             "tsocial",
             "elliptic",
+            "fdcompcn",
         ],
     )
 

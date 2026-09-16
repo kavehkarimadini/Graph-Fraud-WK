@@ -1,0 +1,65 @@
+{
+  "dataset": "fdcompcn",
+  "selection_metric": "mean validation AUROC across five predefined seeds",
+  "train_ratio_used_for_tuning": 0.4,
+  "test_accessed": false,
+  "search_space": {
+    "hidden_dim": [
+      16,
+      64
+    ],
+    "order_C": [
+      2,
+      5
+    ]
+  },
+  "fixed_settings": {
+    "optimizer": "Adam",
+    "learning_rate": 0.01,
+    "weight_decay": 0.0,
+    "lambda_env": 0.2,
+    "high_order": 2,
+    "max_epochs": 500,
+    "early_stop": 25
+  },
+  "results": [
+    {
+      "hidden_dim": 64,
+      "order_C": 2,
+      "num_seeds": 5,
+      "mean_val_auroc": 0.6296464248159832,
+      "std_val_auroc": 0.02620698113054611,
+      "test_accessed": false
+    },
+    {
+      "hidden_dim": 64,
+      "order_C": 5,
+      "num_seeds": 5,
+      "mean_val_auroc": 0.6230190025537029,
+      "std_val_auroc": 0.031122064470794467,
+      "test_accessed": false
+    },
+    {
+      "hidden_dim": 16,
+      "order_C": 2,
+      "num_seeds": 5,
+      "mean_val_auroc": 0.5780663211656902,
+      "std_val_auroc": 0.023535911973826207,
+      "test_accessed": false
+    },
+    {
+      "hidden_dim": 16,
+      "order_C": 5,
+      "num_seeds": 5,
+      "mean_val_auroc": 0.5678036277602523,
+      "std_val_auroc": 0.03020883731184478,
+      "test_accessed": false
+    }
+  ],
+  "selected": {
+    "hidden_dim": 64,
+    "order_C": 2,
+    "mean_val_auroc": 0.6296464248159832,
+    "std_val_auroc": 0.02620698113054611
+  }
+}

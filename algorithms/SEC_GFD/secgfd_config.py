@@ -52,6 +52,11 @@ SEC_GFD_CONFIG = {
         "order": 2,
         "high_order": 2,
     },
+    "fdcompcn": {
+        "hidden_dim": 64,
+        "order": 2,
+        "high_order": 2,
+    },
 }
 
 
@@ -59,15 +64,6 @@ def get_secgfd_config(dataset_name):
     dataset_name = canonical_dataset_name(
         dataset_name
     )
-
-    if dataset_name == "fdcompcn":
-        raise ValueError(
-            "FDCompCN does not yet have a fixed SEC-GFD configuration. "
-            "Run the predefined validation-only hyperparameter search "
-            "first, select the configuration using mean validation AUROC "
-            "across the five benchmark seeds, and freeze that configuration "
-            "before final benchmark evaluation."
-        )
 
     cfg = dict(
         SEC_GFD_CONFIG[
@@ -83,6 +79,20 @@ def get_secgfd_config(dataset_name):
             "all configurations evaluated on train_40 using the five "
             "predefined benchmark seeds and selected by mean validation "
             "AUROC. Selected hidden_dim=16 and order_C=2. "
+            "The test set was not accessed during tuning. "
+            "Learning rate=0.01, weight decay=0.0, lambda_env=0.2, "
+            "Adam optimizer, and high_order=2 were kept fixed from "
+            "SEC-GFD paper/released-code settings."
+        )
+    elif dataset_name == "fdcompcn":
+        source_note = (
+            "FDCompCN SEC-GFD configuration selected by the predefined "
+            "validation-only hyperparameter search. Search space: "
+            "hidden_dim in {16, 64} and order_C in {2, 5}; "
+            "all configurations evaluated on train_40 using the five "
+            "predefined benchmark seeds and selected by mean validation "
+            "AUROC. Selected hidden_dim=64 and order_C=2; mean validation "
+            "AUROC=0.629646 with std=0.026207. "
             "The test set was not accessed during tuning. "
             "Learning rate=0.01, weight decay=0.0, lambda_env=0.2, "
             "Adam optimizer, and high_order=2 were kept fixed from "
