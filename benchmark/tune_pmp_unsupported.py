@@ -270,10 +270,10 @@ def run_one(dataset, candidate, seed, graph, features, labels, relations, device
     return payload
 
 
-def summarize(dataset):
+def summarize(dataset, candidates):
     rows = []
 
-    for candidate in CANDIDATES:
+    for candidate in candidates:
         values = []
 
         for seed in SEEDS:
@@ -398,7 +398,25 @@ def main():
         f"relations={relations}"
     )
 
-    for candidate in CANDIDATES:
+    input_dim = int(features.shape[1])
+
+    candidates = [
+        c for c in CANDIDATES
+        if int(c["hidden_dim"]) >= input_dim
+    ]
+
+    if not candidates:
+        raise RuntimeError(
+            f"No architecturally compatible PMP tuning candidates "
+            f"for input_dim={input_dim}"
+        )
+
+    print(
+        "Compatible tuning candidates:",
+        [c["name"] for c in candidates]
+    )
+
+    for candidate in candidates:
         for seed in SEEDS:
             out = result_path(
                 args.dataset,
@@ -424,7 +442,7 @@ def main():
                 device,
             )
 
-    summarize(args.dataset)
+    summarize(args.dataset, candidates)
 
 
 if __name__ == "__main__":
