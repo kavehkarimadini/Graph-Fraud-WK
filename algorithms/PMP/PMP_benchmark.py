@@ -316,7 +316,7 @@ def train_one_run(dataset, seed, train_ratio):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="PMP unified benchmark runner")
-    parser.add_argument("--dataset", required=True, choices=["amazon", "yelp", "yelpchi", "tfinance", "fdcompcn"])
+    parser.add_argument("--dataset", required=True, choices=["amazon", "yelp", "yelpchi", "tfinance", "fdcompcn", "elliptic"])
     parser.add_argument("--seed", type=int, choices=ALLOWED_SEEDS)
     parser.add_argument("--train-ratio", type=float, choices=ALLOWED_TRAIN_RATIOS)
     parser.add_argument("--all", action="store_true", help="Run all 5 seeds x 4 train ratios.")

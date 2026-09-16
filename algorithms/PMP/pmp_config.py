@@ -97,6 +97,30 @@ PMP_CONFIGS = {
             "std=0.030365. Test set was not accessed during tuning."
         ),
     },
+
+    "elliptic": {
+        "hidden_dim": 256,
+        "dropout": 0.0,
+        "num_layers": 1,
+        "batch_size": 512,
+        "learning_rate": 0.01,
+        "weight_decay": 0.0,
+        "num_trans": 1,
+        "aggregation": "mean",
+        "relation_aggregation": "cat",
+        "projection": True,
+        "mlp_activation": "relu",
+        "eval_batch_size": 4096,
+        "weighted_loss": False,
+        "source_note": (
+            "Elliptic PMP configuration selected by predefined validation-only tuning. "
+            "Architecturally compatible configurations derived from PMP paper/released-code "
+            "settings were evaluated on train_40 across five benchmark seeds using validation "
+            "AUROC only. Selected paper_yelp configuration: hidden_dim=256, dropout=0.0, "
+            "batch_size=512, learning_rate=0.01; mean validation AUROC=0.942498, "
+            "std=0.006514. Test set was not accessed during tuning."
+        ),
+    },
 }
 
 def canonical_dataset_name(name):

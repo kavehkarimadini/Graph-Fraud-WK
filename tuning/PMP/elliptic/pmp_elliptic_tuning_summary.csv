@@ -1,0 +1,3 @@
+candidate,hidden_dim,dropout,batch_size,learning_rate,weight_decay,mlp_activation,mean_val_auroc,std_val_auroc,num_seeds,test_accessed
+paper_yelp,256,0.0,512,0.01,0.0,relu,0.9424976398163377,0.006513676478101709,5,False
+release_amazon,256,0.6,128,0.01,0.0,elu,0.8718953963459173,0.015377771872852823,5,False

@@ -1,0 +1,47 @@
+{
+  "model": "PMP",
+  "dataset": "elliptic",
+  "selection_metric": "mean validation AUROC across five seeds",
+  "test_accessed": false,
+  "candidates": [
+    {
+      "candidate": "paper_yelp",
+      "hidden_dim": 256,
+      "dropout": 0.0,
+      "batch_size": 512,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "mlp_activation": "relu",
+      "mean_val_auroc": 0.9424976398163377,
+      "std_val_auroc": 0.006513676478101709,
+      "num_seeds": 5,
+      "test_accessed": false
+    },
+    {
+      "candidate": "release_amazon",
+      "hidden_dim": 256,
+      "dropout": 0.6,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "mlp_activation": "elu",
+      "mean_val_auroc": 0.8718953963459173,
+      "std_val_auroc": 0.015377771872852823,
+      "num_seeds": 5,
+      "test_accessed": false
+    }
+  ],
+  "selected": {
+    "candidate": "paper_yelp",
+    "hidden_dim": 256,
+    "dropout": 0.0,
+    "batch_size": 512,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0,
+    "mlp_activation": "relu",
+    "mean_val_auroc": 0.9424976398163377,
+    "std_val_auroc": 0.006513676478101709,
+    "num_seeds": 5,
+    "test_accessed": false
+  }
+}
