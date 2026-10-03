@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, and **SparseGAD**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, and **AMNet**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -261,6 +261,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | FRAUDRE     | `cd algorithms/FRAUDRE` then `python FRAUDRE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | PC-GNN      | `cd algorithms/PCGNN` then `python PCGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | SparseGAD   | `cd algorithms/SparseGAD` then `python SparseGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                  |
+| AMNet       | `cd algorithms/AMNet` then `python AMNet_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -712,6 +713,21 @@ python SparseGAD_main.py --dataset elliptic --gpu 0
 python SparseGAD_main.py --dataset tfinance --gpu 0
 python SparseGAD_main.py --dataset tsocial --gpu 0
 python SparseGAD_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### AMNet (`algorithms/AMNet/AMNet_main.py`)
+
+Adaptive multi-frequency GNN: learnable Bernstein spectral filters mixed by per-node attention, with a marginal loss that separates normal and anomalous nodes across filters (IJCAI 2022). Full-batch, same 40/20/40 protocol.
+
+```powershell
+cd algorithms/AMNet
+python AMNet_main.py --dataset yelpchi --gpu 0
+python AMNet_main.py --dataset amazon --gpu 0
+python AMNet_main.py --dataset elliptic --gpu 0
+python AMNet_main.py --dataset tfinance --gpu 0
+python AMNet_main.py --dataset tsocial --gpu 0
+python AMNet_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
@@ -1167,6 +1183,29 @@ Same as GraphSAGE, plus:
 | `--gpu`              | `0`       | Device                                                               |
 
 
+### AMNet (`algorithms/AMNet/AMNet_main.py`)
+
+
+| Argument          | Default    | Description                                                                 |
+| ----------------- | ---------- | --------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi`  | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`         |
+| `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (valid/test fixed 20/40)                    |
+| `--relation`      | dataset    | `rur` (YelpChi) / `all` = union of relations (others)                       |
+| `--hidden`        | dataset    | 64 (YelpChi, Amazon, FDCompCN) / 128 (Elliptic, T-Finance) / 32 (T-Social)  |
+| `--order`         | dataset    | Bernstein order M: 5 / 4 (Elliptic) / 7 (T-Finance)                         |
+| `--n_filters`     | `2`        | Number of Bernstein filters K                                               |
+| `--beta`          | dataset    | Marginal loss weight: 1.0 / 0.5 (Elliptic)                                  |
+| `--learning_rate` | dataset    | MLP / attention lr: `5e-4` / `1e-4` (Elliptic)                              |
+| `--lr_filter`     | `5e-2`     | Filter coefficient lr (no weight decay)                                     |
+| `--weight_decay`  | `1e-5`     | L2 weight of non-filter parameters                                          |
+| `--dropout`       | `0.3`      | Dropout before the classifier                                               |
+| `--feat_norm`     | `standard` | `row` / `minmax` / `standard` / `none`                                      |
+| `--loss_weight`   | `none`     | `none` (reference) / `balanced` CE class weights                            |
+| `--select_metric` | `auroc`    | Validation metric for checkpointing / early stopping (`auprc` = reference) |
+| `--epochs`        | `2000`     | Max epochs, early stop with patience 200 (T-Social: 500 / 50)               |
+| `--gpu`           | `0`        | Device                                                                      |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1210,6 +1249,7 @@ Same as GraphSAGE, plus:
 | **FRAUDRE**     | [FRAUDRE: Fraud Detection Dual-Resistant to Graph Inconsistency and Imbalance](https://ieeexplore.ieee.org/document/9679178)                                                             | ICDM 2021  | [BibTex](algorithms/FRAUDRE/README.md#paper)                                          |
 | **PC-GNN**      | [Pick and Choose: A GNN-based Imbalanced Learning Approach for Fraud Detection](https://dl.acm.org/doi/abs/10.1145/3442381.3449989)                                                     | WWW 2021   | [BibTex](https://github.com/PonderLY/PC-GNN#citation)                                 |
 | **SparseGAD**   | [Beyond Homophily: Robust Graph Anomaly Detection via Neural Sparsification](https://www.ijcai.org/proceedings/2023/234)                                                                 | IJCAI 2023 | [BibTex](algorithms/SparseGAD/README.md#paper)                                        |
+| **AMNet**       | [Can Abnormality be Detected by Graph Neural Networks?](https://www.ijcai.org/proceedings/2022/270)                                                                                      | IJCAI 2022 | [BibTex](algorithms/AMNet/README.md#paper)                                            |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1227,6 +1267,7 @@ Same as GraphSAGE, plus:
 - **FRAUDRE:** ego MLP + mean / difference aggregation over fixed sampled neighbours (vectorised K-hop gathers) + softmax relation weights + prior-adjusted CE (no DGL)
 - **PC-GNN:** degree / class-size node picking + label-aware top-p neighbour choosing with vectorised minority over-sampling + per-relation SAGE-style aggregation (no DGL)
 - **SparseGAD:** GPR GCN (gather / `index_add_`) + cosine edge attention from an extractor MLP + chunked brute-force kNN graph augmentation (no DGL)
+- **AMNet:** Bernstein polynomial filters on the scaled Laplacian (shared `torch.sparse` CSR powers) + per-node filter attention + marginal loss (no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1255,6 +1296,7 @@ Same as GraphSAGE, plus:
 | **FRAUDRE**     | Opinion Fraud   | Heterogeneous | GraphSAGE (mean + difference) |
 | **PC-GNN**      | Opinion Fraud   | Heterogeneous | GraphSAGE + resampling |
 | **SparseGAD**   | Graph Anomaly   | Homogeneous   | GPR-GNN + edge sparsification |
+| **AMNet**       | Graph Anomaly   | Homogeneous   | Bernstein spectral GNN |
 
 
 ---
@@ -1810,6 +1852,25 @@ python SparseGAD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate
 python SparseGAD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python SparseGAD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python SparseGAD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### AMNet
+
+Reference defaults: full-batch, 2 Bernstein filters with filter lr `5e-2`, up to 2000 epochs with patience 200; order, hidden size, lr and marginal-loss weight per dataset. `--learning_rate` is omitted so the per-dataset rates apply.
+
+```bash
+cd algorithms/AMNet
+
+python AMNet_main.py --dataset yelpchi --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset amazon --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset elliptic --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset tfinance --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset tsocial --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset comp --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
