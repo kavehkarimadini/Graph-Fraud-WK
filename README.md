@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, and **CARE-GNN**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, and **H2-FDetector**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -257,6 +257,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | GLHN        | `cd algorithms/GLHN` then `python GLHN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
 | BSL         | `cd algorithms/BSL` then `python BSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
 | CARE-GNN    | `cd algorithms/CAREGNN` then `python CAREGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
+| H2-FDetector | `cd algorithms/H2FDetector` then `python H2FDetector_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                             |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -651,6 +652,21 @@ python CAREGNN_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
+#### H2-FDetector (`algorithms/H2FDetector/H2FDetector_main.py`)
+
+Signed (homophilic / heterophilic) multi-relation attention with edge hinge and prototype losses (WWW 2022). Full-batch, same 40/20/40 protocol.
+
+```powershell
+cd algorithms/H2FDetector
+python H2FDetector_main.py --dataset yelpchi --gpu 0
+python H2FDetector_main.py --dataset amazon --gpu 0
+python H2FDetector_main.py --dataset elliptic --gpu 0
+python H2FDetector_main.py --dataset tfinance --gpu 0
+python H2FDetector_main.py --dataset tsocial --gpu 0
+python H2FDetector_main.py --dataset comp --gpu 0
+cd ../..
+```
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -1024,6 +1040,26 @@ Same as GraphSAGE, plus:
 | `--gpu`            | `0`       | Device                                                              |
 
 
+### H2-FDetector (`algorithms/H2FDetector/H2FDetector_main.py`)
+
+
+| Argument          | Default   | Description                                                          |
+| ----------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`   | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--intra_dim`     | `8`       | Hidden size per head                                                 |
+| `--head`          | `4`       | Attention heads                                                      |
+| `--n_layer`       | `2`       | H2-FDetector layers                                                  |
+| `--dropout`       | `0.1`     | Dropout (edge scorer, relation concat, between layers)               |
+| `--gamma1`        | dataset   | Edge hinge-loss weight: 1.2 (YelpChi and others) / 0.4 (Amazon)      |
+| `--gamma2`        | dataset   | Prototype-loss weight: 2.0 (YelpChi and others) / 1.4 (Amazon)       |
+| `--feat_norm`     | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
+| `--epochs`        | `1000`    | Max epochs, early stop on valid AUC (T-Social: 200)                  |
+| `--learning_rate` | `0.1`     | Learning rate                                                        |
+| `--weight_decay`  | `5e-5`    | L2 weight                                                            |
+| `--gpu`           | `0`       | Device                                                               |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1063,6 +1099,7 @@ Same as GraphSAGE, plus:
 | **GLHN**        | [Graph Local Homophily Network for Anomaly Detection](https://doi.org/10.1145/3627673.3679785)                                                                                           | CIKM 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/glhn.txt)        |
 | **BSL**         | [Barely Supervised Learning for Graph-Based Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29593)                                                                     | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bsl.txt)         |
 | **CARE-GNN**    | [Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters](https://arxiv.org/pdf/2008.08692.pdf)                                                              | CIKM 2020  | [BibTex](https://github.com/YingtongDou/CARE-GNN#citation)                            |
+| **H2-FDetector** | [H2-FDetector: A GNN-based Fraud Detector with Homophilic and Heterophilic Connections](https://dl.acm.org/doi/10.1145/3485447.3512195)                                               | WWW 2022   | [BibTex](https://github.com/shifengzhao/H2-FDetector#citation)                        |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1076,6 +1113,7 @@ Same as GraphSAGE, plus:
 - **GLHN:** local-homophily prediction + `I-L` / `L` mix + InfoNCE (no DGL)
 - **BSL:** GCN + NA/AA/NN disentanglement + weak/strong unlabeled augmentations (no DGL)
 - **CARE-GNN:** label-aware top-p neighbour filtering (vectorised over CSR) + RL thresholds + threshold-weighted relation sum (no DGL)
+- **H2-FDetector:** relation-aware edge-sign scorer + signed multi-head attention (gather / segment softmax) + prototype loss (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1100,6 +1138,7 @@ Same as GraphSAGE, plus:
 | **GLHN**        | Graph Anomaly   | Heterogeneous | Homophily mix GNN   |
 | **BSL**         | Graph Anomaly   | Homogeneous   | Disentangled GCN    |
 | **CARE-GNN**    | Opinion Fraud   | Heterogeneous | GraphSAGE + RL      |
+| **H2-FDetector** | Opinion Fraud  | Heterogeneous | Signed GAT          |
 
 
 ---
@@ -1579,6 +1618,25 @@ python CAREGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $
 python CAREGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python CAREGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python CAREGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### H2-FDetector
+
+Paper defaults: full-batch, `lr=0.1` (set `LR=0.1` or drop the flag), weight decay `5e-5`, `intra_dim=8`, 4 heads, 2 layers; loss weights per dataset (`gamma1` / `gamma2`).
+
+```bash
+cd algorithms/H2FDetector
+
+python H2FDetector_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
