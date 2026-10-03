@@ -283,7 +283,7 @@ def collect_runs() -> list[dict]:
 
 def aggregate(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     # Normalize model display names
-    rename = {"DGAGNN": "DGA-GNN", "SEC_GFD": "SEC-GFD", "CAREGNN": "CARE-GNN", "H2FDetector": "H2-FDetector"}
+    rename = {"DGAGNN": "DGA-GNN", "SEC_GFD": "SEC-GFD", "CAREGNN": "CARE-GNN", "H2FDetector": "H2-FDetector", "PCGNN": "PC-GNN"}
     df = df.copy()
     df["model"] = df["model"].replace(rename)
 

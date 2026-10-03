@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, and **FRAUDRE**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, and **SparseGAD**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -259,6 +259,8 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | CARE-GNN    | `cd algorithms/CAREGNN` then `python CAREGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | H2-FDetector | `cd algorithms/H2FDetector` then `python H2FDetector_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                             |
 | FRAUDRE     | `cd algorithms/FRAUDRE` then `python FRAUDRE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
+| PC-GNN      | `cd algorithms/PCGNN` then `python PCGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
+| SparseGAD   | `cd algorithms/SparseGAD` then `python SparseGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                  |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -683,6 +685,36 @@ python FRAUDRE_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
+#### PC-GNN (`algorithms/PCGNN/PCGNN_main.py`)
+
+Label-balanced node picking + label-aware neighbour choosing with minority over-sampling (WWW 2021). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/PCGNN
+python PCGNN_main.py --dataset yelpchi --gpu 0
+python PCGNN_main.py --dataset amazon --gpu 0
+python PCGNN_main.py --dataset elliptic --gpu 0
+python PCGNN_main.py --dataset tfinance --gpu 0
+python PCGNN_main.py --dataset tsocial --gpu 0
+python PCGNN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### SparseGAD (`algorithms/SparseGAD/SparseGAD_main.py`)
+
+GPR GCN with learned cosine edge attention (neural sparsification) and periodic kNN graph augmentation (IJCAI 2023). Full-batch, same 40/20/40 protocol.
+
+```powershell
+cd algorithms/SparseGAD
+python SparseGAD_main.py --dataset yelpchi --gpu 0
+python SparseGAD_main.py --dataset amazon --gpu 0
+python SparseGAD_main.py --dataset elliptic --gpu 0
+python SparseGAD_main.py --dataset tfinance --gpu 0
+python SparseGAD_main.py --dataset tsocial --gpu 0
+python SparseGAD_main.py --dataset comp --gpu 0
+cd ../..
+```
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -1095,6 +1127,46 @@ Same as GraphSAGE, plus:
 | `--gpu`             | `0`       | Device                                                               |
 
 
+### PC-GNN (`algorithms/PCGNN/PCGNN_main.py`)
+
+
+| Argument            | Default   | Description                                                          |
+| ------------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`     | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--emb_size`        | `64`      | Embedding size                                                       |
+| `--rho`             | `0.5`     | Oversampled fraud neighbours per fraud centre (fraction of kept)     |
+| `--alpha`           | `2.0`     | Label-predictor loss weight                                          |
+| `--threshold`       | `0.5`     | Fraction of neighbours kept per relation                             |
+| `--thres`           | dataset   | Decision threshold on the fraud probability: 0.4 (Amazon) / 0.5      |
+| `--batch_size`      | dataset   | 1024 (YelpChi, Elliptic, T-Finance, T-Social) / 256 (Amazon, comp)   |
+| `--learning_rate`   | dataset   | 0.01 (YelpChi and large graphs) / 0.005 (Amazon, comp)               |
+| `--weight_decay`    | dataset   | 1e-3 (YelpChi and large graphs) / 5e-4 (Amazon, comp)                |
+| `--feat_norm`       | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
+| `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
+| `--gpu`             | `0`       | Device                                                               |
+
+
+### SparseGAD (`algorithms/SparseGAD/SparseGAD_main.py`)
+
+
+| Argument             | Default   | Description                                                          |
+| -------------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`      | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--hidden`           | dataset   | 32 (YelpChi and others) / 16 (Amazon)                                |
+| `--nlayers`          | `2`       | GPR propagation layers                                               |
+| `--dropout`          | dataset   | Feature dropout: 0.1 (YelpChi and others) / 0.2 (Amazon)             |
+| `--dropout_adj`      | dataset   | Edge-weight dropout: 0.25 (YelpChi and others) / 0.1 (Amazon)        |
+| `--k`                | `10`      | Neighbours per node in the kNN graph update                          |
+| `--update_adj_epoch` | dataset   | kNN graph update interval: 200 (T-Social: 0 = off)                   |
+| `--feat_norm`        | dataset   | `minmax` (YelpChi) / `row` (Amazon) / `standard` (others) / `none`   |
+| `--epochs`           | `1000`    | Max epochs, early stop on valid AUC with patience 200 (T-Social: 300 / 50) |
+| `--learning_rate`    | `0.01`    | Learning rate                                                        |
+| `--weight_decay`     | `5e-4`    | L2 weight                                                            |
+| `--gpu`              | `0`       | Device                                                               |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1136,6 +1208,8 @@ Same as GraphSAGE, plus:
 | **CARE-GNN**    | [Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters](https://arxiv.org/pdf/2008.08692.pdf)                                                              | CIKM 2020  | [BibTex](https://github.com/YingtongDou/CARE-GNN#citation)                            |
 | **H2-FDetector** | [H2-FDetector: A GNN-based Fraud Detector with Homophilic and Heterophilic Connections](https://dl.acm.org/doi/10.1145/3485447.3512195)                                               | WWW 2022   | [BibTex](https://github.com/shifengzhao/H2-FDetector#citation)                        |
 | **FRAUDRE**     | [FRAUDRE: Fraud Detection Dual-Resistant to Graph Inconsistency and Imbalance](https://ieeexplore.ieee.org/document/9679178)                                                             | ICDM 2021  | [BibTex](algorithms/FRAUDRE/README.md#paper)                                          |
+| **PC-GNN**      | [Pick and Choose: A GNN-based Imbalanced Learning Approach for Fraud Detection](https://dl.acm.org/doi/abs/10.1145/3442381.3449989)                                                     | WWW 2021   | [BibTex](https://github.com/PonderLY/PC-GNN#citation)                                 |
+| **SparseGAD**   | [Beyond Homophily: Robust Graph Anomaly Detection via Neural Sparsification](https://www.ijcai.org/proceedings/2023/234)                                                                 | IJCAI 2023 | [BibTex](algorithms/SparseGAD/README.md#paper)                                        |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1151,6 +1225,8 @@ Same as GraphSAGE, plus:
 - **CARE-GNN:** label-aware top-p neighbour filtering (vectorised over CSR) + RL thresholds + threshold-weighted relation sum (no DGL)
 - **H2-FDetector:** relation-aware edge-sign scorer + signed multi-head attention (gather / segment softmax) + prototype loss (no DGL)
 - **FRAUDRE:** ego MLP + mean / difference aggregation over fixed sampled neighbours (vectorised K-hop gathers) + softmax relation weights + prior-adjusted CE (no DGL)
+- **PC-GNN:** degree / class-size node picking + label-aware top-p neighbour choosing with vectorised minority over-sampling + per-relation SAGE-style aggregation (no DGL)
+- **SparseGAD:** GPR GCN (gather / `index_add_`) + cosine edge attention from an extractor MLP + chunked brute-force kNN graph augmentation (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1177,6 +1253,8 @@ Same as GraphSAGE, plus:
 | **CARE-GNN**    | Opinion Fraud   | Heterogeneous | GraphSAGE + RL      |
 | **H2-FDetector** | Opinion Fraud  | Heterogeneous | Signed GAT          |
 | **FRAUDRE**     | Opinion Fraud   | Heterogeneous | GraphSAGE (mean + difference) |
+| **PC-GNN**      | Opinion Fraud   | Heterogeneous | GraphSAGE + resampling |
+| **SparseGAD**   | Graph Anomaly   | Homogeneous   | GPR-GNN + edge sparsification |
 
 
 ---
@@ -1694,6 +1772,44 @@ python FRAUDRE_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $
 python FRAUDRE_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python FRAUDRE_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python FRAUDRE_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### PC-GNN
+
+Reference defaults: embedding 64, `rho=0.5`, `alpha=2`, kept-neighbour fraction 0.5. Learning rate / weight decay / decision threshold differ per dataset (0.01 / 1e-3 / 0.5 on YelpChi, 0.005 / 5e-4 / 0.4 on Amazon); drop `--learning_rate` to use these.
+
+```bash
+cd algorithms/PCGNN
+
+python PCGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### SparseGAD
+
+Reference defaults: full-batch, lr `0.01`, weight decay `5e-4`, 2 layers, kNN `k=10` added every 200 epochs; hidden size and dropouts per dataset.
+
+```bash
+cd algorithms/SparseGAD
+
+python SparseGAD_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```

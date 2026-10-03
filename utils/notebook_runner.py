@@ -833,6 +833,113 @@ def run_fraudre(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _pcgnn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.PCGNN.PCGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        emb_size=64,
+        rho=0.5,
+        alpha=2.0,
+        threshold=0.5,
+        thres=paper['thres'],
+        batch_size=paper['batch_size'],
+        eval_batch_size=1024,
+        weight_decay=paper['weight_decay'],
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=paper['learning_rate'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_pcgnn(dataset='yelpchi', download=True, **overrides):
+    """Train PC-GNN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.PCGNN.PCGNN_main import train
+
+    params = _pcgnn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+    print('PC-GNN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _sparsegad_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.SparseGAD.SparseGAD_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        hidden=paper['hidden'],
+        nlayers=2,
+        dropout=paper['dropout'],
+        dropout_adj=paper['dropout_adj'],
+        k=10,
+        update_adj_epoch=paper['update_adj_epoch'],
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=0.01,
+        weight_decay=5e-4,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_sparsegad(dataset='yelpchi', download=True, **overrides):
+    """Train SparseGAD, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.SparseGAD.SparseGAD_main import train
+
+    params = _sparsegad_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hidden'])
+    print('SparseGAD', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)
