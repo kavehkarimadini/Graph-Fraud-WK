@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, and **BSL**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, and **CARE-GNN**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -256,6 +256,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | DGA-GNN     | `cd algorithms/DGAGNN` then `python DGAGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
 | GLHN        | `cd algorithms/GLHN` then `python GLHN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
 | BSL         | `cd algorithms/BSL` then `python BSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| CARE-GNN    | `cd algorithms/CAREGNN` then `python CAREGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -635,6 +636,21 @@ python BSL_main.py --dataset yelpchi --paper_split --gpu 0
 cd ../..
 ```
 
+#### CARE-GNN (`algorithms/CAREGNN/CAREGNN_main.py`)
+
+Label-aware neighbour filtering with RL-tuned per-relation thresholds (CIKM 2020). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/CAREGNN
+python CAREGNN_main.py --dataset yelpchi --gpu 0
+python CAREGNN_main.py --dataset amazon --gpu 0
+python CAREGNN_main.py --dataset elliptic --gpu 0
+python CAREGNN_main.py --dataset tfinance --gpu 0
+python CAREGNN_main.py --dataset tsocial --gpu 0
+python CAREGNN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -988,6 +1004,26 @@ Same as GraphSAGE, plus:
 | `--gpu`              | `0`           | Device                                                              |
 
 
+### CARE-GNN (`algorithms/CAREGNN/CAREGNN_main.py`)
+
+
+| Argument           | Default   | Description                                                         |
+| ------------------ | --------- | ------------------------------------------------------------------- |
+| `--dataset`        | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`    | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)            |
+| `--inter`          | `GNN`     | Inter-relation aggregator: `GNN` / `Mean` / `Weight` / `Att`        |
+| `--emb_size`       | `64`      | Embedding size                                                      |
+| `--batch_size`     | dataset   | 1024 (YelpChi, Elliptic, T-Finance, T-Social) / 256 (Amazon, comp)  |
+| `--lambda_1`       | `2.0`     | Weight of the label-predictor (similarity) loss                     |
+| `--weight_decay`   | `1e-3`    | L2 weight (`lambda_2`)                                              |
+| `--step_size`      | `0.02`    | RL threshold step                                                   |
+| `--under_sample`   | `1.0`     | Negatives drawn per positive each epoch                             |
+| `--no_rl`          | off       | Freeze thresholds at `--init_threshold` (0.5)                       |
+| `--epochs`         | `100`     | Max epochs (early stop on valid AUC)                                |
+| `--learning_rate`  | `0.01`    | Learning rate                                                       |
+| `--gpu`            | `0`       | Device                                                              |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1026,6 +1062,7 @@ Same as GraphSAGE, plus:
 | **DGA-GNN**     | [DGA-GNN: Dynamic Grouping Aggregation GNN for Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29067)                                                                  | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/dgagnn.txt)      |
 | **GLHN**        | [Graph Local Homophily Network for Anomaly Detection](https://doi.org/10.1145/3627673.3679785)                                                                                           | CIKM 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/glhn.txt)        |
 | **BSL**         | [Barely Supervised Learning for Graph-Based Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29593)                                                                     | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bsl.txt)         |
+| **CARE-GNN**    | [Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters](https://arxiv.org/pdf/2008.08692.pdf)                                                              | CIKM 2020  | [BibTex](https://github.com/YingtongDou/CARE-GNN#citation)                            |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1038,6 +1075,7 @@ Same as GraphSAGE, plus:
 - **DGA-GNN:** decision-tree binning + grouped mean aggregation + attention (no DGL)
 - **GLHN:** local-homophily prediction + `I-L` / `L` mix + InfoNCE (no DGL)
 - **BSL:** GCN + NA/AA/NN disentanglement + weak/strong unlabeled augmentations (no DGL)
+- **CARE-GNN:** label-aware top-p neighbour filtering (vectorised over CSR) + RL thresholds + threshold-weighted relation sum (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1061,6 +1099,7 @@ Same as GraphSAGE, plus:
 | **DGA-GNN**     | Financial Fraud | Heterogeneous | Grouped GraphSAGE   |
 | **GLHN**        | Graph Anomaly   | Heterogeneous | Homophily mix GNN   |
 | **BSL**         | Graph Anomaly   | Homogeneous   | Disentangled GCN    |
+| **CARE-GNN**    | Opinion Fraud   | Heterogeneous | GraphSAGE + RL      |
 
 
 ---
@@ -1521,6 +1560,25 @@ python BSL_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR -
 python BSL_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python BSL_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python BSL_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### CARE-GNN
+
+Paper defaults: embedding 64, `lambda_1=2`, weight decay `1e-3`, RL step `0.02`, batch 1024 (256 on Amazon / comp).
+
+```bash
+cd algorithms/CAREGNN
+
+python CAREGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
