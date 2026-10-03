@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, and **H2-FDetector**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, and **FRAUDRE**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -258,6 +258,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | BSL         | `cd algorithms/BSL` then `python BSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
 | CARE-GNN    | `cd algorithms/CAREGNN` then `python CAREGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | H2-FDetector | `cd algorithms/H2FDetector` then `python H2FDetector_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                             |
+| FRAUDRE     | `cd algorithms/FRAUDRE` then `python FRAUDRE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -667,6 +668,21 @@ python H2FDetector_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
+#### FRAUDRE (`algorithms/FRAUDRE/FRAUDRE_main.py`)
+
+Ego-feature MLP + fraud-aware (mean and difference) multi-relation convolutions + prior-adjusted loss (ICDM 2021). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/FRAUDRE
+python FRAUDRE_main.py --dataset yelpchi --gpu 0
+python FRAUDRE_main.py --dataset amazon --gpu 0
+python FRAUDRE_main.py --dataset elliptic --gpu 0
+python FRAUDRE_main.py --dataset tfinance --gpu 0
+python FRAUDRE_main.py --dataset tsocial --gpu 0
+python FRAUDRE_main.py --dataset comp --gpu 0
+cd ../..
+```
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -1060,6 +1076,25 @@ Same as GraphSAGE, plus:
 | `--gpu`           | `0`       | Device                                                               |
 
 
+### FRAUDRE (`algorithms/FRAUDRE/FRAUDRE_main.py`)
+
+
+| Argument            | Default   | Description                                                          |
+| ------------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`     | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--embed_dim`       | `64`      | Ego-feature embedding size `d` (final embedding `7d` for 2 layers)   |
+| `--n_layers`        | `2`       | Fraud-aware convolution layers                                       |
+| `--hidden_dim`      | `64`      | Classifier hidden size                                               |
+| `--max_neighbors`   | `10`      | Fixed neighbour sample per node and relation (0 keeps all)           |
+| `--batch_size`      | dataset   | 1024 (YelpChi, Elliptic, T-Finance, T-Social) / 256 (Amazon, comp)   |
+| `--learning_rate`   | dataset   | 0.001 (YelpChi) / 0.1 (Amazon) / 0.01 (others)                       |
+| `--weight_decay`    | `1e-4`    | L2 weight                                                            |
+| `--feat_norm`       | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
+| `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
+| `--gpu`             | `0`       | Device                                                               |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1100,6 +1135,7 @@ Same as GraphSAGE, plus:
 | **BSL**         | [Barely Supervised Learning for Graph-Based Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29593)                                                                     | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bsl.txt)         |
 | **CARE-GNN**    | [Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters](https://arxiv.org/pdf/2008.08692.pdf)                                                              | CIKM 2020  | [BibTex](https://github.com/YingtongDou/CARE-GNN#citation)                            |
 | **H2-FDetector** | [H2-FDetector: A GNN-based Fraud Detector with Homophilic and Heterophilic Connections](https://dl.acm.org/doi/10.1145/3485447.3512195)                                               | WWW 2022   | [BibTex](https://github.com/shifengzhao/H2-FDetector#citation)                        |
+| **FRAUDRE**     | [FRAUDRE: Fraud Detection Dual-Resistant to Graph Inconsistency and Imbalance](https://ieeexplore.ieee.org/document/9679178)                                                             | ICDM 2021  | [BibTex](algorithms/FRAUDRE/README.md#paper)                                          |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1114,6 +1150,7 @@ Same as GraphSAGE, plus:
 - **BSL:** GCN + NA/AA/NN disentanglement + weak/strong unlabeled augmentations (no DGL)
 - **CARE-GNN:** label-aware top-p neighbour filtering (vectorised over CSR) + RL thresholds + threshold-weighted relation sum (no DGL)
 - **H2-FDetector:** relation-aware edge-sign scorer + signed multi-head attention (gather / segment softmax) + prototype loss (no DGL)
+- **FRAUDRE:** ego MLP + mean / difference aggregation over fixed sampled neighbours (vectorised K-hop gathers) + softmax relation weights + prior-adjusted CE (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1139,6 +1176,7 @@ Same as GraphSAGE, plus:
 | **BSL**         | Graph Anomaly   | Homogeneous   | Disentangled GCN    |
 | **CARE-GNN**    | Opinion Fraud   | Heterogeneous | GraphSAGE + RL      |
 | **H2-FDetector** | Opinion Fraud  | Heterogeneous | Signed GAT          |
+| **FRAUDRE**     | Opinion Fraud   | Heterogeneous | GraphSAGE (mean + difference) |
 
 
 ---
@@ -1637,6 +1675,25 @@ python H2FDetector_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_ra
 python H2FDetector_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python H2FDetector_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python H2FDetector_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### FRAUDRE
+
+Reference defaults: embedding 64, weight decay `1e-4`, 2 convolution layers, 10 sampled neighbours. Learning rate differs per dataset (0.001 YelpChi, 0.1 Amazon, 0.01 others); drop `--learning_rate` to use these.
+
+```bash
+cd algorithms/FRAUDRE
+
+python FRAUDRE_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
