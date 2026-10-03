@@ -1438,16 +1438,32 @@ Default learning rate is Adam `0.01` on every dataset. Other defaults (`C`, `K`,
 ```bash
 cd algorithms/SplitGNN
 
-uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
-uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
-uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
-uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
-uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
-python SplitGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --gpu 0 --seed 123 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 1234 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 12345 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 123456 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 1234567 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 1234567 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 123456 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 12345 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 1234 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 123 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
 
 cd ../..
 ```

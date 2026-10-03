@@ -1130,7 +1130,7 @@ On the **Vast instance** (SSH session), from the folder you want to pack:
 
 ```bash
 cd /path/to/that/folder   # or stay where you are
-tar --exclude='.venv' --exclude='__pycache__' --exclude='.git' -czf /workspace/BWGNN.tar.gz .
+tar --exclude='.venv' --exclude='__pycache__' --exclude='.git' -czf /workspace/SplitGNN.tar.gz .
 ```
 
 Or if you want the folder name inside the archive:
@@ -1143,7 +1143,8 @@ tar --exclude='MyFolder/.venv' --exclude='MyFolder/__pycache__' --exclude='MyFol
 On your **local PC** (PowerShell), download it with the current Vast public IP and SSH port from the Connect UI:
 
 ```powershell
-scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P PORT root@HOST:/workspace/SplitGNN.tar.gz "$HOME\Downloads\"
+scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P 36803 root@81.183.231.113:/workspace/SplitGNN.tar.gz "$HOME\Downloads\"
+scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P 22596 root@217.154.252.24:/workspace/SplitGNN.tar.gz "$HOME\Downloads\"
 ```
 
 Example with values like before:
