@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, and **ImGSL**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, and **H2IDE**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -267,6 +267,8 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | TAM         | `cd algorithms/TAM` then `python TAM_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
 | GDN         | `cd algorithms/GDN` then `python GDN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
 | ImGSL       | `cd algorithms/ImGSL` then `python ImGSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
+| CGNN        | `cd algorithms/CGNN` then `python CGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`; `--n_black 1` / `5` for the paper few-label split)                         |
+| H2IDE       | `cd algorithms/H2IDE` then `python H2IDE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -812,6 +814,37 @@ python ImGSL_main.py --dataset tfinance --gpu 0
 python ImGSL_main.py --dataset tsocial --gpu 0
 python ImGSL_main.py --dataset comp --gpu 0
 python ImGSL_main.py --dataset amazon --remove_hetero 1 --oversample_ratio 0.5 --gpu 0   # paper-literal Eq. 9
+cd ../..
+```
+
+#### CGNN (`algorithms/CGNN/CGNN_main.py`)
+
+Context-aware GNN for fraud detection with extremely limited labels (AAAI 2025), implemented from the paper (no official code): each neighbour is decomposed into normal / abnormal subspace components (supervised contrastive loss), mixed by a per-neighbour denoising attention, and aggregated with `1/sqrt(d_i)` scaling; unlabeled gray centres get consistency training on subspace-permuted neighbour messages. Mini-batch training; same 40/20/40 protocol by default, or the paper's 10/30/60 split with 1 or 5 labeled frauds (`--n_black`).
+
+```powershell
+cd algorithms/CGNN
+python CGNN_main.py --dataset yelpchi --gpu 0
+python CGNN_main.py --dataset amazon --gpu 0
+python CGNN_main.py --dataset elliptic --gpu 0
+python CGNN_main.py --dataset tfinance --gpu 0
+python CGNN_main.py --dataset tsocial --gpu 0
+python CGNN_main.py --dataset comp --gpu 0
+python CGNN_main.py --dataset amazon --n_black 5 --gpu 0   # paper few-label split
+cd ../..
+```
+
+#### H2IDE (`algorithms/H2IDE/H2IDE_main.py`)
+
+Homophily and Heterophily Identification with Disentangled Embeddings (IEEE TKDE 2025), implemented from the paper (no official code): `K` factor embeddings per node, factor-level edge homophily trained with a hinge loss on labeled edges, signed per-relation per-factor attention, factor-aware relation mixing, and a CLUB mutual-information penalty between factors. Mini-batch training with two-hop neighbour sampling and exact layer-wise inference; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/H2IDE
+python H2IDE_main.py --dataset yelpchi --gpu 0
+python H2IDE_main.py --dataset amazon --gpu 0
+python H2IDE_main.py --dataset elliptic --gpu 0
+python H2IDE_main.py --dataset tfinance --gpu 0
+python H2IDE_main.py --dataset tsocial --gpu 0
+python H2IDE_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
@@ -1401,6 +1434,55 @@ Same as GraphSAGE, plus:
 | `--gpu`              | `0`         | Device                                                                              |
 
 
+### CGNN (`algorithms/CGNN/CGNN_main.py`)
+
+
+| Argument            | Default     | Description                                                                                       |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                               |
+| `--train_ratio`     | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40; ignored with `--n_black`)                |
+| `--n_black`         | `0`         | `1` / `5` = paper split: 10/30/60, that many labeled frauds plus `eta`-times as many normals      |
+| `--emb_size`        | `64`        | Embedding size                                                                                    |
+| `--lam`             | `1`         | Weight of the category semantic decomposition loss (`0` = w/o CSD)                                |
+| `--beta`            | `1`         | Weight of the consistency loss on gray samples (`0` = w/o CL)                                     |
+| `--tau`             | per mode    | Contrastive temperature: paper `0.01` (T-Finance `0.8`) with `--n_black`, else `0.5` (T-Finance `0.8`) |
+| `--csd_nodes`       | `256`       | Max distinct neighbours per step whose components enter the contrastive loss                     |
+| `--batch_size`      | per mode    | Labeled (and gray) centres per step: `16` with `--n_black`, else `256` (T-Social `1024`)          |
+| `--thres`           | `0.5`       | Decision threshold on the fraud probability                                                       |
+| `--learning_rate`   | `0.01`      | Learning rate                                                                                     |
+| `--weight_decay`    | `1e-4`      | L2 weight                                                                                         |
+| `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                       |
+| `--epochs`          | `100`       | Max epochs, early stop on valid AUC with patience 25 (T-Social: 30 / 10)                          |
+| `--gpu`             | `0`         | Device                                                                                            |
+
+
+### H2IDE (`algorithms/H2IDE/H2IDE_main.py`)
+
+
+| Argument             | Default     | Description                                                                                  |
+| -------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                          |
+| `--train_ratio`      | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                                     |
+| `--n_factors`        | per dataset | Latent factors `K` (YelpChi `12`, others `8`)                                                |
+| `--factor_dim`       | `8`         | Embedding size per factor                                                                    |
+| `--tau`              | `0.5`       | Temperature of the cosine proximity (not given in the paper)                                 |
+| `--alpha1`           | per dataset | Identification hinge-loss weight (Amazon / FDCompCN `0.8`, others `1.2`)                     |
+| `--alpha2`           | per dataset | MI independence-loss weight (YelpChi `0.001`, others `0.01`)                                 |
+| `--alpha3`           | `1e-4`      | Explicit squared-L2 weight                                                                   |
+| `--mi_beta`          | `1`         | Weight of the variational log-likelihood fitted by the CLUB estimators                       |
+| `--mi_hidden`        | `16`        | Hidden size of the CLUB networks                                                             |
+| `--residual`         | `0`         | `1` = add the centre factor embedding to its aggregated message                              |
+| `--dropout`          | `0.1`       | Dropout on features and before the MLP                                                       |
+| `--fanouts`          | `25 10`     | Training neighbours per relation at hop 1 / hop 2 (`0` = all); evaluation is exact           |
+| `--batch_size`       | per dataset | YelpChi `256`, others `1024` (balanced, under-sampled normals)                               |
+| `--thres`            | `0.5`       | Decision threshold on the fraud probability                                                  |
+| `--learning_rate`    | `0.005`     | Learning rate (also used by the CLUB estimators)                                             |
+| `--weight_decay`     | `5e-5`      | Adam weight decay                                                                            |
+| `--feat_norm`        | `standard`  | `row` / `standard` / `none`                                                                  |
+| `--epochs`           | `500`       | Max epochs, early stop on valid AUC with patience 100 (T-Social: 50 / 10)                    |
+| `--gpu`              | `0`         | Device                                                                                       |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1450,6 +1532,8 @@ Same as GraphSAGE, plus:
 | **TAM**         | [Truncated Affinity Maximization: One-class Homophily Modeling for Graph Anomaly Detection](https://arxiv.org/abs/2306.00006)                                                           | NeurIPS 2023 | [BibTex](algorithms/TAM/README.md#paper)                                            |
 | **GDN**         | [Alleviating Structural Distribution Shift in Graph Anomaly Detection](https://doi.org/10.1145/3539597.3570377)                                                                          | WSDM 2023  | [BibTex](algorithms/GDN/README.md#paper)                                              |
 | **ImGSL**       | [Improving fraud detection via imbalanced graph structure learning](https://doi.org/10.1007/s10994-023-06464-0)                                                                          | Machine Learning 2024 | [BibTex](algorithms/ImGSL/README.md#paper)                                 |
+| **CGNN**        | [Context-aware Graph Neural Network for Graph-based Fraud Detection with Extremely Limited Labels](https://doi.org/10.1609/aaai.v39i11.33319)                                            | AAAI 2025  | [BibTex](algorithms/CGNN/README.md#paper)                                             |
+| **H2IDE**       | [Nowhere to H²IDE: Fraud Detection From Multi-Relation Graphs via Disentangled Homophily and Heterophily Identification](https://doi.org/10.1109/TKDE.2024.3523107)                 | TKDE 2025  | [BibTex](algorithms/H2IDE/README.md#paper)                                            |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1473,6 +1557,8 @@ Same as GraphSAGE, plus:
 - **TAM:** unsupervised; two-layer GCN encoders (`torch.sparse` CSR) maximising local affinity `z_i . (A z)_i / d_i` on the original graph, trained on graphs truncated by vectorised per-node distance thresholds (edge masks + reverse-edge indices; no dense `N x N`, no DGL / PyG)
 - **GDN:** per-relation mean aggregation (CSR gathers + `index_add_`) on a trainable feature table + gradient-based feature split + prototype / neighbourhood KL constraints with vectorised non-neighbour sampling (no DGL / PyG)
 - **ImGSL:** degree / class-frequency sampler per relation + label-predictor edge pruning (CSR gathers) + K-head weighted-cosine node-anchor graphs with two-step anchor message passing and dynamic stopping (no dense `N x N`, no DGL / PyG)
+- **CGNN:** per-neighbour normal / abnormal subspace projections + supervised contrastive loss + two-way denoising attention, aggregated over CSR gathers with `index_add_`; consistency training permutes subspace components within each gray centre's neighbourhood (segment-wise random sort; no DGL / PyG)
+- **H2IDE:** factor-wise embeddings + cosine edge homophily with prototype-weighted factor mixing (hinge loss on labeled edges) + signed per-relation per-factor attention (segment softmax over CSR gathers) + CLUB pairwise MI penalty; two-hop GraphSAGE-style sampling for training and chunked exact layer-wise inference (no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1507,6 +1593,8 @@ Same as GraphSAGE, plus:
 | **TAM**         | Graph Anomaly (unsupervised) | Homogeneous | GCN + affinity maximisation + edge truncation |
 | **GDN**         | Opinion Fraud   | Heterogeneous | RGCN + feature decomposition |
 | **ImGSL**       | Opinion Fraud   | Heterogeneous | GCN + graph structure learning |
+| **CGNN**        | Graph Fraud (few labels) | Homogeneous | Subspace-decomposed GNN + consistency training |
+| **H2IDE**       | Opinion / Financial Fraud | Heterogeneous | Disentangled signed GAT + MI independence |
 
 
 ---
@@ -2176,6 +2264,45 @@ python ImGSL_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR
 python ImGSL_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python ImGSL_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python ImGSL_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### CGNN
+
+Paper defaults: lr `0.01`, weight decay `1e-4`, embedding 64, `lambda = beta = 1`; up to 100 epochs with patience 25. The toolbox split uses batch 256 and `tau 0.5` (T-Finance `0.8`); `--n_black 1` / `5` switches to the paper's few-label split with batch 16 and the paper temperatures (see `algorithms/CGNN/README.md`).
+
+```bash
+cd algorithms/CGNN
+
+python CGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --n_black 5   # paper few-label split
+
+cd ../..
+```
+
+---
+
+### H2IDE
+
+Paper defaults: lr `0.005`, weight decay `5e-5`, one layer, factor dimension 8, dropout 0.1, `alpha3 1e-4`; YelpChi `K 12`, `alpha1 1.2`, `alpha2 0.001`, batch 256; Amazon `K 8`, `alpha1 0.8`, `alpha2 0.01`, batch 1024; others `K 8`, `alpha1 1.2`, `alpha2 0.01`, batch 1024; up to 500 epochs with patience 100 (see `algorithms/H2IDE/README.md`).
+
+```bash
+cd algorithms/H2IDE
+
+python H2IDE_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```

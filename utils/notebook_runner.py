@@ -1279,6 +1279,127 @@ def run_imgsl(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _cgnn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.CGNN.CGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        n_black=0,
+        emb_size=64,
+        lam=1.0,
+        beta=1.0,
+        tau=None,
+        csd_nodes=256,
+        batch_size=None,
+        eval_batch_size=2048,
+        thres=0.5,
+        learning_rate=0.01,
+        weight_decay=1e-4,
+        feat_norm='standard',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_cgnn(dataset='yelpchi', download=True, **overrides):
+    """Train CGNN, save artifacts, zip the run folder, download on Colab.
+
+    ``tau`` and ``batch_size`` left as ``None`` follow the split mode (see CGNN_main);
+    pass ``n_black=1`` or ``5`` for the paper few-label split.
+    """
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.CGNN.CGNN_main import train
+
+    params = _cgnn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+        if params.get('n_black'):
+            params['run_tag'] += '_black{}'.format(params['n_black'])
+    print('CGNN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _h2ide_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.H2IDE.H2IDE_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        n_factors=paper['n_factors'],
+        factor_dim=8,
+        tau=0.5,
+        alpha1=paper['alpha1'],
+        alpha2=paper['alpha2'],
+        alpha3=1e-4,
+        mi_beta=1.0,
+        mi_hidden=16,
+        residual=0,
+        dropout=0.1,
+        fanouts=[25, 10],
+        batch_size=paper['batch_size'],
+        eval_edge_budget=1 << 19,
+        thres=0.5,
+        learning_rate=0.005,
+        weight_decay=5e-5,
+        feat_norm='standard',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_h2ide(dataset='yelpchi', download=True, **overrides):
+    """Train H2IDE, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.H2IDE.H2IDE_main import train
+
+    params = _h2ide_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['n_factors'] * params['factor_dim'])
+    print('H2IDE', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)
