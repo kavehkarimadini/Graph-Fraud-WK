@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, and **GHRN**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, and **GGCN**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -263,6 +263,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | SparseGAD   | `cd algorithms/SparseGAD` then `python SparseGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                  |
 | AMNet       | `cd algorithms/AMNet` then `python AMNet_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | GHRN        | `cd algorithms/GHRN` then `python GHRN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
+| GGCN        | `cd algorithms/GGCN` then `python GGCN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -745,6 +746,21 @@ python GHRN_main.py --dataset tfinance --gpu 0
 python GHRN_main.py --dataset tsocial --gpu 0
 python GHRN_main.py --dataset comp --gpu 0
 python GHRN_main.py --dataset yelpchi --homo 0 --gpu 0   # per-relation BWGNN
+cd ../..
+```
+
+#### GGCN (`algorithms/GGCN/GGCN_main.py`)
+
+Heterophily- and oversmoothing-aware GCN (ICDM 2022): signed cosine-similarity messages, learnable degree correction, and decaying residual aggregation. Full-batch on the union graph with sparse edge kernels; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/GGCN
+python GGCN_main.py --dataset yelpchi --gpu 0
+python GGCN_main.py --dataset amazon --gpu 0
+python GGCN_main.py --dataset elliptic --gpu 0
+python GGCN_main.py --dataset tfinance --gpu 0
+python GGCN_main.py --dataset tsocial --gpu 0
+python GGCN_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
@@ -1243,6 +1259,28 @@ Same as GraphSAGE, plus:
 | `--gpu`           | `0`       | Device                                                                              |
 
 
+### GGCN (`algorithms/GGCN/GGCN_main.py`)
+
+
+| Argument          | Default    | Description                                                                   |
+| ----------------- | ---------- | ----------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi`  | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`           |
+| `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (valid/test fixed 20/40)                      |
+| `--relation`      | `all`      | Relation to use (`all` = union of relations)                                  |
+| `--nlayers`       | `2`        | GGCN layers (>= 2)                                                            |
+| `--hidden`        | `32`       | Hidden size                                                                   |
+| `--dropout`       | `0.5`      | Dropout                                                                       |
+| `--decay_rate`    | `1.0`      | Decay rate of the residual weights                                            |
+| `--exponent`      | `3.0`      | Exponent of the residual decay                                                |
+| `--no_sign` / `--no_degree` / `--no_decay` | off | Disable signed messages / degree correction / decaying aggregation |
+| `--feat_norm`     | `standard` | `row` (reference) / `minmax` / `standard` / `none`                            |
+| `--loss_weight`   | `none`     | `none` (reference) / `balanced` CE class weights                              |
+| `--epochs`        | `1500`     | Max epochs, early stop on valid AUC with patience 100 (T-Social: 500 / 50)    |
+| `--learning_rate` | `0.01`     | Learning rate                                                                 |
+| `--weight_decay`  | `4e-3`     | L2 weight                                                                     |
+| `--gpu`           | `0`        | Device                                                                        |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1288,6 +1326,7 @@ Same as GraphSAGE, plus:
 | **SparseGAD**   | [Beyond Homophily: Robust Graph Anomaly Detection via Neural Sparsification](https://www.ijcai.org/proceedings/2023/234)                                                                 | IJCAI 2023 | [BibTex](algorithms/SparseGAD/README.md#paper)                                        |
 | **AMNet**       | [Can Abnormality be Detected by Graph Neural Networks?](https://www.ijcai.org/proceedings/2022/270)                                                                                      | IJCAI 2022 | [BibTex](algorithms/AMNet/README.md#paper)                                            |
 | **GHRN**        | [Addressing Heterophily in Graph Anomaly Detection: A Perspective of Graph Spectrum](https://dl.acm.org/doi/10.1145/3543507.3583268)                                                     | WWW 2023   | [BibTex](algorithms/GHRN/README.md#paper)                                             |
+| **GGCN**        | [Two Sides of the Same Coin: Heterophily and Oversmoothing in Graph Convolutional Neural Networks](https://arxiv.org/abs/2102.06462)                                                    | ICDM 2022  | [BibTex](algorithms/GGCN/README.md#paper)                                             |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1307,6 +1346,7 @@ Same as GraphSAGE, plus:
 - **SparseGAD:** GPR GCN (gather / `index_add_`) + cosine edge attention from an extractor MLP + chunked brute-force kNN graph augmentation (no DGL)
 - **AMNet:** Bernstein polynomial filters on the scaled Laplacian (shared `torch.sparse` CSR powers) + per-node filter attention + marginal loss (no DGL / PyG)
 - **GHRN:** BWGNN (shared `torch.sparse` CSR Laplacian powers, union or per-relation) + graph-Laplacian edge indicator on predictions + edge pruning and retraining (no DGL)
+- **GGCN:** signed cosine-similarity messages + learnable degree correction + decaying residuals, on edge lists with custom-backward CSR kernels (sampled dot products and value-weighted sparse products; no dense `N x N`, no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1337,6 +1377,7 @@ Same as GraphSAGE, plus:
 | **SparseGAD**   | Graph Anomaly   | Homogeneous   | GPR-GNN + edge sparsification |
 | **AMNet**       | Graph Anomaly   | Homogeneous   | Bernstein spectral GNN |
 | **GHRN**        | Graph Anomaly   | Homogeneous   | Beta wavelet GNN + edge pruning |
+| **GGCN**        | Heterophilous Graphs | Homogeneous | Signed GCN + degree correction |
 
 
 ---
@@ -1930,6 +1971,25 @@ python GHRN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR 
 python GHRN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python GHRN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python GHRN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### GGCN
+
+Reference defaults: full-batch, lr `0.01`, 2 layers, hidden 32, dropout 0.5, weight decay `4e-3`, decaying residuals (`decay_rate 1.0`, `exponent 3.0`), up to 1500 epochs with patience 100.
+
+```bash
+cd algorithms/GGCN
+
+python GGCN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
