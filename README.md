@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, and **GGCN**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, and **TAM**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -264,6 +264,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | AMNet       | `cd algorithms/AMNet` then `python AMNet_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | GHRN        | `cd algorithms/GHRN` then `python GHRN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
 | GGCN        | `cd algorithms/GGCN` then `python GGCN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
+| TAM         | `cd algorithms/TAM` then `python TAM_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -761,6 +762,22 @@ python GGCN_main.py --dataset elliptic --gpu 0
 python GGCN_main.py --dataset tfinance --gpu 0
 python GGCN_main.py --dataset tsocial --gpu 0
 python GGCN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### TAM (`algorithms/TAM/TAM_main.py`)
+
+Truncated Affinity Maximization (NeurIPS 2023), an **unsupervised** detector: GCNs trained without labels to maximise neighbour affinity on graphs with dissimilar edges repeatedly truncated; the anomaly score is low local affinity. Labels are used only for evaluation on the 40/20/40 split and for the decision threshold.
+
+```powershell
+cd algorithms/TAM
+python TAM_main.py --dataset yelpchi --gpu 0
+python TAM_main.py --dataset amazon --gpu 0
+python TAM_main.py --dataset elliptic --gpu 0
+python TAM_main.py --dataset tfinance --gpu 0
+python TAM_main.py --dataset tsocial --gpu 0
+python TAM_main.py --dataset comp --gpu 0
+python TAM_main.py --dataset amazon --relation upu --gpu 0   # single relation (K=4, T=3)
 cd ../..
 ```
 
@@ -1281,6 +1298,26 @@ Same as GraphSAGE, plus:
 | `--gpu`           | `0`        | Device                                                                        |
 
 
+### TAM (`algorithms/TAM/TAM_main.py`)
+
+
+| Argument          | Default   | Description                                                                         |
+| ----------------- | --------- | ----------------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                 |
+| `--train_ratio`   | `0.4`     | Train fraction of labeled nodes; only sets the anomaly-rate estimate for the threshold (unsupervised) |
+| `--relation`      | `all`     | Relation to use (`all` = union of relations)                                        |
+| `--embedding_dim` | `128`     | LAMNet embedding size                                                               |
+| `--cutting`       | auto      | Truncations K (union graph `7`, single relation `4`)                                |
+| `--n_tree`        | auto      | Truncation sequences T (union graph `1`, single relation `3`)                       |
+| `--minmax_loss`   | auto      | Min-max normalise the affinity in the loss (union graph `1`, single relation `0`)   |
+| `--lamda`         | `0`       | Weight of the non-neighbour similarity regulariser                                 |
+| `--feat_norm`     | per dataset | `row` (YelpChi / Amazon, reference) / `minmax` / `standard` (Elliptic / FDCompCN) / `none` (T-Finance / T-Social) |
+| `--epochs`        | `500`     | Epochs per LAMNet (no early stopping)                                               |
+| `--learning_rate` | `1e-5`    | Learning rate                                                                       |
+| `--weight_decay`  | `0`       | L2 weight                                                                           |
+| `--gpu`           | `0`       | Device                                                                              |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1327,6 +1364,7 @@ Same as GraphSAGE, plus:
 | **AMNet**       | [Can Abnormality be Detected by Graph Neural Networks?](https://www.ijcai.org/proceedings/2022/270)                                                                                      | IJCAI 2022 | [BibTex](algorithms/AMNet/README.md#paper)                                            |
 | **GHRN**        | [Addressing Heterophily in Graph Anomaly Detection: A Perspective of Graph Spectrum](https://dl.acm.org/doi/10.1145/3543507.3583268)                                                     | WWW 2023   | [BibTex](algorithms/GHRN/README.md#paper)                                             |
 | **GGCN**        | [Two Sides of the Same Coin: Heterophily and Oversmoothing in Graph Convolutional Neural Networks](https://arxiv.org/abs/2102.06462)                                                    | ICDM 2022  | [BibTex](algorithms/GGCN/README.md#paper)                                             |
+| **TAM**         | [Truncated Affinity Maximization: One-class Homophily Modeling for Graph Anomaly Detection](https://arxiv.org/abs/2306.00006)                                                           | NeurIPS 2023 | [BibTex](algorithms/TAM/README.md#paper)                                            |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1347,6 +1385,7 @@ Same as GraphSAGE, plus:
 - **AMNet:** Bernstein polynomial filters on the scaled Laplacian (shared `torch.sparse` CSR powers) + per-node filter attention + marginal loss (no DGL / PyG)
 - **GHRN:** BWGNN (shared `torch.sparse` CSR Laplacian powers, union or per-relation) + graph-Laplacian edge indicator on predictions + edge pruning and retraining (no DGL)
 - **GGCN:** signed cosine-similarity messages + learnable degree correction + decaying residuals, on edge lists with custom-backward CSR kernels (sampled dot products and value-weighted sparse products; no dense `N x N`, no DGL / PyG)
+- **TAM:** unsupervised; two-layer GCN encoders (`torch.sparse` CSR) maximising local affinity `z_i . (A z)_i / d_i` on the original graph, trained on graphs truncated by vectorised per-node distance thresholds (edge masks + reverse-edge indices; no dense `N x N`, no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1378,6 +1417,7 @@ Same as GraphSAGE, plus:
 | **AMNet**       | Graph Anomaly   | Homogeneous   | Bernstein spectral GNN |
 | **GHRN**        | Graph Anomaly   | Homogeneous   | Beta wavelet GNN + edge pruning |
 | **GGCN**        | Heterophilous Graphs | Homogeneous | Signed GCN + degree correction |
+| **TAM**         | Graph Anomaly (unsupervised) | Homogeneous | GCN + affinity maximisation + edge truncation |
 
 
 ---
@@ -1990,6 +2030,25 @@ python GGCN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR 
 python GGCN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python GGCN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python GGCN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### TAM
+
+Reference defaults: unsupervised, embedding 128, lr `1e-5` (kept, so `$LR` is not passed), 500 epochs per LAMNet. Union graphs use K=7 truncations, T=1 and the min-max loss; single relations use K=4 and T=3. The seed changes initialisation and truncation thresholds; `$TRAIN_RATIO` only affects the decision threshold.
+
+```bash
+cd algorithms/TAM
+
+python TAM_main.py --dataset yelpchi --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset amazon --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset elliptic --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset tfinance --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset tsocial --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset comp --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```

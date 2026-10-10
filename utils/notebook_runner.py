@@ -1110,6 +1110,59 @@ def run_ggcn(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _tam_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        relation='all',
+        embedding_dim=128,
+        cutting=None,
+        n_tree=None,
+        lamda=0.0,
+        minmax_loss=None,
+        feat_norm=None,
+        epochs=500,
+        learning_rate=1e-5,
+        weight_decay=0.0,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_tam(dataset='yelpchi', download=True, **overrides):
+    """Train TAM (unsupervised), save artifacts, zip the run folder, download on Colab.
+
+    ``cutting`` / ``n_tree`` / ``minmax_loss`` / ``feat_norm`` left as ``None`` follow
+    the per-dataset and graph-type defaults of ``TAM_main``.
+    """
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.TAM.TAM_main import train
+
+    params = _tam_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['embedding_dim'])
+    print('TAM', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)
