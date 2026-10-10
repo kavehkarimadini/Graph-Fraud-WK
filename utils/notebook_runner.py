@@ -996,6 +996,59 @@ def run_amnet(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _ghrn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.GHRN.GHRN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        homo=1,
+        hid_dim=paper['hid_dim'],
+        order=paper['order'],
+        del_ratio=paper['del_ratio'],
+        adj_type='sym',
+        self_loop=paper['self_loop'],
+        feat_norm=paper['feat_norm'],
+        epochs=100,
+        early_stop=25,
+        learning_rate=0.01,
+        weight_decay=0.0,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_ghrn(dataset='yelpchi', download=True, **overrides):
+    """Train GHRN (BWGNN, edge pruning, BWGNN), save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.GHRN.GHRN_main import train
+
+    params = _ghrn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hid_dim'])
+    print('GHRN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)
