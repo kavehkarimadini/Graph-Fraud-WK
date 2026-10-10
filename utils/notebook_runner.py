@@ -1218,6 +1218,67 @@ def run_gdn(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _imgsl_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.ImGSL.ImGSL_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        emb_size=64,
+        beta=0.5,
+        epsilon=paper['epsilon'],
+        tau_minus=0.2,
+        oversample_ratio=0.0,
+        remove_hetero=0,
+        alpha=2.0,
+        num_anchors=512,
+        heads=4,
+        max_iter=3,
+        delta=1e-2,
+        no_sampler=False,
+        thres=0.5,
+        batch_size=paper['batch_size'],
+        eval_batch_size=1024,
+        learning_rate=0.01,
+        weight_decay=1e-3,
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_imgsl(dataset='yelpchi', download=True, **overrides):
+    """Train ImGSL, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.ImGSL.ImGSL_main import train
+
+    params = _imgsl_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+    print('ImGSL', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)

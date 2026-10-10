@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, and **GDN**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, and **ImGSL**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -266,6 +266,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | GGCN        | `cd algorithms/GGCN` then `python GGCN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
 | TAM         | `cd algorithms/TAM` then `python TAM_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
 | GDN         | `cd algorithms/GDN` then `python GDN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| ImGSL       | `cd algorithms/ImGSL` then `python ImGSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -795,6 +796,22 @@ python GDN_main.py --dataset tfinance --gpu 0
 python GDN_main.py --dataset tsocial --gpu 0
 python GDN_main.py --dataset comp --gpu 0
 python GDN_main.py --dataset yelpchi --add_constraint 0 --gpu 0   # backbone only (ablation)
+cd ../..
+```
+
+#### ImGSL (`algorithms/ImGSL/ImGSL_main.py`)
+
+Imbalanced Graph Structure Learning (IGSL, Machine Learning 2024), implemented from the paper (no official code): multi-relational class-balanced node sampler, label-predictor edge pruning, and per-relation iterative node-anchor graph learning (IDGL-style) mixed with the refined input graph. Mini-batch training; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/ImGSL
+python ImGSL_main.py --dataset yelpchi --gpu 0
+python ImGSL_main.py --dataset amazon --gpu 0
+python ImGSL_main.py --dataset elliptic --gpu 0
+python ImGSL_main.py --dataset tfinance --gpu 0
+python ImGSL_main.py --dataset tsocial --gpu 0
+python ImGSL_main.py --dataset comp --gpu 0
+python ImGSL_main.py --dataset amazon --remove_hetero 1 --oversample_ratio 0.5 --gpu 0   # paper-literal Eq. 9
 cd ../..
 ```
 
@@ -1357,6 +1374,33 @@ Same as GraphSAGE, plus:
 | `--gpu`                | `0`         | Device                                                                      |
 
 
+### ImGSL (`algorithms/ImGSL/ImGSL_main.py`)
+
+
+| Argument             | Default     | Description                                                                         |
+| -------------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                 |
+| `--train_ratio`      | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                            |
+| `--emb_size`         | `64`        | Embedding size                                                                      |
+| `--beta`             | `0.5`       | Weight of the refined input graph versus the learned graph (`1` = no learned graph) |
+| `--epsilon`          | per dataset | Sparsity threshold of the learned node-anchor graph (Amazon `0.5`, others `0`)      |
+| `--tau_minus`        | `0.2`       | Edge pruning threshold on label-predictor similarity                                |
+| `--remove_hetero`    | `0`         | `1` = drop edges between train nodes with different labels (paper Eq. 9)            |
+| `--oversample_ratio` | `0`         | Fraud oversampling `k_r = ratio * avg fraud degree` (paper `0.5`)                   |
+| `--alpha`            | `2`         | Label-predictor loss weight                                                         |
+| `--num_anchors`      | `512`       | Anchors of the node-anchor graph                                                    |
+| `--heads`            | `4`         | Heads of the weighted cosine                                                        |
+| `--max_iter` / `--delta` | `3` / `1e-2` | Maximum structure-learning iterations / dynamic stopping threshold           |
+| `--no_sampler`       | off         | Uniform node sampling instead of the class-balanced sampler                         |
+| `--thres`            | `0.5`       | Decision threshold on the fraud probability                                         |
+| `--batch_size`       | per dataset | Amazon / FDCompCN `256`, others `1024`                                              |
+| `--learning_rate`    | `0.01`      | Learning rate                                                                       |
+| `--weight_decay`     | `1e-3`      | L2 weight                                                                           |
+| `--feat_norm`        | `standard`  | `row` / `standard` / `none`                                                         |
+| `--epochs`           | `150`       | Max epochs, early stop on valid AUC with patience 30 (T-Social: 50 / 10)            |
+| `--gpu`              | `0`         | Device                                                                              |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1405,6 +1449,7 @@ Same as GraphSAGE, plus:
 | **GGCN**        | [Two Sides of the Same Coin: Heterophily and Oversmoothing in Graph Convolutional Neural Networks](https://arxiv.org/abs/2102.06462)                                                    | ICDM 2022  | [BibTex](algorithms/GGCN/README.md#paper)                                             |
 | **TAM**         | [Truncated Affinity Maximization: One-class Homophily Modeling for Graph Anomaly Detection](https://arxiv.org/abs/2306.00006)                                                           | NeurIPS 2023 | [BibTex](algorithms/TAM/README.md#paper)                                            |
 | **GDN**         | [Alleviating Structural Distribution Shift in Graph Anomaly Detection](https://doi.org/10.1145/3539597.3570377)                                                                          | WSDM 2023  | [BibTex](algorithms/GDN/README.md#paper)                                              |
+| **ImGSL**       | [Improving fraud detection via imbalanced graph structure learning](https://doi.org/10.1007/s10994-023-06464-0)                                                                          | Machine Learning 2024 | [BibTex](algorithms/ImGSL/README.md#paper)                                 |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1427,6 +1472,7 @@ Same as GraphSAGE, plus:
 - **GGCN:** signed cosine-similarity messages + learnable degree correction + decaying residuals, on edge lists with custom-backward CSR kernels (sampled dot products and value-weighted sparse products; no dense `N x N`, no DGL / PyG)
 - **TAM:** unsupervised; two-layer GCN encoders (`torch.sparse` CSR) maximising local affinity `z_i . (A z)_i / d_i` on the original graph, trained on graphs truncated by vectorised per-node distance thresholds (edge masks + reverse-edge indices; no dense `N x N`, no DGL / PyG)
 - **GDN:** per-relation mean aggregation (CSR gathers + `index_add_`) on a trainable feature table + gradient-based feature split + prototype / neighbourhood KL constraints with vectorised non-neighbour sampling (no DGL / PyG)
+- **ImGSL:** degree / class-frequency sampler per relation + label-predictor edge pruning (CSR gathers) + K-head weighted-cosine node-anchor graphs with two-step anchor message passing and dynamic stopping (no dense `N x N`, no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1460,6 +1506,7 @@ Same as GraphSAGE, plus:
 | **GGCN**        | Heterophilous Graphs | Homogeneous | Signed GCN + degree correction |
 | **TAM**         | Graph Anomaly (unsupervised) | Homogeneous | GCN + affinity maximisation + edge truncation |
 | **GDN**         | Opinion Fraud   | Heterogeneous | RGCN + feature decomposition |
+| **ImGSL**       | Opinion Fraud   | Heterogeneous | GCN + graph structure learning |
 
 
 ---
@@ -2110,6 +2157,25 @@ python GDN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR -
 python GDN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python GDN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python GDN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### ImGSL
+
+Paper defaults: lr `0.01`, weight decay `1e-3`, `beta 0.5`, `tau- 0.2`, `alpha 2`, 512 anchors; batch 256 / `epsilon 0.5` on Amazon, 1024 / `0` elsewhere; up to 150 epochs with patience 30. Label-dependent Eq. 9 edits off (see `algorithms/ImGSL/README.md`).
+
+```bash
+cd algorithms/ImGSL
+
+python ImGSL_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
