@@ -1,0 +1,40 @@
+{
+  "n_runs": 864,
+  "models": [
+    "BSL",
+    "BWGNN",
+    "DGA-GNN",
+    "GAGA",
+    "GHRN",
+    "GLHN",
+    "GraphConsis",
+    "PMP",
+    "SEC-GFD",
+    "SplitGNN"
+  ],
+  "datasets": [
+    "Amazon",
+    "YelpChi",
+    "T-Finance",
+    "Elliptic",
+    "FDCompCN"
+  ],
+  "ratios": [
+    0.1,
+    0.2,
+    0.3,
+    0.4
+  ],
+  "coverage": {
+    "BSL": 5,
+    "BWGNN": 5,
+    "DGA-GNN": 5,
+    "GAGA": 2,
+    "GHRN": 3,
+    "GLHN": 5,
+    "GraphConsis": 5,
+    "PMP": 5,
+    "SEC-GFD": 5,
+    "SplitGNN": 5
+  }
+}

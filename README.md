@@ -60,11 +60,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 
 ---
 
-
-
 ## Installation
-
-
 
 ### Requirements
 
@@ -74,8 +70,6 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 - `torch-geometric`
 - `numpy`, `scipy`, `scikit-learn`
 - **BWGNN / SplitGNN:** `sympy` (see uv step 4). T-Finance / T-Social / FDCompCN binaries are read without DGL.
-
-
 
 ### Setup with `uv` (recommended, GPU)
 
@@ -120,8 +114,6 @@ If CUDA is unavailable, common causes are:
 - CPU `torch` was installed again from PyPI
 - Python version has no CUDA wheel → recreate with `uv venv --python 3.12`
 
-
-
 ### Setup with `pip` (alternative)
 
 ```bash
@@ -136,11 +128,7 @@ pip install -r requirements.txt
 
 ---
 
-
-
 ## Datasets
-
-
 
 ### DBLP
 
@@ -207,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, and **BSL**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, and **H2IDE**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -225,11 +213,7 @@ If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 4
 
 ---
 
-
-
 ## User Guide
-
-
 
 ### Quick start (unified entry: `main.py`)
 
@@ -272,9 +256,20 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | DGA-GNN     | `cd algorithms/DGAGNN` then `python DGAGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
 | GLHN        | `cd algorithms/GLHN` then `python GLHN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
 | BSL         | `cd algorithms/BSL` then `python BSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| CARE-GNN    | `cd algorithms/CAREGNN` then `python CAREGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
+| H2-FDetector | `cd algorithms/H2FDetector` then `python H2FDetector_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                             |
+| FRAUDRE     | `cd algorithms/FRAUDRE` then `python FRAUDRE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
+| PC-GNN      | `cd algorithms/PCGNN` then `python PCGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
+| SparseGAD   | `cd algorithms/SparseGAD` then `python SparseGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                  |
+| AMNet       | `cd algorithms/AMNet` then `python AMNet_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
+| GHRN        | `cd algorithms/GHRN` then `python GHRN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
+| GGCN        | `cd algorithms/GGCN` then `python GGCN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                            |
+| TAM         | `cd algorithms/TAM` then `python TAM_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| GDN         | `cd algorithms/GDN` then `python GDN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| ImGSL       | `cd algorithms/ImGSL` then `python ImGSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
+| CGNN        | `cd algorithms/CGNN` then `python CGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`; `--n_black 1` / `5` for the paper few-label split)                         |
+| H2IDE       | `cd algorithms/H2IDE` then `python H2IDE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
-
-
 
 
 ### Running on your own data
@@ -299,8 +294,6 @@ Models are `torch.nn.Module` subclasses. Use:
 After `main.py` training, evaluation artifacts are written via `utils.training.finalize_run` / `utils.evaluation.save_run_outputs` (see [Evaluation & Saved Outputs](#evaluation--saved-outputs)).
 
 ---
-
-
 
 ## Command Examples
 
@@ -334,8 +327,6 @@ uv pip install torch torch-geometric numpy scipy scikit-learn
 python main.py --model GAS --gpu -1
 ```
 
-
-
 ### Dataset preparation
 
 ```powershell
@@ -360,8 +351,6 @@ cd dataset && unzip YelpChi.zip && cd ..
 
 ---
 
-
-
 ### `main.py` — unified trainer
 
 `main.py` supports: `Player2Vec`, `FdGars`, `GEM`, `SemiGNN`, `GAS`, `GeniePath`.
@@ -380,8 +369,6 @@ python main.py --model SemiGNN --dataset_str example --epoch_num 2 --batch_size 
   --init_emb_size 4 --semi_encoding1 3 --semi_encoding2 2 --semi_encoding3 4 `
   --alpha 0.5 --lamtha 0.5 --gpu 0
 ```
-
-
 
 #### DBLP training (requires extracted `.mat`)
 
@@ -406,8 +393,6 @@ python main.py --model GEM --dataset_str dblp --gpu 0 `
   --epoch_num 30 --batch_size 1000 --hop 2 --k 32
 ```
 
-
-
 #### Tuning common hyperparameters via `main.py`
 
 ```powershell
@@ -431,8 +416,6 @@ python main.py --model GeniePath --dataset_str dblp --gpu 0 `
 
 ---
 
-
-
 ### Per-model scripts
 
 Run from each model folder **or** pass the full path from repo root.
@@ -454,8 +437,6 @@ python Player2Vec_main.py --gpu 0 --seed 42 --epoch_num 50 --batch_size 512
 cd ../..
 ```
 
-
-
 #### FdGars (`algorithms/FdGars/FdGars_main.py`)
 
 ```powershell
@@ -469,8 +450,6 @@ python FdGars_main.py --gpu 0 --hidden1 32 --hidden2 32 --gcn_output 8 --batch_s
 
 cd ../..
 ```
-
-
 
 #### GAS (`algorithms/GAS/GAS_main.py`)
 
@@ -488,8 +467,6 @@ python GAS_main.py --gpu 0 --dataset_str example `
 cd ../..
 ```
 
-
-
 #### GEM (`algorithms/GEM/GEM_main.py`)
 
 ```powershell
@@ -503,8 +480,6 @@ python GEM_main.py --dataset_str dblp --gpu 0 --hop 2 --k 32 --epoch_num 50
 
 cd ../..
 ```
-
-
 
 #### SemiGNN (`algorithms/SemiGNN/SemiGNN_main.py`)
 
@@ -522,8 +497,6 @@ python SemiGNN_main.py --gpu 0 --batch_size 4 `
 cd ../..
 ```
 
-
-
 #### GeniePath (`algorithms/GeniePath/GeniePath_main.py`)
 
 ```powershell
@@ -537,8 +510,6 @@ python GeniePath_main.py --gpu 0 --heads 4 --layer_num 2 --dim 64 --batch_size 2
 
 cd ../..
 ```
-
-
 
 #### GraphSAGE (`algorithms/GraphSage/supervised_train.py`)
 
@@ -569,8 +540,6 @@ python supervised_train.py `
 cd ../..
 ```
 
-
-
 #### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
 Uses Yelp relations (`net_rur`, `net_rtr`, `net_rsr`), Amazon relations (`net_upu`, `net_usu`, `net_uvu`), a single T-Finance / T-Social adjacency, or the labeled Elliptic payment graph.
@@ -586,7 +555,7 @@ python supervised_train.py `
   --epochs 3 `
   --context_dim 128 `
   --samples_1 10 --samples_2 5 `
-  --dim_1 200 --dim_2 100 --batch_size 512 `
+  --dim_1 128 --batch_size 512 `
   --gpu 0
 
 # T-Finance / T-Social (DGL binaries; unzip dataset/tfinance.zip and tsocial.zip first)
@@ -597,8 +566,6 @@ python supervised_train.py --train_prefix ../../dataset/ --file_name comp --sigm
 
 cd ../..
 ```
-
-
 
 #### BWGNN (`algorithms/BWGNN/BWGNN_main.py`)
 
@@ -622,8 +589,6 @@ python BWGNN_main.py --dataset comp --train_ratio 0.4 --hid_dim 64 --order 2 --e
 cd ../..
 ```
 
-
-
 #### SplitGNN (`algorithms/SplitGNN/SplitGNN_main.py`)
 
 Requires sympy and `dataset/comp.dgl` (YelpChi / Amazon `.mat` also work). Defaults follow the paper table.
@@ -636,8 +601,6 @@ python SplitGNN_main.py --dataset amazon --gpu 0
 python SplitGNN_main.py --dataset elliptic --gpu 0
 cd ../..
 ```
-
-
 
 #### DGA-GNN (`algorithms/DGAGNN/DGAGNN_main.py`)
 
@@ -654,8 +617,6 @@ python DGAGNN_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
-
-
 #### GLHN (`algorithms/GLHN/GLHN_main.py`)
 
 Local-homophily-guided low/high-pass fusion (CIKM 2024; paper name GLHAD). Same 40/20/40 protocol.
@@ -670,8 +631,6 @@ python GLHN_main.py --dataset tsocial --gpu 0
 python GLHN_main.py --dataset comp --gpu 0
 cd ../..
 ```
-
-
 
 #### BSL (`algorithms/BSL/BSL_main.py`)
 
@@ -689,7 +648,205 @@ python BSL_main.py --dataset yelpchi --paper_split --gpu 0
 cd ../..
 ```
 
+#### CARE-GNN (`algorithms/CAREGNN/CAREGNN_main.py`)
 
+Label-aware neighbour filtering with RL-tuned per-relation thresholds (CIKM 2020). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/CAREGNN
+python CAREGNN_main.py --dataset yelpchi --gpu 0
+python CAREGNN_main.py --dataset amazon --gpu 0
+python CAREGNN_main.py --dataset elliptic --gpu 0
+python CAREGNN_main.py --dataset tfinance --gpu 0
+python CAREGNN_main.py --dataset tsocial --gpu 0
+python CAREGNN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### H2-FDetector (`algorithms/H2FDetector/H2FDetector_main.py`)
+
+Signed (homophilic / heterophilic) multi-relation attention with edge hinge and prototype losses (WWW 2022). Full-batch, same 40/20/40 protocol.
+
+```powershell
+cd algorithms/H2FDetector
+python H2FDetector_main.py --dataset yelpchi --gpu 0
+python H2FDetector_main.py --dataset amazon --gpu 0
+python H2FDetector_main.py --dataset elliptic --gpu 0
+python H2FDetector_main.py --dataset tfinance --gpu 0
+python H2FDetector_main.py --dataset tsocial --gpu 0
+python H2FDetector_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### FRAUDRE (`algorithms/FRAUDRE/FRAUDRE_main.py`)
+
+Ego-feature MLP + fraud-aware (mean and difference) multi-relation convolutions + prior-adjusted loss (ICDM 2021). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/FRAUDRE
+python FRAUDRE_main.py --dataset yelpchi --gpu 0
+python FRAUDRE_main.py --dataset amazon --gpu 0
+python FRAUDRE_main.py --dataset elliptic --gpu 0
+python FRAUDRE_main.py --dataset tfinance --gpu 0
+python FRAUDRE_main.py --dataset tsocial --gpu 0
+python FRAUDRE_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### PC-GNN (`algorithms/PCGNN/PCGNN_main.py`)
+
+Label-balanced node picking + label-aware neighbour choosing with minority over-sampling (WWW 2021). Same 40/20/40 protocol.
+
+```powershell
+cd algorithms/PCGNN
+python PCGNN_main.py --dataset yelpchi --gpu 0
+python PCGNN_main.py --dataset amazon --gpu 0
+python PCGNN_main.py --dataset elliptic --gpu 0
+python PCGNN_main.py --dataset tfinance --gpu 0
+python PCGNN_main.py --dataset tsocial --gpu 0
+python PCGNN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### SparseGAD (`algorithms/SparseGAD/SparseGAD_main.py`)
+
+GPR GCN with learned cosine edge attention (neural sparsification) and periodic kNN graph augmentation (IJCAI 2023). Full-batch, same 40/20/40 protocol.
+
+```powershell
+cd algorithms/SparseGAD
+python SparseGAD_main.py --dataset yelpchi --gpu 0
+python SparseGAD_main.py --dataset amazon --gpu 0
+python SparseGAD_main.py --dataset elliptic --gpu 0
+python SparseGAD_main.py --dataset tfinance --gpu 0
+python SparseGAD_main.py --dataset tsocial --gpu 0
+python SparseGAD_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### AMNet (`algorithms/AMNet/AMNet_main.py`)
+
+Adaptive multi-frequency GNN: learnable Bernstein spectral filters mixed by per-node attention, with a marginal loss that separates normal and anomalous nodes across filters (IJCAI 2022). Full-batch, same 40/20/40 protocol.
+
+```powershell
+cd algorithms/AMNet
+python AMNet_main.py --dataset yelpchi --gpu 0
+python AMNet_main.py --dataset amazon --gpu 0
+python AMNet_main.py --dataset elliptic --gpu 0
+python AMNet_main.py --dataset tfinance --gpu 0
+python AMNet_main.py --dataset tsocial --gpu 0
+python AMNet_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### GHRN (`algorithms/GHRN/GHRN_main.py`)
+
+Heterophily-reducing edge pruning (WWW 2023): BWGNN is trained, its predictions score every edge with a graph-Laplacian high-frequency indicator, the most heterophilous edges are deleted, and a fresh BWGNN is trained on the pruned graph. Both stages run in one command; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/GHRN
+python GHRN_main.py --dataset yelpchi --gpu 0
+python GHRN_main.py --dataset amazon --gpu 0
+python GHRN_main.py --dataset elliptic --gpu 0
+python GHRN_main.py --dataset tfinance --gpu 0
+python GHRN_main.py --dataset tsocial --gpu 0
+python GHRN_main.py --dataset comp --gpu 0
+python GHRN_main.py --dataset yelpchi --homo 0 --gpu 0   # per-relation BWGNN
+cd ../..
+```
+
+#### GGCN (`algorithms/GGCN/GGCN_main.py`)
+
+Heterophily- and oversmoothing-aware GCN (ICDM 2022): signed cosine-similarity messages, learnable degree correction, and decaying residual aggregation. Full-batch on the union graph with sparse edge kernels; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/GGCN
+python GGCN_main.py --dataset yelpchi --gpu 0
+python GGCN_main.py --dataset amazon --gpu 0
+python GGCN_main.py --dataset elliptic --gpu 0
+python GGCN_main.py --dataset tfinance --gpu 0
+python GGCN_main.py --dataset tsocial --gpu 0
+python GGCN_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### TAM (`algorithms/TAM/TAM_main.py`)
+
+Truncated Affinity Maximization (NeurIPS 2023), an **unsupervised** detector: GCNs trained without labels to maximise neighbour affinity on graphs with dissimilar edges repeatedly truncated; the anomaly score is low local affinity. Labels are used only for evaluation on the 40/20/40 split and for the decision threshold.
+
+```powershell
+cd algorithms/TAM
+python TAM_main.py --dataset yelpchi --gpu 0
+python TAM_main.py --dataset amazon --gpu 0
+python TAM_main.py --dataset elliptic --gpu 0
+python TAM_main.py --dataset tfinance --gpu 0
+python TAM_main.py --dataset tsocial --gpu 0
+python TAM_main.py --dataset comp --gpu 0
+python TAM_main.py --dataset amazon --relation upu --gpu 0   # single relation (K=4, T=3)
+cd ../..
+```
+
+#### GDN (`algorithms/GDN/GDN_main.py`)
+
+Graph Decomposition Network (WSDM 2023) against structural distribution shift: a multi-relation mean-aggregation GNN on a trainable feature table, whose features are split by CE-gradient magnitude into anomaly features (constrained towards class prototypes) and surrounding features (constrained towards the neighbourhood). Mini-batch training; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/GDN
+python GDN_main.py --dataset yelpchi --gpu 0
+python GDN_main.py --dataset amazon --gpu 0
+python GDN_main.py --dataset elliptic --gpu 0
+python GDN_main.py --dataset tfinance --gpu 0
+python GDN_main.py --dataset tsocial --gpu 0
+python GDN_main.py --dataset comp --gpu 0
+python GDN_main.py --dataset yelpchi --add_constraint 0 --gpu 0   # backbone only (ablation)
+cd ../..
+```
+
+#### ImGSL (`algorithms/ImGSL/ImGSL_main.py`)
+
+Imbalanced Graph Structure Learning (IGSL, Machine Learning 2024), implemented from the paper (no official code): multi-relational class-balanced node sampler, label-predictor edge pruning, and per-relation iterative node-anchor graph learning (IDGL-style) mixed with the refined input graph. Mini-batch training; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/ImGSL
+python ImGSL_main.py --dataset yelpchi --gpu 0
+python ImGSL_main.py --dataset amazon --gpu 0
+python ImGSL_main.py --dataset elliptic --gpu 0
+python ImGSL_main.py --dataset tfinance --gpu 0
+python ImGSL_main.py --dataset tsocial --gpu 0
+python ImGSL_main.py --dataset comp --gpu 0
+python ImGSL_main.py --dataset amazon --remove_hetero 1 --oversample_ratio 0.5 --gpu 0   # paper-literal Eq. 9
+cd ../..
+```
+
+#### CGNN (`algorithms/CGNN/CGNN_main.py`)
+
+Context-aware GNN for fraud detection with extremely limited labels (AAAI 2025), implemented from the paper (no official code): each neighbour is decomposed into normal / abnormal subspace components (supervised contrastive loss), mixed by a per-neighbour denoising attention, and aggregated with `1/sqrt(d_i)` scaling; unlabeled gray centres get consistency training on subspace-permuted neighbour messages. Mini-batch training; same 40/20/40 protocol by default, or the paper's 10/30/60 split with 1 or 5 labeled frauds (`--n_black`).
+
+```powershell
+cd algorithms/CGNN
+python CGNN_main.py --dataset yelpchi --gpu 0
+python CGNN_main.py --dataset amazon --gpu 0
+python CGNN_main.py --dataset elliptic --gpu 0
+python CGNN_main.py --dataset tfinance --gpu 0
+python CGNN_main.py --dataset tsocial --gpu 0
+python CGNN_main.py --dataset comp --gpu 0
+python CGNN_main.py --dataset amazon --n_black 5 --gpu 0   # paper few-label split
+cd ../..
+```
+
+#### H2IDE (`algorithms/H2IDE/H2IDE_main.py`)
+
+Homophily and Heterophily Identification with Disentangled Embeddings (IEEE TKDE 2025), implemented from the paper (no official code): `K` factor embeddings per node, factor-level edge homophily trained with a hinge loss on labeled edges, signed per-relation per-factor attention, factor-aware relation mixing, and a CLUB mutual-information penalty between factors. Mini-batch training with two-hop neighbour sampling and exact layer-wise inference; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/H2IDE
+python H2IDE_main.py --dataset yelpchi --gpu 0
+python H2IDE_main.py --dataset amazon --gpu 0
+python H2IDE_main.py --dataset elliptic --gpu 0
+python H2IDE_main.py --dataset tfinance --gpu 0
+python H2IDE_main.py --dataset tsocial --gpu 0
+python H2IDE_main.py --dataset comp --gpu 0
+cd ../..
+```
 
 #### HACUD (`algorithms/HACUD/main.py`)
 
@@ -714,8 +871,6 @@ cd ../..
 
 ---
 
-
-
 ### Quick reference — which script for which dataset?
 
 
@@ -731,8 +886,6 @@ cd ../..
 
 ---
 
-
-
 ## Evaluation & Saved Outputs
 
 Every training entry point (`main.py`, `*_main.py`, GraphSAGE/GraphConsis `supervised_train.py`, HACUD `main.py`) now:
@@ -740,8 +893,6 @@ Every training entry point (`main.py`, `*_main.py`, GraphSAGE/GraphConsis `super
 1. **Splits data with stratified train/test** (preserves class balance for imbalanced fraud labels).
 2. **Evaluates train and test** after the last epoch.
 3. **Writes unified artifacts** under `results/` (unless `--no_save`).
-
-
 
 ### Unified run layout
 
@@ -770,8 +921,6 @@ Examples:
 - `results/Player2Vec/dblp/seed123/checkpoint.pt`
 - `results/GraphSage/YelpChi/seed123/predictions.npz`
 - `results/HACUD/dblp/seed123/split.npz`
-
-
 
 ### Stratified split defaults
 
@@ -830,8 +979,6 @@ python supervised_train.py `
 cd ../..
 ```
 
-
-
 ### Inspect saved evaluation
 
 ```powershell
@@ -845,8 +992,6 @@ python evaluate.py --run_dir results/GAS/example/seed123 --verify
 python -c "import json; print(json.load(open('results/GAS/example/seed123/metrics.json', encoding='utf-8')))"
 python -c "import numpy as np; s=np.load('results/GAS/example/seed123/split.npz'); print(s.files, s['train_idx'].shape, s['test_idx'].shape)"
 ```
-
-
 
 ### Load a checkpoint and re-evaluate
 
@@ -869,11 +1014,7 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 
 ---
 
-
-
 ## Training Arguments
-
-
 
 ### Shared args (`main.py` and most `*_main.py`)
 
@@ -891,8 +1032,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--no_save`       | flag                                   | Do not write metrics / predictions / checkpoint |
 
 
-
-
 ### Player2Vec / FdGars (GCN)
 
 
@@ -901,8 +1040,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--hidden1`    | `16`    | GCN hidden units (layer 1) |
 | `--hidden2`    | `16`    | GCN hidden units (FdGars)  |
 | `--gcn_output` | `4`     | Embedding / encoding size  |
-
-
 
 
 ### GAS
@@ -915,8 +1052,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--encoding2` | `64`    | Attention hidden size           |
 | `--encoding3` | `64`    | User/item aggregator output     |
 | `--encoding4` | `64`    | Comment-graph encoding (legacy) |
-
-
 
 
 ### SemiGNN
@@ -932,8 +1067,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--lamtha`         | `0.5`   | L2 weight multiplier            |
 
 
-
-
 ### GEM
 
 
@@ -941,8 +1074,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | -------- | ------- | ---------------------- |
 | `--hop`  | `1`     | Number of GEM layers   |
 | `--k`    | `16`    | Encoding / hidden size |
-
-
 
 
 ### GeniePath
@@ -954,8 +1085,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--lstm_hidden` | `128`   | Depth LSTM size            |
 | `--heads`       | `1`     | GAT heads                  |
 | `--layer_num`   | `4`     | Number of GeniePath layers |
-
-
 
 
 ### GraphSAGE (`algorithms/GraphSage/supervised_train.py`)
@@ -978,26 +1107,18 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--no_save`                   | flag                      | Skip writing eval outputs            |
 
 
-
-
 ### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
-Paper architecture (context embeddings, consistency sampling, relation attention) except the four toolbox knobs: `--train_ratio 0.4`, `--epochs 10`, `--batch_size 512`, Adam `--learning_rate 0.01`.
+Same as GraphSAGE, plus:
 
 
-| Argument                      | Default                     | Description                                |
-| ----------------------------- | --------------------------- | ------------------------------------------ |
-| `--dim_1` / `--dim_2`         | `200` / `100`               | Hidden sizes (paper §4.1.3)                |
-| `--samples_1` / `--samples_2` | `10` / `5`                  | Neighbors sampled per layer                |
-| `--context_dim`               | `128`                       | Context embedding dim (`0` disables)       |
-| `--consis_eps`                | `0.0`                       | Consistency threshold ε                    |
-| `--max_neighbors`             | `256`                       | Cap on neighbors scored per node           |
-| `--train_ratio`               | `0.4`                       | Train fraction of labeled nodes (max 0.4)  |
-| `--early_stop`                | `25`                        | Valid-AUC patience (`0` trains all epochs) |
-| `--save_dir`                  | `../../results/GraphConsis` | Eval output directory                      |
-| `--no_save`                   | flag                        | Skip writing eval outputs                  |
-
-
+| Argument        | Default                     | Description                                |
+| --------------- | --------------------------- | ------------------------------------------ |
+| `--context_dim` | `0`                         | Context embedding dim (`0` disables)       |
+| `--train_perc`  | `1.`                        | Fraction of the 80% train split to use     |
+| `--early_stop`  | `25`                        | Valid-AUC patience (`0` trains all epochs) |
+| `--save_dir`    | `../../results/GraphConsis` | Eval output directory                      |
+| `--no_save`     | flag                        | Skip writing eval outputs                  |
 
 
 ### BWGNN (`algorithms/BWGNN/BWGNN_main.py`)
@@ -1013,8 +1134,6 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | `--early_stop`    | `25`       | Valid-AUC patience (`0` trains all epochs)                             |
 | `--learning_rate` | `0.01`     | Learning rate                                                          |
 | `--gpu`           | `0`        | Device                                                                 |
-
-
 
 
 ### SplitGNN (`algorithms/SplitGNN/SplitGNN_main.py`)
@@ -1033,8 +1152,6 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | `--gpu`           | `0`         | Device                                                                 |
 
 
-
-
 ### DGA-GNN (`algorithms/DGAGNN/DGAGNN_main.py`)
 
 
@@ -1049,8 +1166,6 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | `--epochs`        | `200`      | Max epochs (early stop on valid AUC)                                |
 | `--learning_rate` | `0.01`     | Learning rate                                                       |
 | `--gpu`           | `0`        | Device                                                              |
-
-
 
 
 ### GLHN (`algorithms/GLHN/GLHN_main.py`)
@@ -1070,8 +1185,6 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | `--gpu`                 | `0`       | Device                                                              |
 
 
-
-
 ### BSL (`algorithms/BSL/BSL_main.py`)
 
 
@@ -1088,6 +1201,286 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | `--gpu`              | `0`           | Device                                                              |
 
 
+### CARE-GNN (`algorithms/CAREGNN/CAREGNN_main.py`)
+
+
+| Argument           | Default   | Description                                                         |
+| ------------------ | --------- | ------------------------------------------------------------------- |
+| `--dataset`        | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp` |
+| `--train_ratio`    | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)            |
+| `--inter`          | `GNN`     | Inter-relation aggregator: `GNN` / `Mean` / `Weight` / `Att`        |
+| `--emb_size`       | `64`      | Embedding size                                                      |
+| `--batch_size`     | dataset   | 1024 (YelpChi, Elliptic, T-Finance, T-Social) / 256 (Amazon, comp)  |
+| `--lambda_1`       | `2.0`     | Weight of the label-predictor (similarity) loss                     |
+| `--weight_decay`   | `1e-3`    | L2 weight (`lambda_2`)                                              |
+| `--step_size`      | `0.02`    | RL threshold step                                                   |
+| `--under_sample`   | `1.0`     | Negatives drawn per positive each epoch                             |
+| `--no_rl`          | off       | Freeze thresholds at `--init_threshold` (0.5)                       |
+| `--epochs`         | `100`     | Max epochs (early stop on valid AUC)                                |
+| `--learning_rate`  | `0.01`    | Learning rate                                                       |
+| `--gpu`            | `0`       | Device                                                              |
+
+
+### H2-FDetector (`algorithms/H2FDetector/H2FDetector_main.py`)
+
+
+| Argument          | Default   | Description                                                          |
+| ----------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`   | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--intra_dim`     | `8`       | Hidden size per head                                                 |
+| `--head`          | `4`       | Attention heads                                                      |
+| `--n_layer`       | `2`       | H2-FDetector layers                                                  |
+| `--dropout`       | `0.1`     | Dropout (edge scorer, relation concat, between layers)               |
+| `--gamma1`        | dataset   | Edge hinge-loss weight: 1.2 (YelpChi and others) / 0.4 (Amazon)      |
+| `--gamma2`        | dataset   | Prototype-loss weight: 2.0 (YelpChi and others) / 1.4 (Amazon)       |
+| `--feat_norm`     | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
+| `--epochs`        | `1000`    | Max epochs, early stop on valid AUC (T-Social: 200)                  |
+| `--learning_rate` | `0.1`     | Learning rate                                                        |
+| `--weight_decay`  | `5e-5`    | L2 weight                                                            |
+| `--gpu`           | `0`       | Device                                                               |
+
+
+### FRAUDRE (`algorithms/FRAUDRE/FRAUDRE_main.py`)
+
+
+| Argument            | Default   | Description                                                          |
+| ------------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`     | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--embed_dim`       | `64`      | Ego-feature embedding size `d` (final embedding `7d` for 2 layers)   |
+| `--n_layers`        | `2`       | Fraud-aware convolution layers                                       |
+| `--hidden_dim`      | `64`      | Classifier hidden size                                               |
+| `--max_neighbors`   | `10`      | Fixed neighbour sample per node and relation (0 keeps all)           |
+| `--batch_size`      | dataset   | 1024 (YelpChi, Elliptic, T-Finance, T-Social) / 256 (Amazon, comp)   |
+| `--learning_rate`   | dataset   | 0.001 (YelpChi) / 0.1 (Amazon) / 0.01 (others)                       |
+| `--weight_decay`    | `1e-4`    | L2 weight                                                            |
+| `--feat_norm`       | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
+| `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
+| `--gpu`             | `0`       | Device                                                               |
+
+
+### PC-GNN (`algorithms/PCGNN/PCGNN_main.py`)
+
+
+| Argument            | Default   | Description                                                          |
+| ------------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`     | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--emb_size`        | `64`      | Embedding size                                                       |
+| `--rho`             | `0.5`     | Oversampled fraud neighbours per fraud centre (fraction of kept)     |
+| `--alpha`           | `2.0`     | Label-predictor loss weight                                          |
+| `--threshold`       | `0.5`     | Fraction of neighbours kept per relation                             |
+| `--thres`           | dataset   | Decision threshold on the fraud probability: 0.4 (Amazon) / 0.5      |
+| `--batch_size`      | dataset   | 1024 (YelpChi, Elliptic, T-Finance, T-Social) / 256 (Amazon, comp)   |
+| `--learning_rate`   | dataset   | 0.01 (YelpChi and large graphs) / 0.005 (Amazon, comp)               |
+| `--weight_decay`    | dataset   | 1e-3 (YelpChi and large graphs) / 5e-4 (Amazon, comp)                |
+| `--feat_norm`       | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
+| `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
+| `--gpu`             | `0`       | Device                                                               |
+
+
+### SparseGAD (`algorithms/SparseGAD/SparseGAD_main.py`)
+
+
+| Argument             | Default   | Description                                                          |
+| -------------------- | --------- | -------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`  |
+| `--train_ratio`      | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)             |
+| `--hidden`           | dataset   | 32 (YelpChi and others) / 16 (Amazon)                                |
+| `--nlayers`          | `2`       | GPR propagation layers                                               |
+| `--dropout`          | dataset   | Feature dropout: 0.1 (YelpChi and others) / 0.2 (Amazon)             |
+| `--dropout_adj`      | dataset   | Edge-weight dropout: 0.25 (YelpChi and others) / 0.1 (Amazon)        |
+| `--k`                | `10`      | Neighbours per node in the kNN graph update                          |
+| `--update_adj_epoch` | dataset   | kNN graph update interval: 200 (T-Social: 0 = off)                   |
+| `--feat_norm`        | dataset   | `minmax` (YelpChi) / `row` (Amazon) / `standard` (others) / `none`   |
+| `--epochs`           | `1000`    | Max epochs, early stop on valid AUC with patience 200 (T-Social: 300 / 50) |
+| `--learning_rate`    | `0.01`    | Learning rate                                                        |
+| `--weight_decay`     | `5e-4`    | L2 weight                                                            |
+| `--gpu`              | `0`       | Device                                                               |
+
+
+### AMNet (`algorithms/AMNet/AMNet_main.py`)
+
+
+| Argument          | Default    | Description                                                                 |
+| ----------------- | ---------- | --------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi`  | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`         |
+| `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (valid/test fixed 20/40)                    |
+| `--relation`      | dataset    | `rur` (YelpChi) / `all` = union of relations (others)                       |
+| `--hidden`        | dataset    | 64 (YelpChi, Amazon, FDCompCN) / 128 (Elliptic, T-Finance) / 32 (T-Social)  |
+| `--order`         | dataset    | Bernstein order M: 5 / 4 (Elliptic) / 7 (T-Finance)                         |
+| `--n_filters`     | `2`        | Number of Bernstein filters K                                               |
+| `--beta`          | dataset    | Marginal loss weight: 1.0 / 0.5 (Elliptic)                                  |
+| `--learning_rate` | dataset    | MLP / attention lr: `5e-4` / `1e-4` (Elliptic)                              |
+| `--lr_filter`     | `5e-2`     | Filter coefficient lr (no weight decay)                                     |
+| `--weight_decay`  | `1e-5`     | L2 weight of non-filter parameters                                          |
+| `--dropout`       | `0.3`      | Dropout before the classifier                                               |
+| `--feat_norm`     | `standard` | `row` / `minmax` / `standard` / `none`                                      |
+| `--loss_weight`   | `none`     | `none` (reference) / `balanced` CE class weights                            |
+| `--select_metric` | `auroc`    | Validation metric for checkpointing / early stopping (`auprc` = reference) |
+| `--epochs`        | `2000`     | Max epochs, early stop with patience 200 (T-Social: 500 / 50)               |
+| `--gpu`           | `0`        | Device                                                                      |
+
+
+### GHRN (`algorithms/GHRN/GHRN_main.py`)
+
+
+| Argument          | Default   | Description                                                                         |
+| ----------------- | --------- | ----------------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                 |
+| `--train_ratio`   | `0.4`     | Train fraction of labeled nodes (valid/test fixed 20/40)                            |
+| `--homo`          | `1`       | `1`: BWGNN on the union graph; `0`: per-relation BWGNN                              |
+| `--hid_dim`       | dataset   | 64 / 10 (T-Social)                                                                  |
+| `--order`         | dataset   | Beta wavelet order: 2 / 5 (T-Social)                                                |
+| `--del_ratio`     | dataset   | Fraction of edges deleted: 0.1 (YelpChi) / 0.015 (others); `0` = plain BWGNN        |
+| `--adj_type`      | `sym`     | Indicator normalisation: `sym` / `rw`                                               |
+| `--self_loop`     | dataset   | Self-loops on the union graph: 1 (YelpChi, Amazon, FDCompCN) / 0 (others)           |
+| `--feat_norm`     | dataset   | `none` (YelpChi, Amazon, T-Finance, T-Social) / `standard` (Elliptic, FDCompCN)     |
+| `--epochs`        | `100`     | Max epochs per stage, early stop on valid AUC (patience 25)                         |
+| `--learning_rate` | `0.01`    | Learning rate                                                                       |
+| `--weight_decay`  | `0.0`     | L2 weight                                                                           |
+| `--gpu`           | `0`       | Device                                                                              |
+
+
+### GGCN (`algorithms/GGCN/GGCN_main.py`)
+
+
+| Argument          | Default    | Description                                                                   |
+| ----------------- | ---------- | ----------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi`  | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`           |
+| `--train_ratio`   | `0.4`      | Train fraction of labeled nodes (valid/test fixed 20/40)                      |
+| `--relation`      | `all`      | Relation to use (`all` = union of relations)                                  |
+| `--nlayers`       | `2`        | GGCN layers (>= 2)                                                            |
+| `--hidden`        | `32`       | Hidden size                                                                   |
+| `--dropout`       | `0.5`      | Dropout                                                                       |
+| `--decay_rate`    | `1.0`      | Decay rate of the residual weights                                            |
+| `--exponent`      | `3.0`      | Exponent of the residual decay                                                |
+| `--no_sign` / `--no_degree` / `--no_decay` | off | Disable signed messages / degree correction / decaying aggregation |
+| `--feat_norm`     | `standard` | `row` (reference) / `minmax` / `standard` / `none`                            |
+| `--loss_weight`   | `none`     | `none` (reference) / `balanced` CE class weights                              |
+| `--epochs`        | `1500`     | Max epochs, early stop on valid AUC with patience 100 (T-Social: 500 / 50)    |
+| `--learning_rate` | `0.01`     | Learning rate                                                                 |
+| `--weight_decay`  | `4e-3`     | L2 weight                                                                     |
+| `--gpu`           | `0`        | Device                                                                        |
+
+
+### TAM (`algorithms/TAM/TAM_main.py`)
+
+
+| Argument          | Default   | Description                                                                         |
+| ----------------- | --------- | ----------------------------------------------------------------------------------- |
+| `--dataset`       | `yelpchi` | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                 |
+| `--train_ratio`   | `0.4`     | Train fraction of labeled nodes; only sets the anomaly-rate estimate for the threshold (unsupervised) |
+| `--relation`      | `all`     | Relation to use (`all` = union of relations)                                        |
+| `--embedding_dim` | `128`     | LAMNet embedding size                                                               |
+| `--cutting`       | auto      | Truncations K (union graph `7`, single relation `4`)                                |
+| `--n_tree`        | auto      | Truncation sequences T (union graph `1`, single relation `3`)                       |
+| `--minmax_loss`   | auto      | Min-max normalise the affinity in the loss (union graph `1`, single relation `0`)   |
+| `--lamda`         | `0`       | Weight of the non-neighbour similarity regulariser                                 |
+| `--feat_norm`     | per dataset | `row` (YelpChi / Amazon, reference) / `minmax` / `standard` (Elliptic / FDCompCN) / `none` (T-Finance / T-Social) |
+| `--epochs`        | `500`     | Epochs per LAMNet (no early stopping)                                               |
+| `--learning_rate` | `1e-5`    | Learning rate                                                                       |
+| `--weight_decay`  | `0`       | L2 weight                                                                           |
+| `--gpu`           | `0`       | Device                                                                              |
+
+
+### GDN (`algorithms/GDN/GDN_main.py`)
+
+
+| Argument               | Default     | Description                                                                 |
+| ---------------------- | ----------- | --------------------------------------------------------------------------- |
+| `--dataset`            | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`         |
+| `--train_ratio`        | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                    |
+| `--emb_size`           | `64`        | Embedding size                                                              |
+| `--topk`               | per dataset | Anomaly feature dimensions (`10`; T-Finance / T-Social `3`)                 |
+| `--beta`               | `0.1`       | Weight of the two feature constraints                                       |
+| `--add_constraint`     | `1`         | `0` trains the backbone only                                                |
+| `--thres`              | `0.2`       | Decision threshold on the fraud probability                                 |
+| `--batch_size`         | `1024`      | Mini-batch size                                                             |
+| `--learning_rate`      | `1e-3`      | Network learning rate                                                       |
+| `--weight_decay`       | `1e-3`      | Network L2 weight                                                           |
+| `--feat_learning_rate` | `1e-5`      | Learning rate of the trainable feature table                                |
+| `--feat_weight_decay`  | `0.1`       | L2 weight of the trainable feature table                                    |
+| `--feat_norm`          | per dataset | `none` (YelpChi) / `row` (Amazon) / `standard` (others)                     |
+| `--epochs`             | `100`       | Max epochs, early stop on valid AUC with patience 20 (T-Social: 50 / 10)    |
+| `--gpu`                | `0`         | Device                                                                      |
+
+
+### ImGSL (`algorithms/ImGSL/ImGSL_main.py`)
+
+
+| Argument             | Default     | Description                                                                         |
+| -------------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                 |
+| `--train_ratio`      | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                            |
+| `--emb_size`         | `64`        | Embedding size                                                                      |
+| `--beta`             | `0.5`       | Weight of the refined input graph versus the learned graph (`1` = no learned graph) |
+| `--epsilon`          | per dataset | Sparsity threshold of the learned node-anchor graph (Amazon `0.5`, others `0`)      |
+| `--tau_minus`        | `0.2`       | Edge pruning threshold on label-predictor similarity                                |
+| `--remove_hetero`    | `0`         | `1` = drop edges between train nodes with different labels (paper Eq. 9)            |
+| `--oversample_ratio` | `0`         | Fraud oversampling `k_r = ratio * avg fraud degree` (paper `0.5`)                   |
+| `--alpha`            | `2`         | Label-predictor loss weight                                                         |
+| `--num_anchors`      | `512`       | Anchors of the node-anchor graph                                                    |
+| `--heads`            | `4`         | Heads of the weighted cosine                                                        |
+| `--max_iter` / `--delta` | `3` / `1e-2` | Maximum structure-learning iterations / dynamic stopping threshold           |
+| `--no_sampler`       | off         | Uniform node sampling instead of the class-balanced sampler                         |
+| `--thres`            | `0.5`       | Decision threshold on the fraud probability                                         |
+| `--batch_size`       | per dataset | Amazon / FDCompCN `256`, others `1024`                                              |
+| `--learning_rate`    | `0.01`      | Learning rate                                                                       |
+| `--weight_decay`     | `1e-3`      | L2 weight                                                                           |
+| `--feat_norm`        | `standard`  | `row` / `standard` / `none`                                                         |
+| `--epochs`           | `150`       | Max epochs, early stop on valid AUC with patience 30 (T-Social: 50 / 10)            |
+| `--gpu`              | `0`         | Device                                                                              |
+
+
+### CGNN (`algorithms/CGNN/CGNN_main.py`)
+
+
+| Argument            | Default     | Description                                                                                       |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                               |
+| `--train_ratio`     | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40; ignored with `--n_black`)                |
+| `--n_black`         | `0`         | `1` / `5` = paper split: 10/30/60, that many labeled frauds plus `eta`-times as many normals      |
+| `--emb_size`        | `64`        | Embedding size                                                                                    |
+| `--lam`             | `1`         | Weight of the category semantic decomposition loss (`0` = w/o CSD)                                |
+| `--beta`            | `1`         | Weight of the consistency loss on gray samples (`0` = w/o CL)                                     |
+| `--tau`             | per mode    | Contrastive temperature: paper `0.01` (T-Finance `0.8`) with `--n_black`, else `0.5` (T-Finance `0.8`) |
+| `--csd_nodes`       | `256`       | Max distinct neighbours per step whose components enter the contrastive loss                     |
+| `--batch_size`      | per mode    | Labeled (and gray) centres per step: `16` with `--n_black`, else `256` (T-Social `1024`)          |
+| `--thres`           | `0.5`       | Decision threshold on the fraud probability                                                       |
+| `--learning_rate`   | `0.01`      | Learning rate                                                                                     |
+| `--weight_decay`    | `1e-4`      | L2 weight                                                                                         |
+| `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                       |
+| `--epochs`          | `100`       | Max epochs, early stop on valid AUC with patience 25 (T-Social: 30 / 10)                          |
+| `--gpu`             | `0`         | Device                                                                                            |
+
+
+### H2IDE (`algorithms/H2IDE/H2IDE_main.py`)
+
+
+| Argument             | Default     | Description                                                                                  |
+| -------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `--dataset`          | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                          |
+| `--train_ratio`      | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                                     |
+| `--n_factors`        | per dataset | Latent factors `K` (YelpChi `12`, others `8`)                                                |
+| `--factor_dim`       | `8`         | Embedding size per factor                                                                    |
+| `--tau`              | `0.5`       | Temperature of the cosine proximity (not given in the paper)                                 |
+| `--alpha1`           | per dataset | Identification hinge-loss weight (Amazon / FDCompCN `0.8`, others `1.2`)                     |
+| `--alpha2`           | per dataset | MI independence-loss weight (YelpChi `0.001`, others `0.01`)                                 |
+| `--alpha3`           | `1e-4`      | Explicit squared-L2 weight                                                                   |
+| `--mi_beta`          | `1`         | Weight of the variational log-likelihood fitted by the CLUB estimators                       |
+| `--mi_hidden`        | `16`        | Hidden size of the CLUB networks                                                             |
+| `--residual`         | `0`         | `1` = add the centre factor embedding to its aggregated message                              |
+| `--dropout`          | `0.1`       | Dropout on features and before the MLP                                                       |
+| `--fanouts`          | `25 10`     | Training neighbours per relation at hop 1 / hop 2 (`0` = all); evaluation is exact           |
+| `--batch_size`       | per dataset | YelpChi `256`, others `1024` (balanced, under-sampled normals)                               |
+| `--thres`            | `0.5`       | Decision threshold on the fraud probability                                                  |
+| `--learning_rate`    | `0.005`     | Learning rate (also used by the CLUB estimators)                                             |
+| `--weight_decay`     | `5e-5`      | Adam weight decay                                                                            |
+| `--feat_norm`        | `standard`  | `row` / `standard` / `none`                                                                  |
+| `--epochs`           | `500`       | Max epochs, early stop on valid AUC with patience 100 (T-Social: 50 / 10)                    |
+| `--gpu`              | `0`         | Device                                                                                       |
 
 
 ### HACUD (`algorithms/HACUD/main.py`)
@@ -1109,8 +1502,6 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 
 ---
 
-
-
 ## Implemented Models
 
 
@@ -1130,25 +1521,47 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | **DGA-GNN**     | [DGA-GNN: Dynamic Grouping Aggregation GNN for Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29067)                                                                  | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/dgagnn.txt)      |
 | **GLHN**        | [Graph Local Homophily Network for Anomaly Detection](https://doi.org/10.1145/3627673.3679785)                                                                                           | CIKM 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/glhn.txt)        |
 | **BSL**         | [Barely Supervised Learning for Graph-Based Fraud Detection](https://ojs.aaai.org/index.php/AAAI/article/view/29593)                                                                     | AAAI 2024  | [BibTex](https://github.com/safe-graph/DGFraud/blob/master/reference/bsl.txt)         |
-
-
+| **CARE-GNN**    | [Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters](https://arxiv.org/pdf/2008.08692.pdf)                                                              | CIKM 2020  | [BibTex](https://github.com/YingtongDou/CARE-GNN#citation)                            |
+| **H2-FDetector** | [H2-FDetector: A GNN-based Fraud Detector with Homophilic and Heterophilic Connections](https://dl.acm.org/doi/10.1145/3485447.3512195)                                               | WWW 2022   | [BibTex](https://github.com/shifengzhao/H2-FDetector#citation)                        |
+| **FRAUDRE**     | [FRAUDRE: Fraud Detection Dual-Resistant to Graph Inconsistency and Imbalance](https://ieeexplore.ieee.org/document/9679178)                                                             | ICDM 2021  | [BibTex](algorithms/FRAUDRE/README.md#paper)                                          |
+| **PC-GNN**      | [Pick and Choose: A GNN-based Imbalanced Learning Approach for Fraud Detection](https://dl.acm.org/doi/abs/10.1145/3442381.3449989)                                                     | WWW 2021   | [BibTex](https://github.com/PonderLY/PC-GNN#citation)                                 |
+| **SparseGAD**   | [Beyond Homophily: Robust Graph Anomaly Detection via Neural Sparsification](https://www.ijcai.org/proceedings/2023/234)                                                                 | IJCAI 2023 | [BibTex](algorithms/SparseGAD/README.md#paper)                                        |
+| **AMNet**       | [Can Abnormality be Detected by Graph Neural Networks?](https://www.ijcai.org/proceedings/2022/270)                                                                                      | IJCAI 2022 | [BibTex](algorithms/AMNet/README.md#paper)                                            |
+| **GHRN**        | [Addressing Heterophily in Graph Anomaly Detection: A Perspective of Graph Spectrum](https://dl.acm.org/doi/10.1145/3543507.3583268)                                                     | WWW 2023   | [BibTex](algorithms/GHRN/README.md#paper)                                             |
+| **GGCN**        | [Two Sides of the Same Coin: Heterophily and Oversmoothing in Graph Convolutional Neural Networks](https://arxiv.org/abs/2102.06462)                                                    | ICDM 2022  | [BibTex](algorithms/GGCN/README.md#paper)                                             |
+| **TAM**         | [Truncated Affinity Maximization: One-class Homophily Modeling for Graph Anomaly Detection](https://arxiv.org/abs/2306.00006)                                                           | NeurIPS 2023 | [BibTex](algorithms/TAM/README.md#paper)                                            |
+| **GDN**         | [Alleviating Structural Distribution Shift in Graph Anomaly Detection](https://doi.org/10.1145/3539597.3570377)                                                                          | WSDM 2023  | [BibTex](algorithms/GDN/README.md#paper)                                              |
+| **ImGSL**       | [Improving fraud detection via imbalanced graph structure learning](https://doi.org/10.1007/s10994-023-06464-0)                                                                          | Machine Learning 2024 | [BibTex](algorithms/ImGSL/README.md#paper)                                 |
+| **CGNN**        | [Context-aware Graph Neural Network for Graph-based Fraud Detection with Extremely Limited Labels](https://doi.org/10.1609/aaai.v39i11.33319)                                            | AAAI 2025  | [BibTex](algorithms/CGNN/README.md#paper)                                             |
+| **H2IDE**       | [Nowhere to H²IDE: Fraud Detection From Multi-Relation Graphs via Disentangled Homophily and Heterophily Identification](https://doi.org/10.1109/TKDE.2024.3523107)                 | TKDE 2025  | [BibTex](algorithms/H2IDE/README.md#paper)                                            |
 
 
 ### Backend notes (PyTorch Geometric)
 
 - **Player2Vec / FdGars:** multi-layer GCN (`GCNConv`) (+ meta-path attention for Player2Vec)
 - **GeniePath:** GAT breadth (`GATConv`) + LSTM depth
-- **GraphSAGE / GraphConsis:** GraphSAGE uses `SAGEConv`; GraphConsis follows the paper (context embeddings, consistency sampling, relation attention)
+- **GraphSAGE / GraphConsis:** `SAGEConv` (GraphConsis adds multi-relation attention)
 - **BWGNN:** beta-wavelet polynomial filters (`PolyConv`) with `torch.sparse`
 - **SplitGNN:** signed multi-relation beta-wavelet filters (`PolyConv` + `RelationAware`) with `torch.sparse`
 - **DGA-GNN:** decision-tree binning + grouped mean aggregation + attention (no DGL)
 - **GLHN:** local-homophily prediction + `I-L` / `L` mix + InfoNCE (no DGL)
 - **BSL:** GCN + NA/AA/NN disentanglement + weak/strong unlabeled augmentations (no DGL)
+- **CARE-GNN:** label-aware top-p neighbour filtering (vectorised over CSR) + RL thresholds + threshold-weighted relation sum (no DGL)
+- **H2-FDetector:** relation-aware edge-sign scorer + signed multi-head attention (gather / segment softmax) + prototype loss (no DGL)
+- **FRAUDRE:** ego MLP + mean / difference aggregation over fixed sampled neighbours (vectorised K-hop gathers) + softmax relation weights + prior-adjusted CE (no DGL)
+- **PC-GNN:** degree / class-size node picking + label-aware top-p neighbour choosing with vectorised minority over-sampling + per-relation SAGE-style aggregation (no DGL)
+- **SparseGAD:** GPR GCN (gather / `index_add_`) + cosine edge attention from an extractor MLP + chunked brute-force kNN graph augmentation (no DGL)
+- **AMNet:** Bernstein polynomial filters on the scaled Laplacian (shared `torch.sparse` CSR powers) + per-node filter attention + marginal loss (no DGL / PyG)
+- **GHRN:** BWGNN (shared `torch.sparse` CSR Laplacian powers, union or per-relation) + graph-Laplacian edge indicator on predictions + edge pruning and retraining (no DGL)
+- **GGCN:** signed cosine-similarity messages + learnable degree correction + decaying residuals, on edge lists with custom-backward CSR kernels (sampled dot products and value-weighted sparse products; no dense `N x N`, no DGL / PyG)
+- **TAM:** unsupervised; two-layer GCN encoders (`torch.sparse` CSR) maximising local affinity `z_i . (A z)_i / d_i` on the original graph, trained on graphs truncated by vectorised per-node distance thresholds (edge masks + reverse-edge indices; no dense `N x N`, no DGL / PyG)
+- **GDN:** per-relation mean aggregation (CSR gathers + `index_add_`) on a trainable feature table + gradient-based feature split + prototype / neighbourhood KL constraints with vectorised non-neighbour sampling (no DGL / PyG)
+- **ImGSL:** degree / class-frequency sampler per relation + label-predictor edge pruning (CSR gathers) + K-head weighted-cosine node-anchor graphs with two-step anchor message passing and dynamic stopping (no dense `N x N`, no DGL / PyG)
+- **CGNN:** per-neighbour normal / abnormal subspace projections + supervised contrastive loss + two-way denoising attention, aggregated over CSR gathers with `index_add_`; consistency training permutes subspace components within each gray centre's neighbourhood (segment-wise random sort; no DGL / PyG)
+- **H2IDE:** factor-wise embeddings + cosine edge homophily with prototype-weighted factor mixing (hinge loss on labeled edges) + signed per-relation per-factor attention (segment softmax over CSR gathers) + CLUB pairwise MI penalty; two-hop GraphSAGE-style sampling for training and chunked exact layer-wise inference (no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
-
-
 
 ## Model Comparison
 
@@ -1169,11 +1582,22 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 | **DGA-GNN**     | Financial Fraud | Heterogeneous | Grouped GraphSAGE   |
 | **GLHN**        | Graph Anomaly   | Heterogeneous | Homophily mix GNN   |
 | **BSL**         | Graph Anomaly   | Homogeneous   | Disentangled GCN    |
+| **CARE-GNN**    | Opinion Fraud   | Heterogeneous | GraphSAGE + RL      |
+| **H2-FDetector** | Opinion Fraud  | Heterogeneous | Signed GAT          |
+| **FRAUDRE**     | Opinion Fraud   | Heterogeneous | GraphSAGE (mean + difference) |
+| **PC-GNN**      | Opinion Fraud   | Heterogeneous | GraphSAGE + resampling |
+| **SparseGAD**   | Graph Anomaly   | Homogeneous   | GPR-GNN + edge sparsification |
+| **AMNet**       | Graph Anomaly   | Homogeneous   | Bernstein spectral GNN |
+| **GHRN**        | Graph Anomaly   | Homogeneous   | Beta wavelet GNN + edge pruning |
+| **GGCN**        | Heterophilous Graphs | Homogeneous | Signed GCN + degree correction |
+| **TAM**         | Graph Anomaly (unsupervised) | Homogeneous | GCN + affinity maximisation + edge truncation |
+| **GDN**         | Opinion Fraud   | Heterogeneous | RGCN + feature decomposition |
+| **ImGSL**       | Opinion Fraud   | Heterogeneous | GCN + graph structure learning |
+| **CGNN**        | Graph Fraud (few labels) | Homogeneous | Subspace-decomposed GNN + consistency training |
+| **H2IDE**       | Opinion / Financial Fraud | Heterogeneous | Disentangled signed GAT + MI independence |
 
 
 ---
-
-
 
 ## Repository Structure
 
@@ -1188,8 +1612,6 @@ Paper architecture (context embeddings, consistency sampling, relation attention
 - `results/` — evaluation outputs after training (`metrics.json`, `predictions.npz`, `*.pt`)
 
 ---
-
-
 
 ## TODO List
 
@@ -1231,14 +1653,13 @@ python supervised_train.py `
   --sigmoid `
   --epochs 50 `
   --learning_rate 0.01 `
-  --dim_1 200 `
-  --dim_2 100 `
+  --dim_1 128 `
   --batch_size 512 `
   --dropout 0.0 `
   --weight_decay 0.0 `
-  --context_dim 128 `
-  --samples_1 10 `
-  --samples_2 5 `
+  --context_dim 0 `
+  --samples_1 25 `
+  --samples_2 10 `
   --seed 123 `
   --gpu 0
 ```
@@ -1252,14 +1673,13 @@ python supervised_train.py `
   --sigmoid `
   --epochs 50 `
   --learning_rate 0.01 `
-  --dim_1 200 `
-  --dim_2 100 `
+  --dim_1 128 `
   --batch_size 512 `
   --dropout 0.0 `
   --weight_decay 0.0 `
-  --context_dim 128 `
-  --samples_1 10 `
-  --samples_2 5 `
+  --context_dim 0 `
+  --samples_1 25 `
+  --samples_2 10 `
   --seed 123 `
   --gpu 0
 ```
@@ -1291,14 +1711,13 @@ python supervised_train.py `
   --sigmoid `
   --epochs 50 `
   --learning_rate 0.01 `
-  --dim_1 200 `
-  --dim_2 100 `
+  --dim_1 128 `
   --batch_size 16 `
   --dropout 0.0 `
   --weight_decay 0.0 `
-  --context_dim 128 `
-  --samples_1 10 `
-  --samples_2 5 `
+  --context_dim 0 `
+  --samples_1 25 `
+  --samples_2 10 `
   --seed 123 `
   --gpu 0
 
@@ -1312,8 +1731,6 @@ cd algorithms/BWGNN
 python BWGNN_main.py --dataset tfinance --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
 python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 --epochs 100 --gpu 0
 ```
-
-
 
 ## T-Social is multi-GB; keep `--hid_dim 10`. BWGNN also takes `--dataset amazon` or `yelpchi`.
 
@@ -1410,8 +1827,6 @@ python BWGNN_main.py --dataset elliptic --train_ratio 0.2 --gpu 0
 python SplitGNN_main.py --dataset comp --train_ratio 0.4 --gpu 0
 ```
 
-
-
 ## `comp.dgl` file masks are no longer used unless you pass `--use_file_masks` on SplitGNN. Amazon still splits only labeled nodes (`index >= 3305`); the 40/20/40 ratios apply to that labeled set.
 
 **DGA-GNN** (Duan et al., AAAI 2024) is in the toolbox as a DGL-free port of `reference/DGA-GNN-main`.
@@ -1486,17 +1901,19 @@ Work from the **repo root** with the venv activated and datasets already in `dat
 
 ---
 
-
-
 ### GraphConsis
 
-Uses `--file_name`, not `--dataset`. Keep `--sigmoid`. Default epochs in the script is `10` (short). Paper knobs are the script defaults (`dim_1=200`, `dim_2=100`, `samples_1=10`, `samples_2=5`, `context_dim=128`). Toolbox knobs stay `--train_ratio 0.4`, `--batch_size 512`, Adam `--learning_rate 0.01`.
+Uses `--file_name`, not `--dataset`. Keep `--sigmoid`. Default epochs in the script is `10` (short). Other knobs stay at script defaults (`dim_1=128`, `batch_size=512`, `samples_1=25`, `samples_2=10`).
 
 ```bash
 cd algorithms/GraphConsis
 
-python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
-python supervised_train.py --train_prefix ../../dataset/ --file_name Amazon.mat --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 100000
+uv run python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 100000
+uv run python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 100000
+uv run python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 100000
+uv run python supervised_train.py --train_prefix ../../dataset/ --file_name Amazon.mat --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
 python supervised_train.py --train_prefix ../../dataset/ --file_name elliptic --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python supervised_train.py --train_prefix ../../dataset/ --file_name tfinance --sigmoid --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --sigmoid --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 100000
@@ -1509,8 +1926,6 @@ On T-Social, add `--batch_size 256` if you hit memory issues (that is the usual 
 
 ---
 
-
-
 ### BWGNN
 
 Dataset defaults: `hid_dim=64`, `order=2`, `epochs=100`. T-Social is the exception — use `hid_dim=10` and `order=5` or a 5.8M-node run with 64/2 will not fit.
@@ -1518,19 +1933,37 @@ Dataset defaults: `hid_dim=64`, `order=2`, `epochs=100`. T-Social is the excepti
 ```bash
 cd algorithms/BWGNN
 
-python BWGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python BWGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python BWGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python BWGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python BWGNN_main.py --dataset tsocial --hid_dim 10 --order 5 --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python BWGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python BWGNN_main.py --dataset yelpchi --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset yelpchi --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset yelpchi --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset yelpchi --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset yelpchi --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset amazon --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset amazon --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset amazon --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset amazon --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset amazon --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset elliptic --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset elliptic --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset elliptic --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset elliptic --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset elliptic --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset tfinance --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset tfinance --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset tfinance --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset tfinance --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset tfinance --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+python BWGNN_main.py --dataset tsocial --hid_dim 10 --order 5 --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500 --batch_size 10000
+uv run python BWGNN_main.py --dataset comp --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset comp --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset comp --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset comp --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
+uv run python BWGNN_main.py --dataset comp --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 500
 
 cd ../..
 ```
 
 ---
-
-
 
 ### SplitGNN
 
@@ -1539,19 +1972,37 @@ Default learning rate is Adam `0.01` on every dataset. Other defaults (`C`, `K`,
 ```bash
 cd algorithms/SplitGNN
 
-python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python SplitGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset yelpchi --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --gpu 0 --seed 123 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 1234 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 12345 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 123456 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset amazon --gpu 0 --seed 1234567 --learning_rate 0.1 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset elliptic --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tfinance --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 1234567 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 123456 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 12345 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 1234 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
+uv run python SplitGNN_main.py --dataset comp --gpu 0 --seed 123 --learning_rate 0.001 --train_ratio 0.2 --epochs 500
 
 cd ../..
 ```
 
 ---
-
-
 
 ### DGA-GNN
 
@@ -1572,8 +2023,6 @@ cd ../..
 
 ---
 
-
-
 ### GLHN
 
 Per-dataset defaults: hidden 32 (10 on T-Social), 2 layers, `τ=0.1`, hetero on Yelp/Amazon/comp, homo on elliptic/tfinance/tsocial.
@@ -1592,8 +2041,6 @@ cd ../..
 ```
 
 ---
-
-
 
 ### BSL
 
@@ -1614,7 +2061,253 @@ cd ../..
 
 ---
 
+### CARE-GNN
 
+Paper defaults: embedding 64, `lambda_1=2`, weight decay `1e-3`, RL step `0.02`, batch 1024 (256 on Amazon / comp).
+
+```bash
+cd algorithms/CAREGNN
+
+python CAREGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CAREGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### H2-FDetector
+
+Paper defaults: full-batch, `lr=0.1` (set `LR=0.1` or drop the flag), weight decay `5e-5`, `intra_dim=8`, 4 heads, 2 layers; loss weights per dataset (`gamma1` / `gamma2`).
+
+```bash
+cd algorithms/H2FDetector
+
+python H2FDetector_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2FDetector_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### FRAUDRE
+
+Reference defaults: embedding 64, weight decay `1e-4`, 2 convolution layers, 10 sampled neighbours. Learning rate differs per dataset (0.001 YelpChi, 0.1 Amazon, 0.01 others); drop `--learning_rate` to use these.
+
+```bash
+cd algorithms/FRAUDRE
+
+python FRAUDRE_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python FRAUDRE_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### PC-GNN
+
+Reference defaults: embedding 64, `rho=0.5`, `alpha=2`, kept-neighbour fraction 0.5. Learning rate / weight decay / decision threshold differ per dataset (0.01 / 1e-3 / 0.5 on YelpChi, 0.005 / 5e-4 / 0.4 on Amazon); drop `--learning_rate` to use these.
+
+```bash
+cd algorithms/PCGNN
+
+python PCGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python PCGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### SparseGAD
+
+Reference defaults: full-batch, lr `0.01`, weight decay `5e-4`, 2 layers, kNN `k=10` added every 200 epochs; hidden size and dropouts per dataset.
+
+```bash
+cd algorithms/SparseGAD
+
+python SparseGAD_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python SparseGAD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### AMNet
+
+Reference defaults: full-batch, 2 Bernstein filters with filter lr `5e-2`, up to 2000 epochs with patience 200; order, hidden size, lr and marginal-loss weight per dataset. `--learning_rate` is omitted so the per-dataset rates apply.
+
+```bash
+cd algorithms/AMNet
+
+python AMNet_main.py --dataset yelpchi --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset amazon --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset elliptic --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset tfinance --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset tsocial --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python AMNet_main.py --dataset comp --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### GHRN
+
+Reference defaults: BWGNN hidden 64 / order 2 (T-Social 10 / 5), lr `0.01`, 100 epochs per stage, class-weighted CE; deleting ratio 0.1 on YelpChi and 0.015 elsewhere. Each run trains BWGNN, prunes, and retrains.
+
+```bash
+cd algorithms/GHRN
+
+python GHRN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GHRN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GHRN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GHRN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GHRN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GHRN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### GGCN
+
+Reference defaults: full-batch, lr `0.01`, 2 layers, hidden 32, dropout 0.5, weight decay `4e-3`, decaying residuals (`decay_rate 1.0`, `exponent 3.0`), up to 1500 epochs with patience 100.
+
+```bash
+cd algorithms/GGCN
+
+python GGCN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GGCN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### TAM
+
+Reference defaults: unsupervised, embedding 128, lr `1e-5` (kept, so `$LR` is not passed), 500 epochs per LAMNet. Union graphs use K=7 truncations, T=1 and the min-max loss; single relations use K=4 and T=3. The seed changes initialisation and truncation thresholds; `$TRAIN_RATIO` only affects the decision threshold.
+
+```bash
+cd algorithms/TAM
+
+python TAM_main.py --dataset yelpchi --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset amazon --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset elliptic --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset tfinance --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset tsocial --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+python TAM_main.py --dataset comp --gpu 0 --seed $SEED --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### GDN
+
+Reference defaults: emb 64, batch 1024, Adam lr `1e-3` / L2 `1e-3` (network) and lr `1e-5` / L2 `0.1` (feature table), Beta 0.1, topk 10 (3 on 10-feature datasets), threshold 0.2; up to 100 epochs with patience 20.
+
+```bash
+cd algorithms/GDN
+
+python GDN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GDN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GDN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GDN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GDN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python GDN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### ImGSL
+
+Paper defaults: lr `0.01`, weight decay `1e-3`, `beta 0.5`, `tau- 0.2`, `alpha 2`, 512 anchors; batch 256 / `epsilon 0.5` on Amazon, 1024 / `0` elsewhere; up to 150 epochs with patience 30. Label-dependent Eq. 9 edits off (see `algorithms/ImGSL/README.md`).
+
+```bash
+cd algorithms/ImGSL
+
+python ImGSL_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python ImGSL_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### CGNN
+
+Paper defaults: lr `0.01`, weight decay `1e-4`, embedding 64, `lambda = beta = 1`; up to 100 epochs with patience 25. The toolbox split uses batch 256 and `tau 0.5` (T-Finance `0.8`); `--n_black 1` / `5` switches to the paper's few-label split with batch 16 and the paper temperatures (see `algorithms/CGNN/README.md`).
+
+```bash
+cd algorithms/CGNN
+
+python CGNN_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CGNN_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --n_black 5   # paper few-label split
+
+cd ../..
+```
+
+---
+
+### H2IDE
+
+Paper defaults: lr `0.005`, weight decay `5e-5`, one layer, factor dimension 8, dropout 0.1, `alpha3 1e-4`; YelpChi `K 12`, `alpha1 1.2`, `alpha2 0.001`, batch 256; Amazon `K 8`, `alpha1 0.8`, `alpha2 0.01`, batch 1024; others `K 8`, `alpha1 1.2`, `alpha2 0.01`, batch 1024; up to 500 epochs with patience 100 (see `algorithms/H2IDE/README.md`).
+
+```bash
+cd algorithms/H2IDE
+
+python H2IDE_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python H2IDE_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
 
 ### How to read validation
 

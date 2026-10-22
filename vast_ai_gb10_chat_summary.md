@@ -26,22 +26,26 @@ Because of this, a local Windows `.venv` should **not** be copied and reused on 
 
 ---
 
+
+
 ## 2. Recommended Vast.ai GB10 configuration
 
 Suggested starting configuration:
 
-| Setting | Recommendation |
-|---|---|
-| GPU | NVIDIA GB10 |
-| GPU count | 1 |
-| CPU architecture | ARM64 / `aarch64` |
-| Instance type | On-demand while developing |
-| Reliability | Preferably 98–99%+ |
-| Verified host | Yes |
-| Disk | Around 150 GB initially; increase if needed |
-| SSH | Enabled |
-| Direct SSH | Prefer if available |
-| Template | Vast recommended PyTorch / ARM64-compatible image |
+
+| Setting          | Recommendation                                    |
+| ---------------- | ------------------------------------------------- |
+| GPU              | NVIDIA GB10                                       |
+| GPU count        | 1                                                 |
+| CPU architecture | ARM64 / `aarch64`                                 |
+| Instance type    | On-demand while developing                        |
+| Reliability      | Preferably 98–99%+                                |
+| Verified host    | Yes                                               |
+| Disk             | Around 150 GB initially; increase if needed       |
+| SSH              | Enabled                                           |
+| Direct SSH       | Prefer if available                               |
+| Template         | Vast recommended PyTorch / ARM64-compatible image |
+
 
 Important points:
 
@@ -51,6 +55,8 @@ Important points:
 - Avoid manually replacing NVIDIA drivers or CUDA before first checking the preinstalled environment.
 
 ---
+
+
 
 ## 3. Installing the Vast.ai CLI locally
 
@@ -74,6 +80,8 @@ uv tool install vastai
 
 ---
 
+
+
 ## 4. Vast.ai API key
 
 Create an API key from the Vast.ai account dashboard and configure it locally:
@@ -91,6 +99,8 @@ vastai show user
 Do not commit the API key into the repository.
 
 ---
+
+
 
 ## 5. Creating the SSH directory and key on Windows
 
@@ -146,6 +156,8 @@ id_ed25519
 ```
 
 ---
+
+
 
 ## 6. Problem: Vast stored the public-key file path instead of the key
 
@@ -205,6 +217,8 @@ vastai show ssh-keys
 
 ---
 
+
+
 ## 7. Connecting to the Vast.ai GB10
 
 Example Vast proxy SSH connection:
@@ -234,6 +248,8 @@ Notes:
 
 ---
 
+
+
 ## 8. First-time SSH host fingerprint prompt
 
 The first connection may show:
@@ -256,6 +272,8 @@ C:\Users\decis\.ssh\known_hosts
 ```
 
 ---
+
+
 
 ## 9. `Permission denied (publickey)`
 
@@ -302,6 +320,8 @@ Server accepts key:
 
 ---
 
+
+
 ## 10. Verifying the GB10 after login
 
 Once connected:
@@ -340,6 +360,8 @@ python -c "import torch; print(torch.version.cuda)"
 
 ---
 
+
+
 ## 11. Vast.ai instance guide
 
 The instance displayed this notice:
@@ -361,6 +383,8 @@ cat ./AGENTS.md
 ```
 
 ---
+
+
 
 ## 12. Using `uv` on the GB10
 
@@ -428,6 +452,8 @@ Reasons:
 
 ---
 
+
+
 ## 13. ARM64 dependency warning
 
 `uv` itself is not the main concern; individual dependencies are.
@@ -460,6 +486,8 @@ If this happens, check ARM64/aarch64 support before changing Python versions.
 
 ---
 
+
+
 ## 14. Directly copying the repo without GitHub
 
 GitHub is **not required**.
@@ -479,6 +507,8 @@ Remote target:
 ```
 
 ---
+
+
 
 ## 15. Direct SCP method
 
@@ -518,6 +548,8 @@ automatically.
 
 ---
 
+
+
 ## 16. SCP destination error
 
 The error:
@@ -538,6 +570,8 @@ Possible fixes:
 mkdir -p /workspace/Graph-Fraud-WK
 ```
 
+
+
 ### Option B: preferred
 
 From the parent local directory:
@@ -549,6 +583,8 @@ scp -i "$HOME\.ssh\id_ed25519" -P PORT -r Graph-Fraud-WK root@HOST:/workspace/
 This avoids needing to pre-create the repo directory.
 
 ---
+
+
 
 ## 17. `mkdir` over SSH appeared to hang
 
@@ -568,13 +604,13 @@ If it hangs for several minutes:
 Ctrl + C
 ```
 
-2. Connect interactively:
+1. Connect interactively:
 
 ```powershell
 ssh -i "$HOME\.ssh\id_ed25519" -p PORT root@HOST
 ```
 
-3. Then run:
+1. Then run:
 
 ```bash
 cd /workspace
@@ -585,6 +621,8 @@ ls -la
 Alternatively, avoid the manual `mkdir` entirely by SCPing the whole folder to `/workspace/`.
 
 ---
+
+
 
 ## 18. Recommended archive method instead of raw `scp -r`
 
@@ -637,6 +675,8 @@ uv sync
 
 ---
 
+
+
 ## 19. Files/folders that should generally not be uploaded
 
 Avoid copying:
@@ -670,7 +710,9 @@ __pycache__/
 
 ---
 
-## 20. Removing uploaded files from Vast.ai
+
+
+## 20. Removing uploaded files from [Vast.ai](http://Vast.ai)
 
 Connect to the instance:
 
@@ -713,6 +755,8 @@ is destructive and cannot normally be undone.
 
 ---
 
+
+
 ## 21. Disconnecting from the GB10
 
 To disconnect the SSH session:
@@ -732,6 +776,8 @@ This only disconnects the terminal.
 It does **not** stop the Vast.ai instance.
 
 ---
+
+
 
 ## 22. Stopping versus destroying an instance
 
@@ -760,6 +806,8 @@ Important distinction:
 - Destroy: instance/data are removed permanently.
 
 ---
+
+
 
 ## 23. Important marketplace behavior after stopping a GB10
 
@@ -796,6 +844,8 @@ exit
 rather than stopping the instance.
 
 ---
+
+
 
 ## 24. `Connection refused`
 
@@ -837,6 +887,8 @@ will remain valid forever.
 
 ---
 
+
+
 ## 25. `loading` status
 
 `loading` means the instance is not yet ready for normal work.
@@ -865,6 +917,8 @@ running
 
 ---
 
+
+
 ## 26. `scheduling` status
 
 `scheduling` means Vast is trying to obtain/allocate GPU resources for the instance.
@@ -880,6 +934,8 @@ Practical options:
 3. Copy data from the old stopped instance to a new running instance if supported.
 
 ---
+
+
 
 ## 27. `kex_exchange_identification: Connection reset`
 
@@ -937,6 +993,8 @@ running
 
 ---
 
+
+
 ## 28. Testing a Vast SSH port from PowerShell
 
 Use:
@@ -964,6 +1022,8 @@ TcpTestSucceeded : False
 the host/port is not currently reachable.
 
 ---
+
+
 
 ## 29. Prefer Direct SSH if Vast offers it
 
@@ -998,6 +1058,8 @@ scp -i "$HOME\.ssh\id_ed25519" -P DIRECT_PORT FILE root@DIRECT_IP:/workspace/
 
 ---
 
+
+
 ## 30. GitHub was not required
 
 At one point, a Git command behaved unexpectedly and appeared to route through Vast SSH settings.
@@ -1022,7 +1084,11 @@ No GitHub authentication is needed.
 
 ---
 
+
+
 ## 31. Recommended end-to-end workflow
+
+
 
 ### Local Windows
 
@@ -1054,11 +1120,54 @@ From:
 C:\Users\decis\Documents\GitHub
 ```
 
+```
+scp -i "$HOME\.ssh\id_ed25519" -P 22726 Graph-Fraud-WK.tar.gz root@217.154.252.24:/workspace/
+
+scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P 21827 Graph-Fraud-WK.tar.gz root@162.142.111.64:/workspace/
+```
+
+On the **Vast instance** (SSH session), from the folder you want to pack:
+
+```bash
+cd /path/to/that/folder   # or stay where you are
+tar --exclude='.venv' --exclude='__pycache__' --exclude='.git' -czf /workspace/SplitGNN.tar.gz .
+```
+
+Or if you want the folder name inside the archive:
+
+```bash
+cd ..
+tar --exclude='MyFolder/.venv' --exclude='MyFolder/__pycache__' --exclude='MyFolder/.git' -czf /workspace/MyFolder.tar.gz MyFolder
+```
+
+On your **local PC** (PowerShell), download it with the current Vast public IP and SSH port from the Connect UI:
+
+```powershell
+scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P 36803 root@81.183.231.113:/workspace/SplitGNN.tar.gz "$HOME\Downloads\"
+scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P 22596 root@217.154.252.24:/workspace/SplitGNN.tar.gz "$HOME\Downloads\"
+```
+
+Example with values like before:
+
+```powershell
+scp -i "$env:USERPROFILE\.ssh\id_ed25519" -P 21827 root@162.142.111.64:/workspace/BWGNN.tar.gz "$HOME\Downloads\"
+```
+
+Then unzip locally:
+
+```powershell
+tar -xzf "$HOME\Downloads\my-folder.tar.gz" -C "$HOME\Downloads\my-folder"
+```
+
+If `scp` asks for a password, key auth failed — use the same `-i` key that works for `ssh` to that instance.
+
 run:
 
 ```powershell
 tar --exclude=Graph-Fraud-WK/.venv --exclude=Graph-Fraud-WK/venv --exclude=Graph-Fraud-WK/__pycache__ --exclude=Graph-Fraud-WK/.pytest_cache --exclude=Graph-Fraud-WK/.git -czf Graph-Fraud-WK.tar.gz Graph-Fraud-WK
 ```
+
+
 
 ### Upload
 
@@ -1066,11 +1175,15 @@ tar --exclude=Graph-Fraud-WK/.venv --exclude=Graph-Fraud-WK/venv --exclude=Graph
 scp -i "$HOME\.ssh\id_ed25519" -P PORT Graph-Fraud-WK.tar.gz root@HOST:/workspace/
 ```
 
+
+
 ### Connect
 
 ```powershell
 ssh -4 -i "$HOME\.ssh\id_ed25519" -o IdentitiesOnly=yes -p PORT root@HOST
 ```
+
+
 
 ### On the GB10
 
@@ -1129,6 +1242,8 @@ or whichever project entrypoint is appropriate.
 
 ---
 
+
+
 ## 32. Recommended mental model
 
 ```text
@@ -1152,6 +1267,8 @@ NVIDIA GB10
 
 ---
 
+
+
 ## 33. Most important lessons from the troubleshooting
 
 1. **GB10 is ARM64**, so do not reuse your Windows/x86 `.venv`.
@@ -1172,7 +1289,11 @@ NVIDIA GB10
 
 ---
 
+
+
 ## 34. Useful command reference
+
+
 
 ### Local PowerShell
 
@@ -1199,6 +1320,8 @@ scp -i "$HOME\.ssh\id_ed25519" -P PORT Graph-Fraud-WK.tar.gz root@HOST:/workspac
 ```powershell
 Test-NetConnection HOST -Port PORT
 ```
+
+
 
 ### Remote GB10
 
@@ -1244,6 +1367,8 @@ exit
 
 ---
 
+
+
 ## 35. Suggested workflow for this specific repository
 
 For `Graph-Fraud-WK`, the cleanest workflow discussed is:
@@ -1265,3 +1390,4 @@ For `Graph-Fraud-WK`, the cleanest workflow discussed is:
 14. Use exit to disconnect if you intend to reconnect soon.
 15. Destroy the instance only when all needed data has been copied elsewhere.
 ```
+

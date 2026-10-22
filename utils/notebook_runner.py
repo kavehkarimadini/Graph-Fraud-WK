@@ -384,17 +384,14 @@ def _graphconsis_defaults(dataset, root):
         epochs=50 if ds != 'tsocial' else 20,
         dropout=0.0,
         weight_decay=0.0,
-        dim_1=200,
-        dim_2=100,
+        dim_1=128,
         batch_size=512 if ds != 'tsocial' else 256,
         sigmoid=True,
-        context_dim=128,
+        context_dim=0,
         gpu='0',
         seed=123,
-        samples_1=10,
-        samples_2=5,
-        consis_eps=0.0,
-        max_neighbors=256,
+        samples_1=25,
+        samples_2=10,
         save_dir=str(notebook_runs_dir(root)),
         test_size=test_size,
         train_ratio=0.4,
@@ -669,6 +666,735 @@ def run_bsl(dataset='yelpchi', download=True, **overrides):
             epochs=params['epochs'], learning_rate=params['learning_rate'],
             hid_dim=params['hid_dim'])
     print('BSL', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _caregnn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.CAREGNN.CAREGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        inter='GNN',
+        emb_size=64,
+        batch_size=paper['batch_size'],
+        eval_batch_size=4096,
+        lambda_1=2.0,
+        weight_decay=1e-3,
+        step_size=0.02,
+        init_threshold=0.5,
+        under_sample=1.0,
+        no_rl=False,
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=0.01,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_caregnn(dataset='yelpchi', download=True, **overrides):
+    """Train CARE-GNN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.CAREGNN.CAREGNN_main import train
+
+    params = _caregnn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+    print('CARE-GNN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _h2fdetector_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.H2FDetector.H2FDetector_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        intra_dim=8,
+        head=4,
+        n_layer=2,
+        dropout=0.1,
+        gamma1=paper['gamma1'],
+        gamma2=paper['gamma2'],
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=0.1,
+        weight_decay=5e-5,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_h2fdetector(dataset='yelpchi', download=True, **overrides):
+    """Train H2-FDetector, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.H2FDetector.H2FDetector_main import train
+
+    params = _h2fdetector_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['intra_dim'] * params['head'])
+    print('H2-FDetector', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _fraudre_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.FRAUDRE.FRAUDRE_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        embed_dim=64,
+        n_layers=2,
+        hidden_dim=64,
+        max_neighbors=10,
+        batch_size=paper['batch_size'],
+        eval_batch_size=4096,
+        weight_decay=1e-4,
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=paper['learning_rate'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_fraudre(dataset='yelpchi', download=True, **overrides):
+    """Train FRAUDRE, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.FRAUDRE.FRAUDRE_main import train
+
+    params = _fraudre_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['embed_dim'])
+    print('FRAUDRE', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _pcgnn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.PCGNN.PCGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        emb_size=64,
+        rho=0.5,
+        alpha=2.0,
+        threshold=0.5,
+        thres=paper['thres'],
+        batch_size=paper['batch_size'],
+        eval_batch_size=1024,
+        weight_decay=paper['weight_decay'],
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=paper['learning_rate'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_pcgnn(dataset='yelpchi', download=True, **overrides):
+    """Train PC-GNN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.PCGNN.PCGNN_main import train
+
+    params = _pcgnn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+    print('PC-GNN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _sparsegad_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.SparseGAD.SparseGAD_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        hidden=paper['hidden'],
+        nlayers=2,
+        dropout=paper['dropout'],
+        dropout_adj=paper['dropout_adj'],
+        k=10,
+        update_adj_epoch=paper['update_adj_epoch'],
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=0.01,
+        weight_decay=5e-4,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_sparsegad(dataset='yelpchi', download=True, **overrides):
+    """Train SparseGAD, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.SparseGAD.SparseGAD_main import train
+
+    params = _sparsegad_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hidden'])
+    print('SparseGAD', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _amnet_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.AMNet.AMNet_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        relation=paper['relation'],
+        hidden=paper['hidden'],
+        order=paper['order'],
+        n_filters=2,
+        dropout=0.3,
+        beta=paper['beta'],
+        feat_norm='standard',
+        loss_weight='none',
+        select_metric='auroc',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=paper['learning_rate'],
+        lr_filter=5e-2,
+        weight_decay=paper['weight_decay'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_amnet(dataset='yelpchi', download=True, **overrides):
+    """Train AMNet, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.AMNet.AMNet_main import train
+
+    params = _amnet_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hidden'])
+    print('AMNet', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _ghrn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.GHRN.GHRN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        homo=1,
+        hid_dim=paper['hid_dim'],
+        order=paper['order'],
+        del_ratio=paper['del_ratio'],
+        adj_type='sym',
+        self_loop=paper['self_loop'],
+        feat_norm=paper['feat_norm'],
+        epochs=100,
+        early_stop=25,
+        learning_rate=0.01,
+        weight_decay=0.0,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_ghrn(dataset='yelpchi', download=True, **overrides):
+    """Train GHRN (BWGNN, edge pruning, BWGNN), save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.GHRN.GHRN_main import train
+
+    params = _ghrn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hid_dim'])
+    print('GHRN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _ggcn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.GGCN.GGCN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        relation='all',
+        nlayers=paper['nlayers'],
+        hidden=paper['hidden'],
+        dropout=paper['dropout'],
+        decay_rate=1.0,
+        exponent=3.0,
+        no_degree=False,
+        no_sign=False,
+        no_decay=False,
+        use_bn=False,
+        use_ln=False,
+        scale_init=0.5,
+        deg_intercept_init=0.5,
+        feat_norm='standard',
+        loss_weight='none',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        learning_rate=0.01,
+        weight_decay=paper['weight_decay'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+        dataset_str=ds,
+    )
+
+
+def run_ggcn(dataset='yelpchi', download=True, **overrides):
+    """Train GGCN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.GGCN.GGCN_main import train
+
+    params = _ggcn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hidden'])
+    print('GGCN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _tam_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        relation='all',
+        embedding_dim=128,
+        cutting=None,
+        n_tree=None,
+        lamda=0.0,
+        minmax_loss=None,
+        feat_norm=None,
+        epochs=500,
+        learning_rate=1e-5,
+        weight_decay=0.0,
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_tam(dataset='yelpchi', download=True, **overrides):
+    """Train TAM (unsupervised), save artifacts, zip the run folder, download on Colab.
+
+    ``cutting`` / ``n_tree`` / ``minmax_loss`` / ``feat_norm`` left as ``None`` follow
+    the per-dataset and graph-type defaults of ``TAM_main``.
+    """
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.TAM.TAM_main import train
+
+    params = _tam_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['embedding_dim'])
+    print('TAM', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _gdn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.GDN.GDN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        emb_size=64,
+        topk=paper['topk'],
+        beta=0.1,
+        add_constraint=1,
+        thres=0.2,
+        batch_size=1024,
+        eval_batch_size=1024,
+        learning_rate=1e-3,
+        weight_decay=1e-3,
+        feat_learning_rate=1e-5,
+        feat_weight_decay=0.1,
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_gdn(dataset='yelpchi', download=True, **overrides):
+    """Train GDN, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.GDN.GDN_main import train
+
+    params = _gdn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+    print('GDN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _imgsl_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.ImGSL.ImGSL_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        emb_size=64,
+        beta=0.5,
+        epsilon=paper['epsilon'],
+        tau_minus=0.2,
+        oversample_ratio=0.0,
+        remove_hetero=0,
+        alpha=2.0,
+        num_anchors=512,
+        heads=4,
+        max_iter=3,
+        delta=1e-2,
+        no_sampler=False,
+        thres=0.5,
+        batch_size=paper['batch_size'],
+        eval_batch_size=1024,
+        learning_rate=0.01,
+        weight_decay=1e-3,
+        feat_norm=paper['feat_norm'],
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_imgsl(dataset='yelpchi', download=True, **overrides):
+    """Train ImGSL, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.ImGSL.ImGSL_main import train
+
+    params = _imgsl_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+    print('ImGSL', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _cgnn_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.CGNN.CGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        n_black=0,
+        emb_size=64,
+        lam=1.0,
+        beta=1.0,
+        tau=None,
+        csd_nodes=256,
+        batch_size=None,
+        eval_batch_size=2048,
+        thres=0.5,
+        learning_rate=0.01,
+        weight_decay=1e-4,
+        feat_norm='standard',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_cgnn(dataset='yelpchi', download=True, **overrides):
+    """Train CGNN, save artifacts, zip the run folder, download on Colab.
+
+    ``tau`` and ``batch_size`` left as ``None`` follow the split mode (see CGNN_main);
+    pass ``n_black=1`` or ``5`` for the paper few-label split.
+    """
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.CGNN.CGNN_main import train
+
+    params = _cgnn_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['emb_size'])
+        if params.get('n_black'):
+            params['run_tag'] += '_black{}'.format(params['n_black'])
+    print('CGNN', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _h2ide_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.H2IDE.H2IDE_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        n_factors=paper['n_factors'],
+        factor_dim=8,
+        tau=0.5,
+        alpha1=paper['alpha1'],
+        alpha2=paper['alpha2'],
+        alpha3=1e-4,
+        mi_beta=1.0,
+        mi_hidden=16,
+        residual=0,
+        dropout=0.1,
+        fanouts=[25, 10],
+        batch_size=paper['batch_size'],
+        eval_edge_budget=1 << 19,
+        thres=0.5,
+        learning_rate=0.005,
+        weight_decay=5e-5,
+        feat_norm='standard',
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_h2ide(dataset='yelpchi', download=True, **overrides):
+    """Train H2IDE, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.H2IDE.H2IDE_main import train
+
+    params = _h2ide_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['n_factors'] * params['factor_dim'])
+    print('H2IDE', params['dataset'], '->', params['save_dir'])
     metrics, out_dir = train(argparse.Namespace(**params))
     zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
