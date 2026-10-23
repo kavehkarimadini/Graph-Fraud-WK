@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, and **H2IDE**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, **H2IDE**, and **CIE-GAD**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE, CIE-GAD)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -269,6 +269,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | ImGSL       | `cd algorithms/ImGSL` then `python ImGSL_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | CGNN        | `cd algorithms/CGNN` then `python CGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`; `--n_black 1` / `5` for the paper few-label split)                         |
 | H2IDE       | `cd algorithms/H2IDE` then `python H2IDE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
+| CIE-GAD     | `cd algorithms/CIEGAD` then `python CIEGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -845,6 +846,21 @@ python H2IDE_main.py --dataset elliptic --gpu 0
 python H2IDE_main.py --dataset tfinance --gpu 0
 python H2IDE_main.py --dataset tsocial --gpu 0
 python H2IDE_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### CIE-GAD (`algorithms/CIEGAD/CIEGAD_main.py`)
+
+Correlation Information Enhanced GAD via Hypergraph Transformation (IEEE TCYB 2025), implemented from the paper (no official code): Jacobi spectral filters with node-level attention fusion (SCNAF), dual-hypergraph co-occurrence convolution (HCRE), and deep supervision. Full-batch training on the homogeneous union graph; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/CIEGAD
+python CIEGAD_main.py --dataset yelpchi --gpu 0
+python CIEGAD_main.py --dataset amazon --gpu 0
+python CIEGAD_main.py --dataset elliptic --gpu 0
+python CIEGAD_main.py --dataset tfinance --gpu 0
+python CIEGAD_main.py --dataset tsocial --gpu 0
+python CIEGAD_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
@@ -1483,6 +1499,29 @@ Same as GraphSAGE, plus:
 | `--gpu`              | `0`         | Device                                                                                       |
 
 
+### CIE-GAD (`algorithms/CIEGAD/CIEGAD_main.py`)
+
+
+| Argument            | Default     | Description                                                                                 |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                         |
+| `--train_ratio`     | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                                    |
+| `--hidden`          | `32`        | Embedding size `C`                                                                          |
+| `--order`           | per dataset | Jacobi order `K` (T-Finance `12`, others `6`)                                               |
+| `--gamma`           | `1`         | Deep-supervision weight (`0` = w/o DS)                                                      |
+| `--jacobi_a` / `--jacobi_b` | `1` / `1` | Jacobi weights (paper leaves values open; learnable by default)                       |
+| `--learn_jacobi`    | `1`         | `1` = learn `a,b` (clamped `> -1`); `0` = keep them fixed                                   |
+| `--no_scnaf`        | off         | Drop Jacobi filters (w/o SCNAF)                                                             |
+| `--no_naf`          | off         | One scalar `α_k` per filter (w/o NAF)                                                       |
+| `--no_hcre`         | off         | Classify from `Z̃` only (w/o HCRE)                                                          |
+| `--thres`           | `0.5`       | Decision threshold on the fraud probability                                                 |
+| `--learning_rate`   | `0.01`      | Adam learning rate (not reported in the paper)                                              |
+| `--weight_decay`    | `5e-5`      | Adam weight decay                                                                           |
+| `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                 |
+| `--epochs`          | `1000`      | Max epochs, early stop on valid AUC with patience 100 (T-Social: 200 / 20)                  |
+| `--gpu`             | `0`         | Device                                                                                      |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1534,6 +1573,7 @@ Same as GraphSAGE, plus:
 | **ImGSL**       | [Improving fraud detection via imbalanced graph structure learning](https://doi.org/10.1007/s10994-023-06464-0)                                                                          | Machine Learning 2024 | [BibTex](algorithms/ImGSL/README.md#paper)                                 |
 | **CGNN**        | [Context-aware Graph Neural Network for Graph-based Fraud Detection with Extremely Limited Labels](https://doi.org/10.1609/aaai.v39i11.33319)                                            | AAAI 2025  | [BibTex](algorithms/CGNN/README.md#paper)                                             |
 | **H2IDE**       | [Nowhere to H²IDE: Fraud Detection From Multi-Relation Graphs via Disentangled Homophily and Heterophily Identification](https://doi.org/10.1109/TKDE.2024.3523107)                 | TKDE 2025  | [BibTex](algorithms/H2IDE/README.md#paper)                                            |
+| **CIE-GAD**     | [Correlation Information Enhanced Graph Anomaly Detection via Hypergraph Transformation](https://doi.org/10.1109/TCYB.2025.3558941)                                                  | TCYB 2025  | [BibTex](algorithms/CIEGAD/README.md#paper)                                           |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1559,6 +1599,7 @@ Same as GraphSAGE, plus:
 - **ImGSL:** degree / class-frequency sampler per relation + label-predictor edge pruning (CSR gathers) + K-head weighted-cosine node-anchor graphs with two-step anchor message passing and dynamic stopping (no dense `N x N`, no DGL / PyG)
 - **CGNN:** per-neighbour normal / abnormal subspace projections + supervised contrastive loss + two-way denoising attention, aggregated over CSR gathers with `index_add_`; consistency training permutes subspace components within each gray centre's neighbourhood (segment-wise random sort; no DGL / PyG)
 - **H2IDE:** factor-wise embeddings + cosine edge homophily with prototype-weighted factor mixing (hinge loss on labeled edges) + signed per-relation per-factor attention (segment softmax over CSR gathers) + CLUB pairwise MI penalty; two-hop GraphSAGE-style sampling for training and chunked exact layer-wise inference (no DGL / PyG)
+- **CIE-GAD:** Jacobi spectral banks on shared CSR `A_hat` + node-level attention fusion + dual-hypergraph HCRE as `D^{-1/2}(A+D)/√2` (no dense incidence matrix) + deep supervision; full-batch (no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1595,6 +1636,7 @@ Same as GraphSAGE, plus:
 | **ImGSL**       | Opinion Fraud   | Heterogeneous | GCN + graph structure learning |
 | **CGNN**        | Graph Fraud (few labels) | Homogeneous | Subspace-decomposed GNN + consistency training |
 | **H2IDE**       | Opinion / Financial Fraud | Heterogeneous | Disentangled signed GAT + MI independence |
+| **CIE-GAD**     | Graph Anomaly   | Homogeneous   | Jacobi spectral GNN + hypergraph HCRE |
 
 
 ---
@@ -2303,6 +2345,25 @@ python H2IDE_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR
 python H2IDE_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python H2IDE_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python H2IDE_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### CIE-GAD
+
+Paper defaults: embedding 32, `γ = 1`, Adam; `K = 12` on T-Finance and `K = 6` elsewhere; up to 1000 epochs with patience 100. Learning rate / weight decay default to `0.01` / `5e-5` (not reported; see `algorithms/CIEGAD/README.md`).
+
+```bash
+cd algorithms/CIEGAD
+
+python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CIEGAD_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CIEGAD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CIEGAD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CIEGAD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python CIEGAD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```
