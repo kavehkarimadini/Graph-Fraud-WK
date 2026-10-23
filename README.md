@@ -195,9 +195,9 @@ Loaders keep **labeled** nodes only (~46.5k: 4,545 illicit / 42,019 licit), indu
 
 Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/10.1145/3583780.3615067) (SplitGNN). Place `dataset/comp.dgl` (5,317 nodes, 57-d features, 559 fraud / 10.5%). Relations: C-I-C, C-S-C, C-P-C, plus a homogeneous union.
 
-Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, **H2IDE**, and **CIE-GAD**. Loaded without importing DGL.
+Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, **H2IDE**, **CIE-GAD**, and **COFRAUD**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE, CIE-GAD)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE, CIE-GAD, COFRAUD)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -270,6 +270,7 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | CGNN        | `cd algorithms/CGNN` then `python CGNN_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`; `--n_black 1` / `5` for the paper few-label split)                         |
 | H2IDE       | `cd algorithms/H2IDE` then `python H2IDE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | CIE-GAD     | `cd algorithms/CIEGAD` then `python CIEGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
+| COFRAUD     | `cd algorithms/COFRAUD` then `python COFRAUD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 
@@ -861,6 +862,21 @@ python CIEGAD_main.py --dataset elliptic --gpu 0
 python CIEGAD_main.py --dataset tfinance --gpu 0
 python CIEGAD_main.py --dataset tsocial --gpu 0
 python CIEGAD_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### COFRAUD (`algorithms/COFRAUD/COFRAUD_main.py`)
+
+Correlation-aware fraud detection for synergistic camouflage (IJCAI 2023): intra-relation tanh frequency attention with degree-normalised residual aggregation, inter-relation crossing, and relation-semantic fusion. Full-batch multi-relation CSR; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/COFRAUD
+python COFRAUD_main.py --dataset yelpchi --gpu 0
+python COFRAUD_main.py --dataset amazon --gpu 0
+python COFRAUD_main.py --dataset elliptic --gpu 0
+python COFRAUD_main.py --dataset tfinance --gpu 0
+python COFRAUD_main.py --dataset tsocial --gpu 0
+python COFRAUD_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
@@ -1522,6 +1538,30 @@ Same as GraphSAGE, plus:
 | `--gpu`             | `0`         | Device                                                                                      |
 
 
+### COFRAUD (`algorithms/COFRAUD/COFRAUD_main.py`)
+
+
+| Argument            | Default     | Description                                                                                 |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| `--dataset`         | `yelpchi`   | `yelpchi` / `amazon` / `elliptic` / `tfinance` / `tsocial` / `comp`                         |
+| `--train_ratio`     | `0.4`       | Train fraction of labeled nodes (valid/test fixed 20/40)                                    |
+| `--hidden`          | `32`        | Per-head hidden size (paper Table 3)                                                        |
+| `--n_layers`        | `2`         | Intra/inter module layers                                                                   |
+| `--n_heads`         | `8`         | Attention heads (official; T-Social default `4`)                                            |
+| `--relation_dim`    | `16`        | Relation embedding size                                                                     |
+| `--relation_hidden` | `16`        | Relation MLP hidden size                                                                    |
+| `--dropout`         | `0.5`       | Dropout                                                                                     |
+| `--residual`        | `1`         | Eq. 5 residual with trainable `λ`                                                           |
+| `--no_inter`        | off         | Skip inter-relation crossing (w/o inter)                                                    |
+| `--no_fusion`       | off         | Mean of `V_r h'` instead of Eqs. 9–10 (w/o fusion)                                          |
+| `--thres`           | `0.5`       | Decision threshold on the fraud probability                                                 |
+| `--learning_rate`   | `0.02`      | Adam learning rate (official)                                                               |
+| `--weight_decay`    | `0`         | Adam weight decay                                                                           |
+| `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                 |
+| `--epochs`          | `500`       | Max epochs, early stop on valid AUC with patience 50 (T-Social: 200 / 20)                   |
+| `--gpu`             | `0`         | Device                                                                                      |
+
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 
@@ -1574,6 +1614,7 @@ Same as GraphSAGE, plus:
 | **CGNN**        | [Context-aware Graph Neural Network for Graph-based Fraud Detection with Extremely Limited Labels](https://doi.org/10.1609/aaai.v39i11.33319)                                            | AAAI 2025  | [BibTex](algorithms/CGNN/README.md#paper)                                             |
 | **H2IDE**       | [Nowhere to H²IDE: Fraud Detection From Multi-Relation Graphs via Disentangled Homophily and Heterophily Identification](https://doi.org/10.1109/TKDE.2024.3523107)                 | TKDE 2025  | [BibTex](algorithms/H2IDE/README.md#paper)                                            |
 | **CIE-GAD**     | [Correlation Information Enhanced Graph Anomaly Detection via Hypergraph Transformation](https://doi.org/10.1109/TCYB.2025.3558941)                                                  | TCYB 2025  | [BibTex](algorithms/CIEGAD/README.md#paper)                                           |
+| **COFRAUD**     | [Don't Ignore Alienation and Marginalization: Correlating Fraud Detection](https://doi.org/10.24963/ijcai.2023/551)                                                                  | IJCAI 2023 | [BibTex](algorithms/COFRAUD/README.md#paper)                                          |
 
 
 ### Backend notes (PyTorch Geometric)
@@ -1600,6 +1641,7 @@ Same as GraphSAGE, plus:
 - **CGNN:** per-neighbour normal / abnormal subspace projections + supervised contrastive loss + two-way denoising attention, aggregated over CSR gathers with `index_add_`; consistency training permutes subspace components within each gray centre's neighbourhood (segment-wise random sort; no DGL / PyG)
 - **H2IDE:** factor-wise embeddings + cosine edge homophily with prototype-weighted factor mixing (hinge loss on labeled edges) + signed per-relation per-factor attention (segment softmax over CSR gathers) + CLUB pairwise MI penalty; two-hop GraphSAGE-style sampling for training and chunked exact layer-wise inference (no DGL / PyG)
 - **CIE-GAD:** Jacobi spectral banks on shared CSR `A_hat` + node-level attention fusion + dual-hypergraph HCRE as `D^{-1/2}(A+D)/√2` (no dense incidence matrix) + deep supervision; full-batch (no DGL / PyG)
+- **COFRAUD:** per-relation tanh frequency attention with degree-normalised residual aggregation (CSR gathers) + inter-relation crossing + relation-semantic fusion; full-batch multi-relation (no DGL / PyG)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1637,6 +1679,7 @@ Same as GraphSAGE, plus:
 | **CGNN**        | Graph Fraud (few labels) | Homogeneous | Subspace-decomposed GNN + consistency training |
 | **H2IDE**       | Opinion / Financial Fraud | Heterogeneous | Disentangled signed GAT + MI independence |
 | **CIE-GAD**     | Graph Anomaly   | Homogeneous   | Jacobi spectral GNN + hypergraph HCRE |
+| **COFRAUD**     | Opinion Fraud   | Heterogeneous | Intra/inter relation attention + fusion |
 
 
 ---
@@ -2364,6 +2407,25 @@ python CIEGAD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $L
 python CIEGAD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python CIEGAD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 python CIEGAD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+
+cd ../..
+```
+
+---
+
+### COFRAUD
+
+Paper defaults: 2 layers, hidden 32; official script fills heads 8, relation hidden 16, dropout 0.5, Adam lr `0.02`, weight decay `0`, 500 epochs with patience 50 (see `algorithms/COFRAUD/README.md`).
+
+```bash
+cd algorithms/COFRAUD
+
+python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python COFRAUD_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python COFRAUD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python COFRAUD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python COFRAUD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+python COFRAUD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
 
 cd ../..
 ```

@@ -1458,6 +1458,64 @@ def run_cie_gad(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _cofraud_defaults(dataset, root):
+    ddir = dataset_dir(root)
+    ds = normalize_dataset(dataset)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    if ds == 'yelp':
+        ds = 'yelpchi'
+    from algorithms.COFRAUD.COFRAUD_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    return dict(
+        dataset=ds,
+        train_ratio=0.4,
+        hidden=paper['hidden'],
+        n_layers=paper['n_layers'],
+        n_heads=paper['n_heads'],
+        relation_dim=16,
+        relation_hidden=16,
+        dropout=0.5,
+        negative_slope=0.2,
+        residual=1,
+        no_inter=False,
+        no_fusion=False,
+        thres=0.5,
+        feat_norm='standard',
+        loss_weight='none',
+        learning_rate=0.02,
+        weight_decay=0.0,
+        epochs=paper['epochs'],
+        early_stop=paper['early_stop'],
+        gpu='0',
+        seed=123,
+        data_prefix=str(ddir) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+
+
+def run_cofraud(dataset='yelpchi', download=True, **overrides):
+    """Train COFRAUD, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.COFRAUD.COFRAUD_main import train
+
+    params = _cofraud_defaults(dataset, root)
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hidden'])
+    print('COFRAUD', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)
