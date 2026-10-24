@@ -284,12 +284,7 @@ def normalize_features(
     )
 
     if mode == "row":
-        if features.min() < 0:
-            raise RuntimeError(
-                "Row normalisation requested for features "
-                "containing negative values."
-            )
-
+        # Match the official CARE-GNN row normalization.
         row_sum = (
             features.sum(
                 axis=1,
@@ -298,8 +293,13 @@ def normalize_features(
             + 0.01
         )
 
+        with np.errstate(divide="ignore", invalid="ignore"):
+            row_inv = np.power(row_sum, -1.0)
+
+        row_inv[~np.isfinite(row_inv)] = 0.0
+
         return (
-            features / row_sum
+            features * row_inv
         ).astype(np.float32)
 
     if mode == "standard":
