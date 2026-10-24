@@ -322,20 +322,16 @@ def normalize_features(
 
 def feature_normalisation_for(dataset):
     """
-    Preserve the preprocessing pathway used by the current CARE-GNN port.
+    Preserve CARE-GNN official preprocessing for paper-supported datasets.
 
     YelpChi:
         row normalisation
 
     Amazon:
-        standard scaling because its loaded feature representation
-        may contain signed values.
+        row normalisation
     """
-    if dataset == "yelp":
+    if dataset in ("yelp", "amazon"):
         return "row"
-
-    if dataset == "amazon":
-        return "standard"
 
     return "standard"
 
