@@ -73,6 +73,8 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 
 ### Setup with `uv` (recommended, GPU)
 
+**RunPod (GPU pod, Google Drive zip → `gdown` → `uv sync` → COFRAUD):** see [`docs/RUNPOD.md`](docs/RUNPOD.md).
+
 `pyproject.toml` pins **CUDA PyTorch** (not the CPU wheel). From the repo root:
 
 ```powershell
@@ -201,13 +203,11 @@ Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN*
 
 All three models use the same stratified split of **labeled** nodes:
 
-
 | Split | Fraction of labeled nodes                  | Role                                         |
 | ----- | ------------------------------------------ | -------------------------------------------- |
 | Train | `--train_ratio` (default **0.4**, max 0.4) | Fit the model                                |
 | Valid | **0.20** (fixed)                           | Checkpoint selection / hyperparameter tuning |
 | Test  | **0.40** (fixed)                           | Final metrics only                           |
-
 
 If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUC checkpoint before reporting test metrics. `--early_stop` defaults to **25** (pass `0` to train every epoch).
 
@@ -240,7 +240,6 @@ Models available via `main.py`: `Player2Vec`, `FdGars`, `GEM`, `SemiGNN`, `GAS`,
 
 Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.py`):
 
-
 | Model       | Command                                                                                                                                                                                                         |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Player2Vec  | `cd algorithms/Player2Vec` then `python Player2Vec_main.py --gpu 0`                                                                                                                                             |
@@ -272,7 +271,6 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | CIE-GAD     | `cd algorithms/CIEGAD` then `python CIEGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
 | COFRAUD     | `cd algorithms/COFRAUD` then `python COFRAUD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
-
 
 ### Running on your own data
 
@@ -905,7 +903,6 @@ cd ../..
 
 ### Quick reference — which script for which dataset?
 
-
 | Goal                                | Command                                                                                                                            |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | Fast sanity check, no data download | `python main.py --model GAS --epoch_num 2 --batch_size 4 --gpu 0`                                                                  |
@@ -914,7 +911,6 @@ cd ../..
 | YelpChi + GraphSAGE                 | `cd algorithms/GraphSage` → `python supervised_train.py --train_prefix ../../dataset --file_name YelpChi.mat --sigmoid --gpu 0`    |
 | YelpChi + GraphConsis               | `cd algorithms/GraphConsis` → `python supervised_train.py --train_prefix ../../dataset/ --file_name YelpChi.mat --sigmoid --gpu 0` |
 | DBLP + HACUD                        | `cd algorithms/HACUD` → `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`              |
-
 
 ---
 
@@ -937,7 +933,6 @@ results/<Model>/<dataset>/seed<seed>/
   checkpoint.pt     # {state_dict, config, model_name}
 ```
 
-
 | File              | Contents                                                                                                                    |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `config.json`     | All training arguments (model, seed, test_size, lr, …)                                                                      |
@@ -945,7 +940,6 @@ results/<Model>/<dataset>/seed<seed>/
 | `split.npz`       | Stratified indices and labels for reproducible re-evaluation                                                                |
 | `predictions.npz` | Held-out test predictions and probabilities                                                                                 |
 | `checkpoint.pt`   | PyTorch checkpoint for loading the trained model                                                                            |
-
 
 Examples:
 
@@ -956,13 +950,11 @@ Examples:
 
 ### Stratified split defaults
 
-
 | Context                                | Default `--test_size`              |
 | -------------------------------------- | ---------------------------------- |
 | DBLP (`dataset_str=dblp`, HACUD)       | `0.4`                              |
 | Example toy graphs (GAS, GEM, SemiGNN) | `0.4` (GAS) / `0.2` (GEM, SemiGNN) |
 | YelpChi (GraphSAGE, GraphConsis)       | `0.2`                              |
-
 
 Override with `--test_size 0.3 --seed 42` on any script that supports `add_save_args`.
 
@@ -1050,7 +1042,6 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 
 ### Shared args (`main.py` and most `*_main.py`)
 
-
 | Argument          | Default                                | Description                                     |
 | ----------------- | -------------------------------------- | ----------------------------------------------- |
 | `--seed`          | `123`                                  | Random seed                                     |
@@ -1063,9 +1054,7 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--save_dir`      | `results`                              | Root folder for eval outputs (`main.py`)        |
 | `--no_save`       | flag                                   | Do not write metrics / predictions / checkpoint |
 
-
 ### Player2Vec / FdGars (GCN)
-
 
 | Argument       | Default | Description                |
 | -------------- | ------- | -------------------------- |
@@ -1073,9 +1062,7 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--hidden2`    | `16`    | GCN hidden units (FdGars)  |
 | `--gcn_output` | `4`     | Embedding / encoding size  |
 
-
 ### GAS
-
 
 | Argument      | Default | Description                     |
 | ------------- | ------- | ------------------------------- |
@@ -1085,9 +1072,7 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--encoding3` | `64`    | User/item aggregator output     |
 | `--encoding4` | `64`    | Comment-graph encoding (legacy) |
 
-
 ### SemiGNN
-
 
 | Argument           | Default | Description                     |
 | ------------------ | ------- | ------------------------------- |
@@ -1098,18 +1083,14 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--alpha`          | `0.5`   | Supervised vs graph loss weight |
 | `--lamtha`         | `0.5`   | L2 weight multiplier            |
 
-
 ### GEM
-
 
 | Argument | Default | Description            |
 | -------- | ------- | ---------------------- |
 | `--hop`  | `1`     | Number of GEM layers   |
 | `--k`    | `16`    | Encoding / hidden size |
 
-
 ### GeniePath
-
 
 | Argument        | Default | Description                |
 | --------------- | ------- | -------------------------- |
@@ -1118,9 +1099,7 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--heads`       | `1`     | GAT heads                  |
 | `--layer_num`   | `4`     | Number of GeniePath layers |
 
-
 ### GraphSAGE (`algorithms/GraphSage/supervised_train.py`)
-
 
 | Argument                      | Default                   | Description                          |
 | ----------------------------- | ------------------------- | ------------------------------------ |
@@ -1138,11 +1117,9 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 | `--save_dir`                  | `../../results/GraphSage` | Eval output directory                |
 | `--no_save`                   | flag                      | Skip writing eval outputs            |
 
-
 ### GraphConsis (`algorithms/GraphConsis/supervised_train.py`)
 
 Same as GraphSAGE, plus:
-
 
 | Argument        | Default                     | Description                                |
 | --------------- | --------------------------- | ------------------------------------------ |
@@ -1152,9 +1129,7 @@ Same as GraphSAGE, plus:
 | `--save_dir`    | `../../results/GraphConsis` | Eval output directory                      |
 | `--no_save`     | flag                        | Skip writing eval outputs                  |
 
-
 ### BWGNN (`algorithms/BWGNN/BWGNN_main.py`)
-
 
 | Argument          | Default    | Description                                                            |
 | ----------------- | ---------- | ---------------------------------------------------------------------- |
@@ -1167,9 +1142,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate` | `0.01`     | Learning rate                                                          |
 | `--gpu`           | `0`        | Device                                                                 |
 
-
 ### SplitGNN (`algorithms/SplitGNN/SplitGNN_main.py`)
-
 
 | Argument          | Default     | Description                                                            |
 | ----------------- | ----------- | ---------------------------------------------------------------------- |
@@ -1183,9 +1156,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate` | `0.01`      | Adam learning rate (same default on every dataset)                     |
 | `--gpu`           | `0`         | Device                                                                 |
 
-
 ### DGA-GNN (`algorithms/DGAGNN/DGAGNN_main.py`)
-
 
 | Argument          | Default    | Description                                                         |
 | ----------------- | ---------- | ------------------------------------------------------------------- |
@@ -1199,9 +1170,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate` | `0.01`     | Learning rate                                                       |
 | `--gpu`           | `0`        | Device                                                              |
 
-
 ### GLHN (`algorithms/GLHN/GLHN_main.py`)
-
 
 | Argument                | Default   | Description                                                         |
 | ----------------------- | --------- | ------------------------------------------------------------------- |
@@ -1216,9 +1185,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`       | `0.01`    | Learning rate                                                       |
 | `--gpu`                 | `0`       | Device                                                              |
 
-
 ### BSL (`algorithms/BSL/BSL_main.py`)
-
 
 | Argument             | Default       | Description                                                         |
 | -------------------- | ------------- | ------------------------------------------------------------------- |
@@ -1232,9 +1199,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`    | `0.01`        | Learning rate                                                       |
 | `--gpu`              | `0`           | Device                                                              |
 
-
 ### CARE-GNN (`algorithms/CAREGNN/CAREGNN_main.py`)
-
 
 | Argument           | Default   | Description                                                         |
 | ------------------ | --------- | ------------------------------------------------------------------- |
@@ -1252,9 +1217,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`  | `0.01`    | Learning rate                                                       |
 | `--gpu`            | `0`       | Device                                                              |
 
-
 ### H2-FDetector (`algorithms/H2FDetector/H2FDetector_main.py`)
-
 
 | Argument          | Default   | Description                                                          |
 | ----------------- | --------- | -------------------------------------------------------------------- |
@@ -1272,9 +1235,7 @@ Same as GraphSAGE, plus:
 | `--weight_decay`  | `5e-5`    | L2 weight                                                            |
 | `--gpu`           | `0`       | Device                                                               |
 
-
 ### FRAUDRE (`algorithms/FRAUDRE/FRAUDRE_main.py`)
-
 
 | Argument            | Default   | Description                                                          |
 | ------------------- | --------- | -------------------------------------------------------------------- |
@@ -1291,9 +1252,7 @@ Same as GraphSAGE, plus:
 | `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
 | `--gpu`             | `0`       | Device                                                               |
 
-
 ### PC-GNN (`algorithms/PCGNN/PCGNN_main.py`)
-
 
 | Argument            | Default   | Description                                                          |
 | ------------------- | --------- | -------------------------------------------------------------------- |
@@ -1311,9 +1270,7 @@ Same as GraphSAGE, plus:
 | `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
 | `--gpu`             | `0`       | Device                                                               |
 
-
 ### SparseGAD (`algorithms/SparseGAD/SparseGAD_main.py`)
-
 
 | Argument             | Default   | Description                                                          |
 | -------------------- | --------- | -------------------------------------------------------------------- |
@@ -1331,9 +1288,7 @@ Same as GraphSAGE, plus:
 | `--weight_decay`     | `5e-4`    | L2 weight                                                            |
 | `--gpu`              | `0`       | Device                                                               |
 
-
 ### AMNet (`algorithms/AMNet/AMNet_main.py`)
-
 
 | Argument          | Default    | Description                                                                 |
 | ----------------- | ---------- | --------------------------------------------------------------------------- |
@@ -1354,9 +1309,7 @@ Same as GraphSAGE, plus:
 | `--epochs`        | `2000`     | Max epochs, early stop with patience 200 (T-Social: 500 / 50)               |
 | `--gpu`           | `0`        | Device                                                                      |
 
-
 ### GHRN (`algorithms/GHRN/GHRN_main.py`)
-
 
 | Argument          | Default   | Description                                                                         |
 | ----------------- | --------- | ----------------------------------------------------------------------------------- |
@@ -1374,9 +1327,7 @@ Same as GraphSAGE, plus:
 | `--weight_decay`  | `0.0`     | L2 weight                                                                           |
 | `--gpu`           | `0`       | Device                                                                              |
 
-
 ### GGCN (`algorithms/GGCN/GGCN_main.py`)
-
 
 | Argument          | Default    | Description                                                                   |
 | ----------------- | ---------- | ----------------------------------------------------------------------------- |
@@ -1396,9 +1347,7 @@ Same as GraphSAGE, plus:
 | `--weight_decay`  | `4e-3`     | L2 weight                                                                     |
 | `--gpu`           | `0`        | Device                                                                        |
 
-
 ### TAM (`algorithms/TAM/TAM_main.py`)
-
 
 | Argument          | Default   | Description                                                                         |
 | ----------------- | --------- | ----------------------------------------------------------------------------------- |
@@ -1416,9 +1365,7 @@ Same as GraphSAGE, plus:
 | `--weight_decay`  | `0`       | L2 weight                                                                           |
 | `--gpu`           | `0`       | Device                                                                              |
 
-
 ### GDN (`algorithms/GDN/GDN_main.py`)
-
 
 | Argument               | Default     | Description                                                                 |
 | ---------------------- | ----------- | --------------------------------------------------------------------------- |
@@ -1438,9 +1385,7 @@ Same as GraphSAGE, plus:
 | `--epochs`             | `100`       | Max epochs, early stop on valid AUC with patience 20 (T-Social: 50 / 10)    |
 | `--gpu`                | `0`         | Device                                                                      |
 
-
 ### ImGSL (`algorithms/ImGSL/ImGSL_main.py`)
-
 
 | Argument             | Default     | Description                                                                         |
 | -------------------- | ----------- | ----------------------------------------------------------------------------------- |
@@ -1465,9 +1410,7 @@ Same as GraphSAGE, plus:
 | `--epochs`           | `150`       | Max epochs, early stop on valid AUC with patience 30 (T-Social: 50 / 10)            |
 | `--gpu`              | `0`         | Device                                                                              |
 
-
 ### CGNN (`algorithms/CGNN/CGNN_main.py`)
-
 
 | Argument            | Default     | Description                                                                                       |
 | ------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
@@ -1487,9 +1430,7 @@ Same as GraphSAGE, plus:
 | `--epochs`          | `100`       | Max epochs, early stop on valid AUC with patience 25 (T-Social: 30 / 10)                          |
 | `--gpu`             | `0`         | Device                                                                                            |
 
-
 ### H2IDE (`algorithms/H2IDE/H2IDE_main.py`)
-
 
 | Argument             | Default     | Description                                                                                  |
 | -------------------- | ----------- | -------------------------------------------------------------------------------------------- |
@@ -1514,9 +1455,7 @@ Same as GraphSAGE, plus:
 | `--epochs`           | `500`       | Max epochs, early stop on valid AUC with patience 100 (T-Social: 50 / 10)                    |
 | `--gpu`              | `0`         | Device                                                                                       |
 
-
 ### CIE-GAD (`algorithms/CIEGAD/CIEGAD_main.py`)
-
 
 | Argument            | Default     | Description                                                                                 |
 | ------------------- | ----------- | ------------------------------------------------------------------------------------------- |
@@ -1537,9 +1476,7 @@ Same as GraphSAGE, plus:
 | `--epochs`          | `1000`      | Max epochs, early stop on valid AUC with patience 100 (T-Social: 200 / 20)                  |
 | `--gpu`             | `0`         | Device                                                                                      |
 
-
 ### COFRAUD (`algorithms/COFRAUD/COFRAUD_main.py`)
-
 
 | Argument            | Default     | Description                                                                                 |
 | ------------------- | ----------- | ------------------------------------------------------------------------------------------- |
@@ -1561,9 +1498,7 @@ Same as GraphSAGE, plus:
 | `--epochs`          | `500`       | Max epochs, early stop on valid AUC with patience 50 (T-Social: 200 / 20)                   |
 | `--gpu`             | `0`         | Device                                                                                      |
 
-
 ### HACUD (`algorithms/HACUD/main.py`)
-
 
 | Argument       | Default       | Description               |
 | -------------- | ------------- | ------------------------- |
@@ -1578,11 +1513,9 @@ Same as GraphSAGE, plus:
 | `--adj_type`   | `norm`        | `plain` / `norm` / `mean` |
 | `--gpu`        | `0`           | Device                    |
 
-
 ---
 
 ## Implemented Models
-
 
 | Model           | Paper                                                                                                                                                                                    | Venue      | Reference                                                                             |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
@@ -1616,7 +1549,6 @@ Same as GraphSAGE, plus:
 | **CIE-GAD**     | [Correlation Information Enhanced Graph Anomaly Detection via Hypergraph Transformation](https://doi.org/10.1109/TCYB.2025.3558941)                                                  | TCYB 2025  | [BibTex](algorithms/CIEGAD/README.md#paper)                                           |
 | **COFRAUD**     | [Don't Ignore Alienation and Marginalization: Correlating Fraud Detection](https://doi.org/10.24963/ijcai.2023/551)                                                                  | IJCAI 2023 | [BibTex](algorithms/COFRAUD/README.md#paper)                                          |
 
-
 ### Backend notes (PyTorch Geometric)
 
 - **Player2Vec / FdGars:** multi-layer GCN (`GCNConv`) (+ meta-path attention for Player2Vec)
@@ -1647,7 +1579,6 @@ Same as GraphSAGE, plus:
 ---
 
 ## Model Comparison
-
 
 | Model           | Application     | Graph Type    | Base Model          |
 | --------------- | --------------- | ------------- | ------------------- |
@@ -1680,7 +1611,6 @@ Same as GraphSAGE, plus:
 | **H2IDE**       | Opinion / Financial Fraud | Heterogeneous | Disentangled signed GAT + MI independence |
 | **CIE-GAD**     | Graph Anomaly   | Homogeneous   | Jacobi spectral GNN + hypergraph HCRE |
 | **COFRAUD**     | Opinion Fraud   | Heterogeneous | Intra/inter relation attention + fusion |
-
 
 ---
 
@@ -1891,13 +1821,11 @@ SplitGNN defaults follow the paper table for FDCompCN architecture (`gamma=0.8`,
 
 GraphConsis, BWGNN, and SplitGNN now share one stratified split of **labeled** nodes:
 
-
 | Split     | Fraction                                   | Role                       |
 | --------- | ------------------------------------------ | -------------------------- |
 | **Train** | `--train_ratio` (default **40%**, max 40%) | Fit the model              |
 | **Valid** | **20%** (fixed)                            | Pick the checkpoint / tune |
 | **Test**  | **40%** (fixed)                            | Final metrics only         |
-
 
 If you set `--train_ratio 0.2`, valid and test stay 20/40. The unused half of the 40% train pool is **discarded**, not moved into valid or test. Same seed → same valid and test nodes.
 
@@ -2396,17 +2324,41 @@ cd ../..
 
 ### CIE-GAD
 
-Paper defaults: embedding 32, `γ = 1`, Adam; `K = 12` on T-Finance and `K = 6` elsewhere; up to 1000 epochs with patience 100. Learning rate / weight decay default to `0.01` / `5e-5` (not reported; see `algorithms/CIEGAD/README.md`).
+Default learning rate is Adam `0.01` on every dataset. Other defaults (embedding `32`, `γ = 1`, Jacobi order `K = 12` on T-Finance / `K = 6` elsewhere, weight decay `5e-5`, epochs, early stop) stay dataset-specific (see `algorithms/CIEGAD/README.md`).
 
 ```bash
 cd algorithms/CIEGAD
 
-python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python CIEGAD_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python CIEGAD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python CIEGAD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python CIEGAD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python CIEGAD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset yelpchi --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset amazon --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset amazon --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset amazon --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset amazon --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset amazon --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset elliptic --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset elliptic --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset elliptic --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset elliptic --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset elliptic --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset tfinance --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset tfinance --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset tfinance --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset tfinance --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset tfinance --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset tsocial --gpu 0 --seed 123 --learning_rate 0.01 --train_ratio 0.4 --epochs 200
+uv run python CIEGAD_main.py --dataset tsocial --gpu 0 --seed 1234 --learning_rate 0.01 --train_ratio 0.4 --epochs 200
+uv run python CIEGAD_main.py --dataset tsocial --gpu 0 --seed 12345 --learning_rate 0.01 --train_ratio 0.4 --epochs 200
+uv run python CIEGAD_main.py --dataset tsocial --gpu 0 --seed 123456 --learning_rate 0.01 --train_ratio 0.4 --epochs 200
+uv run python CIEGAD_main.py --dataset tsocial --gpu 0 --seed 1234567 --learning_rate 0.01 --train_ratio 0.4 --epochs 200
+uv run python CIEGAD_main.py --dataset comp --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset comp --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset comp --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset comp --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python CIEGAD_main.py --dataset comp --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
 
 cd ../..
 ```
@@ -2415,17 +2367,41 @@ cd ../..
 
 ### COFRAUD
 
-Paper defaults: 2 layers, hidden 32; official script fills heads 8, relation hidden 16, dropout 0.5, Adam lr `0.02`, weight decay `0`, 500 epochs with patience 50 (see `algorithms/COFRAUD/README.md`).
+Default learning rate is Adam `0.02` on every dataset. Other defaults (2 layers, hidden 32, 8 heads, relation hidden 16, dropout 0.5, weight decay `0`, epochs, early stop) stay dataset-specific; T-Social uses 4 heads / 200 epochs (see `algorithms/COFRAUD/README.md`).
 
 ```bash
 cd algorithms/COFRAUD
 
-python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python COFRAUD_main.py --dataset amazon --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python COFRAUD_main.py --dataset elliptic --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python COFRAUD_main.py --dataset tfinance --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python COFRAUD_main.py --dataset tsocial --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
-python COFRAUD_main.py --dataset comp --gpu 0 --seed $SEED --learning_rate $LR --train_ratio $TRAIN_RATIO
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 123 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
+uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
+uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
+uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
+uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
 
 cd ../..
 ```
