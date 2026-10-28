@@ -330,7 +330,7 @@ def feature_normalisation_for(dataset):
     Amazon:
         row normalisation
     """
-    if dataset in ("yelp", "amazon"):
+    if dataset in ("yelp", "amazon", "tfinance"):
         return "row"
 
     return "standard"
@@ -1541,6 +1541,7 @@ def parse_args():
             "yelp",
             "yelpchi",
             "amazon",
+            "tfinance",
         ],
         help=(
             "Currently restricted to CARE-GNN "
