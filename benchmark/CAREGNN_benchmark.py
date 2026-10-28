@@ -1543,6 +1543,7 @@ def parse_args():
             "amazon",
             "tfinance",
             "elliptic",
+            "fdcompcn",
         ],
         help=(
             "Currently restricted to CARE-GNN "
