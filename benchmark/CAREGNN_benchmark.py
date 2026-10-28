@@ -1542,6 +1542,7 @@ def parse_args():
             "yelpchi",
             "amazon",
             "tfinance",
+            "elliptic",
         ],
         help=(
             "Currently restricted to CARE-GNN "
