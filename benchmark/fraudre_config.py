@@ -115,12 +115,38 @@ FRAUDRE_TUNING_SPACE = {
 }
 
 
+
+FRAUDRE_TUNED_CONFIG = {
+    "tfinance": {
+        "embed_dim": 64,
+        "n_layers": 2,
+        "hidden_dim": 64,
+        "batch_size": 256,
+        "max_neighbors": 10,
+        "weight_decay": 1e-4,
+        "learning_rate": 0.01,
+        "feature_normalisation": "standard",
+        "optimizer": "Adam",
+        "source_note": (
+            "FRAUDRE T-Finance configuration selected by predefined "
+            "validation-only tuning on train_40 across seeds "
+            "{123,1234,12345,123456,1234567}. Selection metric: mean "
+            "validation AUROC. Test set untouched. Selected config: "
+            "embed_dim=64, n_layers=2, batch_size=256."
+        ),
+    },
+}
+
+
 def get_fraudre_config(dataset):
     dataset = canonical_dataset_name(dataset)
 
+    if dataset in FRAUDRE_TUNED_CONFIG:
+        return dict(FRAUDRE_TUNED_CONFIG[dataset])
+
     if dataset not in PAPER_SUPPORTED_DATASETS:
         raise ValueError(
-            "{} has no FRAUDRE paper-defined configuration yet. "
+            "{} has no FRAUDRE paper-defined or validation-selected configuration yet. "
             "Run the predefined validation-only tuning procedure first."
             .format(dataset)
         )
@@ -140,3 +166,21 @@ def get_fraudre_config(dataset):
     )
 
     return config
+
+
+# FRAUDRE_ELLIPTIC_TUNED_CONFIG
+FRAUDRE_TUNED_CONFIG["elliptic"] = {
+    "embed_dim": 32,
+    "n_layers": 1,
+    "hidden_dim": 64,
+    "batch_size": 1024,
+    "max_neighbors": 10,
+    "weight_decay": 1e-4,
+    "learning_rate": 0.01,
+    "feature_normalisation": "standard",
+    "optimizer": "Adam",
+    "source_note": (
+        "Validation-only tuning on canonical train_40 across all five seeds; "
+        "selected by mean validation AUROC; test untouched."
+    ),
+}
