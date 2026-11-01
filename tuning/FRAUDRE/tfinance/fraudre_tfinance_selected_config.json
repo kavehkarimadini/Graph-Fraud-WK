@@ -1,0 +1,48 @@
+{
+  "model": "FRAUDRE",
+  "dataset": "tfinance",
+  "purpose": "freeze_configuration_before_final_benchmark",
+  "embed_dim": 64,
+  "n_layers": 2,
+  "batch_size": 256,
+  "hidden_dim": 64,
+  "max_neighbors": 10,
+  "optimizer": "Adam",
+  "learning_rate": 0.01,
+  "weight_decay": 0.0001,
+  "feature_preprocessing": "standard_scaler_fixed_not_tuned",
+  "selection_training_split": "train_40",
+  "selection_validation_split": "val",
+  "selection_seeds": [
+    123,
+    1234,
+    12345,
+    123456,
+    1234567
+  ],
+  "selection_metric": "mean_validation_AUROC",
+  "selected_mean_validation_auroc": 0.9615321399721886,
+  "selected_std_validation_auroc": 0.006456264808991121,
+  "test_used_for_hyperparameter_selection": false,
+  "search_space": {
+    "embed_dim": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "n_layers": [
+      1,
+      2
+    ],
+    "batch_size": [
+      256,
+      1024
+    ]
+  },
+  "max_epochs": 500,
+  "early_stop": 25,
+  "early_stop_counter_reset": 1,
+  "checkpoint_metric": "validation_AUROC",
+  "checkpoint_rule": "strict_greater_than"
+}
