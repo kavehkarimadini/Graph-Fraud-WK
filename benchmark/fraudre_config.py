@@ -184,3 +184,21 @@ FRAUDRE_TUNED_CONFIG["elliptic"] = {
         "selected by mean validation AUROC; test untouched."
     ),
 }
+
+
+# FRAUDRE_FDCOMPCN_TUNED_CONFIG
+FRAUDRE_TUNED_CONFIG["fdcompcn"] = {
+    "embed_dim": 128,
+    "n_layers": 1,
+    "hidden_dim": 64,
+    "batch_size": 1024,
+    "max_neighbors": 10,
+    "weight_decay": 1e-4,
+    "learning_rate": 0.01,
+    "feature_normalisation": "standard",
+    "optimizer": "Adam",
+    "source_note": (
+        "Validation-only tuning on canonical train_40 across all five seeds; "
+        "selected by mean validation AUROC; test untouched."
+    ),
+}

@@ -541,17 +541,25 @@ def train_one_run(
         eligible,
     )
 
-    if config[
-        "feature_normalisation"
-    ] != "row":
-        raise RuntimeError(
-            "Paper-supported FRAUDRE datasets must use "
-            "official row normalisation."
+    feature_normalisation = config["feature_normalisation"]
+
+    if feature_normalisation == "row":
+        features_np = row_normalize_features(
+            features_np
         )
 
-    features_np = row_normalize_features(
-        features_np
-    )
+    elif feature_normalisation == "standard":
+        from sklearn.preprocessing import StandardScaler
+
+        features_np = StandardScaler().fit_transform(
+            features_np
+        ).astype(np.float32)
+
+    else:
+        raise RuntimeError(
+            "Unsupported FRAUDRE feature_normalisation: {}"
+            .format(feature_normalisation)
+        )
 
     features = torch.as_tensor(
         features_np,
