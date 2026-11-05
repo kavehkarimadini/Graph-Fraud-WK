@@ -10,6 +10,7 @@ Usage (from algorithms/PCGNN):
   python PCGNN_main.py --dataset comp --gpu 0
 '''
 from __future__ import print_function
+from pathlib import Path
 
 import argparse
 import copy
@@ -75,6 +76,8 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=123)
     parser.add_argument('--data_prefix', type=str, default='../../dataset/')
     parser.add_argument('--run_tag', type=str, default=None)
+    parser.add_argument('--validation_only', action='store_true',
+                        help='Tuning mode: stop after validation; never evaluate test.')
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
     return parser.parse_args()
@@ -152,8 +155,33 @@ def train(args=None):
     features, args.feat_norm = normalize_features(features, args.feat_norm)
     n = int(features.shape[0])
     index = np.arange(labeled_from, n, dtype=np.int64) if labeled_from is not None else None
-    train_np, valid_np, test_np, discarded_np, split_info = protocol_split(
-        labels_np, train_ratio=args.train_ratio, seed=args.seed, indices=index)
+    if args.dataset == 'tfinance':
+        split_path = Path(__file__).resolve().parents[2] / 'splits' / 'tfinance' / f'seed_{args.seed}.npz'
+        split = np.load(split_path)
+
+        ratio_key = f"train_{int(round(args.train_ratio * 100))}"
+        if ratio_key not in split.files:
+            raise KeyError(f"Missing {ratio_key} in {split_path}")
+
+        train_np = split[ratio_key].astype(np.int64)
+        valid_np = split['val'].astype(np.int64)
+        test_np = split['test'].astype(np.int64)
+
+        discarded_key = f"discarded_{int(round(args.train_ratio * 100))}"
+        discarded_np = (
+            split[discarded_key].astype(np.int64)
+            if discarded_key in split.files
+            else np.empty(0, dtype=np.int64)
+        )
+
+        split_info = {
+            'source': str(split_path),
+            'seed': args.seed,
+            'train_ratio': args.train_ratio,
+        }
+    else:
+        train_np, valid_np, test_np, discarded_np, split_info = protocol_split(
+            labels_np, train_ratio=args.train_ratio, seed=args.seed, indices=index)
 
     feat = torch.as_tensor(features, dtype=torch.float32, device=device)
     labels = torch.as_tensor(labels_np, dtype=torch.long, device=device)
@@ -238,6 +266,25 @@ def train(args=None):
 
     prob_train, pred_train = _evaluate(train_idx)
     prob_valid, pred_valid = _evaluate(valid_idx)
+    if args.validation_only:
+        prob_valid, pred_valid = _evaluate(valid_idx)
+        y_valid = labels[valid_idx].cpu().numpy()
+        valid_metrics = compute_classification_metrics(
+            y_valid, pred_valid, prob_valid, sigmoid=False
+        )
+        valid_metrics = dict(valid_metrics)
+        valid_metrics['best_valid_auc'] = best_auc
+        valid_metrics['best_epoch'] = best_epoch
+        valid_metrics['epochs_executed'] = epochs_executed
+
+        print('VALIDATION_ONLY_RESULT:', {
+            'valid_auc': valid_metrics.get('auroc'),
+            'best_valid_auc': best_auc,
+            'best_epoch': best_epoch,
+            'epochs_executed': epochs_executed,
+        })
+        return valid_metrics, None
+
     prob_test, pred_test = _evaluate(test_idx)
     y_train = labels[train_idx].cpu().numpy()
     y_valid = labels[valid_idx].cpu().numpy()
