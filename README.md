@@ -73,7 +73,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 
 ### Setup with `uv` (recommended, GPU)
 
-**RunPod (GPU pod, Google Drive zip → `gdown` → `uv sync` → COFRAUD):** see [`docs/RUNPOD.md`](docs/RUNPOD.md).
+**RunPod (GPU pod, Google Drive zip →** `gdown` **→** `uv sync` **→ COFRAUD):** see [`docs/RUNPOD.md`](docs/RUNPOD.md).
 
 `pyproject.toml` pins **CUDA PyTorch** (not the CPU wheel). From the repo root:
 
@@ -2372,22 +2372,22 @@ Default learning rate is Adam `0.02` on every dataset. Other defaults (2 layers,
 ```bash
 cd algorithms/COFRAUD
 
-uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 123 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset yelpchi --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset elliptic --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 123 --train_ratio 0.4 --epochs 500
 uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
 uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
 uv run python COFRAUD_main.py --dataset tfinance --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
@@ -2397,11 +2397,11 @@ uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 1234 --learning_r
 uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
 uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
 uv run python COFRAUD_main.py --dataset tsocial --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 200
-uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 1234 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 12345 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 123456 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
-uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 1234567 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 123 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 1234 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 12345 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 123456 --train_ratio 0.1 --epochs 500
+uv run python COFRAUD_main.py --dataset comp --gpu 0 --seed 1234567 --train_ratio 0.1 --epochs 500
 
 cd ../..
 ```

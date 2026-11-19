@@ -8,6 +8,7 @@
 .idea/dictionaries
 __pycache__/
 Graph-Fraud-WK.tar.gz/
+paper/
 dataset/YelpChi.mat
 dataset/YelpChi_hand.zip
 dataset/YelpChi_hand.mat

@@ -9,9 +9,11 @@ End-to-end: SSH into a GPU pod → download the project zip from Google Drive wi
 3. Share the file: **Anyone with the link** → Viewer.
 4. Copy the link. It looks like:
    ```text
-   https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+       Compress-Archive -Path Graph-Fraud-WK\* -DestinationPath Graph-Fraud-WK.zip
+
+       https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+       https://drive.google.com/file/d/1N8O9l-4mFKWCAKaTwnikF50mTPN8Zvhi/view?usp=sharing
    ```
-   You only need `FILE_ID` for `gdown`.
 
 Large zips (especially with Amazon / YelpChi mats) can take a few minutes to download on the pod.
 
@@ -33,7 +35,11 @@ The rest of this guide assumes a Linux shell on the pod. The usual working direc
 From the RunPod UI, copy the SSH command (example shape):
 
 ```bash
-ssh root@IP -p PORT -i ~/.ssh/id_ed25519
+ssh root@103.196.86.173 -p 19671 -i ~/.ssh/id_ed25519
+copy your public key:
+
+Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub
+RunPod → Settings → SSH Public Keys → paste that whole line → save.
 ```
 
 Then:
@@ -67,7 +73,7 @@ Replace `FILE_ID` with your Drive file id:
 ```bash
 cd /workspace
 
-gdown "https://drive.google.com/uc?id=FILE_ID" -O Graph-Fraud-WK.zip
+gdown "https://drive.google.com/uc?id=1N8O9l-4mFKWCAKaTwnikF50mTPN8Zvhi" -O Graph-Fraud-WK.zip
 
 # If gdown says the file is too large / needs confirm:
 # gdown --fuzzy "https://drive.google.com/file/d/FILE_ID/view?usp=sharing" -O Graph-Fraud-WK.zip
@@ -100,6 +106,18 @@ From the **repo root** (directory with `pyproject.toml`):
 ```bash
 # x86_64 Linux GPU pods (most RunPod instances): CUDA 12.8 wheels
 uv sync --extra gpu
+
+cd /workspace/Graph-Fraud-WK/Graph-Fraud-WK
+rm -rf .venv
+
+export UV_CACHE_DIR=/tmp/uv-cache
+export UV_PROJECT_ENVIRONMENT=/tmp/gf-venv
+mkdir -p "$UV_CACHE_DIR"
+
+uv sync --extra gpu
+source /tmp/gf-venv/bin/activate
+
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 
 # Activate the venv
 source .venv/bin/activate
@@ -166,23 +184,97 @@ tmux new -s cofraud
 tmux attach -t cofraud
 ```
 
-## 8. Copy results back (optional)
+## 8. Zip results on the pod and download to your PC
 
-From your **laptop**:
+COFRAUD writes under `algorithms/COFRAUD/results/` (or `--save_dir`). Zip that folder on the pod, then pull the archive with `scp` from your laptop.
+
+### 8.1 On the pod — create the zip
 
 ```bash
-# Replace IP, PORT, and remote path
+# Go to the COFRAUD algorithm folder (adjust nested path if needed)
+cd /workspace/Graph-Fraud-WK/Graph-Fraud-WK/algorithms/COFRAUD
+ls results
+
+# Zip the whole results tree into /workspace (easy to find / scp)
+zip -r /workspace/cofraud_results_4.zip results
+
+# Confirm size
+ls -lh /workspace/cofraud_results.zip
+```
+
+Optional: zip only one dataset / seed:
+
+```bash
+zip -r /workspace/cofraud_amazon_seed123.zip results/COFRAUD/amazon/seed123
+```
+
+If `zip` is missing:
+
+```bash
+apt-get update && apt-get install -y zip
+# or use tar instead:
+tar -czf /workspace/cofraud_results.tar.gz -C algorithms/COFRAUD results
+```
+
+Leave the SSH session open or note the pod **IP** and **PORT** from **Connect → SSH** (e.g. `root@157.157.221.29 -p 50642`).
+
+### 8.2 On your PC — download with `scp`
+
+**PowerShell** (Windows), from any folder you want the file in:
+
+```powershell
+# Direct TCP SSH (IP + port from RunPod Connect)
+scp -P 50642 -i $env:USERPROFILE\.ssh\id_ed25519 `
+  root@157.157.221.29:/workspace/cofraud_results_4.zip `
+  .\cofraud_results_4.zip
+```
+
+Replace `50642` / `157.157.221.29` with **your** pod’s port and IP. To put it somewhere specific:
+
+```powershell
+scp -P 50642 -i $env:USERPROFILE\.ssh\id_ed25519 `
+  root@IP:/workspace/cofraud_results.zip `
+  C:\Users\decis\Documents\GitHub\Graph-Fraud-WK\cofraud_results.zip
+```
+
+If you connect via RunPod’s SSH proxy instead (`user@ssh.runpod.io`), use that host and the key the UI shows (often no custom `-P`, or port `22`):
+
+```powershell
+scp -i $env:USERPROFILE\.ssh\id_ed25519 `
+  PODUSER@ssh.runpod.io:/workspace/cofraud_results.zip `
+  .\cofraud_results.zip
+```
+
+**Bash / macOS / WSL:**
+
+```bash
 scp -P PORT -i ~/.ssh/id_ed25519 \
-  -r root@IP:/workspace/.../algorithms/COFRAUD/results \
-  ./cofraud_results
+  root@IP:/workspace/cofraud_results.zip \
+  ./cofraud_results.zip
 ```
 
-Or zip on the pod and `gdown`/`scp` the archive:
+### 8.3 On your PC — unzip
 
-```bash
-cd /workspace/.../algorithms/COFRAUD
-zip -r /workspace/cofraud_results.zip results
+```powershell
+Expand-Archive -Path .\cofraud_results.zip -DestinationPath .\cofraud_results -Force
+# or 7-Zip / Explorer: right-click → Extract
 ```
+
+You should see paths like `cofraud_results\results\COFRAUD\<dataset>\seed<SEED>\metrics.json`.
+
+### 8.4 Alternative: copy the folder without zipping
+
+Slower for many small files, but fine for one run:
+
+```powershell
+scp -P PORT -i $env:USERPROFILE\.ssh\id_ed25519 -r `
+  root@IP:/workspace/.../algorithms/COFRAUD/results `
+  .\cofraud_results
+```
+
+### 8.5 Alternative: upload the zip to Google Drive from the pod
+
+If `scp` is awkward, upload from the pod (needs Drive credentials / `rclone` or a shared upload tool). Simplest path for this project is still **zip +** `scp`.
 
 ## Troubleshooting
 
