@@ -31,6 +31,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from algorithms.GHRN.GHRN import (
     BWGNN, BWGNNHetero, NormAdj, add_self_loops, prune_edges, relation_edges)
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -81,7 +82,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'GHRN', parser)
 
 
 def apply_dataset_defaults(args):

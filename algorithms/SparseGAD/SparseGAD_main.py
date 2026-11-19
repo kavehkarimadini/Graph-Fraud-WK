@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from algorithms.SparseGAD.SparseGAD import (
     SparseGAD, augment_graph, build_union_graph, knn_edges, sym_normalize)
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -37,11 +38,14 @@ from utils.training import add_protocol_split_args, add_save_args
 # dropout 0.1, edge dropout 0.25, min-max features; Amazon: hidden 16, dropout
 # 0.2, edge dropout 0.1, row-normalised features. Other datasets use the
 # YelpChi settings with standard scaling; T-Social skips the O(n^2) kNN update.
+# Paper Experiment Settings: every model is trained for 2000 epochs (YelpChi /
+# Amazon, the paper's datasets). The other rows are the fallback when
+# configs/tuned/SparseGAD/<dataset>.json is absent.
 DATASET_DEFAULTS = {
     'yelpchi': dict(hidden=32, dropout=0.1, dropout_adj=0.25, feat_norm='minmax',
-                    epochs=1000, early_stop=200, update_adj_epoch=200),
+                    epochs=2000, early_stop=200, update_adj_epoch=200),
     'amazon': dict(hidden=16, dropout=0.2, dropout_adj=0.1, feat_norm='row',
-                   epochs=1000, early_stop=200, update_adj_epoch=200),
+                   epochs=2000, early_stop=200, update_adj_epoch=200),
     'elliptic': dict(hidden=32, dropout=0.1, dropout_adj=0.25, feat_norm='standard',
                      epochs=1000, early_stop=200, update_adj_epoch=200),
     'tfinance': dict(hidden=32, dropout=0.1, dropout_adj=0.25, feat_norm='standard',
@@ -75,7 +79,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'SparseGAD', parser)
 
 
 def apply_dataset_defaults(args):

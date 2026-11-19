@@ -29,7 +29,7 @@ python DGAGNN_main.py --dataset tsocial --gpu 0
 python DGAGNN_main.py --dataset comp --gpu 0
 ```
 
-Dataset defaults follow the official yaml files (`n_hidden`, `n_head`, bins `k`, grouping threshold `z`). Learning rate defaults to Adam `0.01`. `--train_ratio` (default 0.4) shrinks only the train pool; valid/test stay 20/40.
+Dataset defaults follow the official yaml files (`n_hidden`, `n_head`, bins `k`, grouping threshold `z`). On the paper's five datasets the optimiser follows the paper (Adam lr `1e-3`, weight decay `1e-3`, up to 1000 epochs); FDCompCN is not in the paper and uses `configs/tuned/DGAGNN/comp.json` (fallback lr `0.01`, weight decay `5e-4`, 200 epochs). `--train_ratio` (default 0.4) shrinks only the train pool; valid/test stay 20/40.
 
 ## Note
 

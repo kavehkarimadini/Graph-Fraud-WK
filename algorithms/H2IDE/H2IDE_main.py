@@ -27,6 +27,7 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.H2IDE.H2IDE import H2IDE, batch_graph, build_csr
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -35,14 +36,15 @@ from utils.training import add_protocol_split_args, add_save_args
 # Paper Sec. V-A4: Adam lr 0.005, weight decay 5e-5, one layer, 500 epochs, factor
 # dimension 8, dropout 0.1, beta 1, alpha3 1e-4. YelpChi: alpha1 1.2, alpha2 0.001,
 # batch 256, K 12. Amazon: alpha1 0.8, alpha2 0.01, batch 1024, K 8. T-Finance /
-# T-Social: alpha1 1.2, alpha2 0.01, batch 1024, K 8. Elliptic follows T-Finance
-# (homogeneous) and FDCompCN follows Amazon (small multi-relation graph).
+# T-Social: alpha1 1.2, alpha2 0.01, batch 1024, K 8. Elliptic / FDCompCN are not in
+# the paper: their rows (T-Finance-like / Amazon-like) are only the fallback when
+# configs/tuned/H2IDE/<dataset>.json is absent.
 DATASET_DEFAULTS = {
     'yelpchi': dict(n_factors=12, alpha1=1.2, alpha2=0.001, batch_size=256, epochs=500, early_stop=100),
     'amazon': dict(n_factors=8, alpha1=0.8, alpha2=0.01, batch_size=1024, epochs=500, early_stop=100),
     'elliptic': dict(n_factors=8, alpha1=1.2, alpha2=0.01, batch_size=1024, epochs=500, early_stop=100),
     'tfinance': dict(n_factors=8, alpha1=1.2, alpha2=0.01, batch_size=1024, epochs=500, early_stop=100),
-    'tsocial': dict(n_factors=8, alpha1=1.2, alpha2=0.01, batch_size=1024, epochs=50, early_stop=10),
+    'tsocial': dict(n_factors=8, alpha1=1.2, alpha2=0.01, batch_size=1024, epochs=500, early_stop=10),
     'comp': dict(n_factors=8, alpha1=0.8, alpha2=0.01, batch_size=1024, epochs=500, early_stop=100),
 }
 
@@ -79,7 +81,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'H2IDE', parser)
 
 
 def apply_dataset_defaults(args):

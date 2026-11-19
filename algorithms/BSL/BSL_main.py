@@ -26,6 +26,7 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.BSL.BSL import BSL, build_gcn_adj
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import barely_split, protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -37,7 +38,7 @@ DATASET_DEFAULTS = {
     'amazon': dict(hid_dim=96, epochs=100, early_stop=25, label_ratio=0.01, unlabeled_ratio=0.10),
     'elliptic': dict(hid_dim=96, epochs=100, early_stop=25, label_ratio=0.01, unlabeled_ratio=0.10),
     'tfinance': dict(hid_dim=96, epochs=100, early_stop=25, label_ratio=0.01, unlabeled_ratio=0.10),
-    'tsocial': dict(hid_dim=48, epochs=50, early_stop=10, label_ratio=0.0001, unlabeled_ratio=0.001),
+    'tsocial': dict(hid_dim=96, epochs=50, early_stop=10, label_ratio=0.0001, unlabeled_ratio=0.001),
     'comp': dict(hid_dim=96, epochs=100, early_stop=25, label_ratio=0.01, unlabeled_ratio=0.10),
     'fdcompcn': dict(hid_dim=96, epochs=100, early_stop=25, label_ratio=0.01, unlabeled_ratio=0.10),
 }
@@ -64,7 +65,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'BSL', parser)
 
 
 def apply_dataset_defaults(args):

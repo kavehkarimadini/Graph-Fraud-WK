@@ -18,9 +18,28 @@ import torch
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.GraphConsis.supervised_models import SupervisedGraphconsis
 from algorithms.GraphConsis.utils import load_data
+from utils.hparams import apply_tuned_hparams, canonical_dataset
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_protocol_split_args, add_save_args
+
+# Paper Sec. 4.1.3 (YelpChi only): 2 layers, 10 / 5 sampled neighbours, hidden 200 /
+# 100. This implementation is full-batch with one hidden width for both layers, so
+# only the first-layer width (200) is applied; samples_1/2 are recorded but unused.
+# Other datasets are not in the paper: their values are only the fallback when
+# configs/tuned/GraphConsis/<dataset>.json is absent.
+DATASET_DEFAULTS = {
+    'yelpchi': dict(dim_1=200, samples_1=10, samples_2=5),
+}
+FALLBACK_DEFAULTS = dict(dim_1=128, samples_1=25, samples_2=10)
+
+
+def apply_dataset_defaults(args):
+    ds = canonical_dataset(getattr(args, 'dataset_str', None) or args.file_name)
+    for key, value in DATASET_DEFAULTS.get(ds, FALLBACK_DEFAULTS).items():
+        if getattr(args, key, None) is None:
+            setattr(args, key, value)
+    return args
 
 
 def parse_args():
@@ -32,19 +51,19 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--dropout', type=float, default=0.0)
     parser.add_argument('--weight_decay', type=float, default=0.0)
-    parser.add_argument('--dim_1', type=int, default=128)
+    parser.add_argument('--dim_1', type=int, default=None)
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--sigmoid', action='store_true')
     parser.add_argument('--context_dim', type=int, default=0)
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--seed', type=int, default=123)
-    parser.add_argument('--samples_1', type=int, default=25)
-    parser.add_argument('--samples_2', type=int, default=10)
+    parser.add_argument('--samples_1', type=int, default=None)
+    parser.add_argument('--samples_2', type=int, default=None)
     parser.add_argument('--run_tag', type=str, default=None,
                         help='Optional suffix on the output folder (e.g. a timestamp).')
     add_save_args(parser)
     add_protocol_split_args(parser)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'GraphConsis', parser)
 
 
 def predict_split(model, x, edge_indices, y, idx, sigmoid):
@@ -61,6 +80,7 @@ def train(args=None):
     """Train GraphConsis. ``args`` is an argparse Namespace (see ``parse_args``)."""
     if args is None:
         args = parse_args()
+    args = apply_dataset_defaults(args)
     set_seed(args.seed)
     device = get_device(args.gpu)
     dataset_name = os.path.splitext(os.path.basename(args.file_name))[0]

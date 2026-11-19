@@ -22,12 +22,12 @@ From `algorithms/BWGNN/` after unzipping `dataset/tfinance.zip` / `dataset/tsoci
 
 ```powershell
 python BWGNN_main.py --dataset tfinance --hid_dim 64 --order 2 --epochs 100 --gpu 0
-python BWGNN_main.py --dataset tsocial --hid_dim 10 --order 5 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset tsocial --epochs 100 --gpu 0   # paper: h 64, C 5 (add --hid_dim 10 if memory is tight)
 python BWGNN_main.py --dataset elliptic --hid_dim 64 --order 2 --epochs 100 --gpu 0
 python BWGNN_main.py --dataset comp --hid_dim 64 --order 2 --epochs 100 --gpu 0
 ```
 
-`--train_ratio 0.4` matches the paper (40% train). T-Social is large; keep `hid_dim` small.
+`--train_ratio 0.4` matches the paper (40% train). Per-dataset defaults follow paper Sec. 4.1 (`h = 64`; `C = 2`, or `C = 5` on T-Social). Elliptic and FDCompCN are not in the paper and use `configs/tuned/BWGNN/<dataset>.json` (root README, Hyperparameter Policy). T-Social is large; pass `--hid_dim 10` if the paper's `h = 64` does not fit in GPU memory.
 
 ## Note
 

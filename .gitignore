@@ -23,4 +23,6 @@ notebook_runs/
 tmp/
 .venv/
 reference/
+tuning_logs/
+configs/tuned/**/*.partial.json
 

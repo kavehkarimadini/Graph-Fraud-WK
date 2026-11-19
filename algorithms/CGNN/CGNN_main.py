@@ -28,23 +28,26 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.CGNN.CGNN import CGNN, build_csr, consistency_loss, supcon_loss
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_protocol_split_args, add_save_args
 
-# Paper Sec. 5.1: Adam lr 0.01, weight decay 1e-4, embedding 64, batch 16,
-# lambda = beta = 1, tau 0.8 on T-Finance and 0.01 elsewhere. The few-label split
-# (--n_black) uses these values. With the 40% labeled toolbox split, batch 16 would
-# mean hundreds of steps per epoch, so that split uses 256 (1024 on T-Social), and
-# tau 0.01 made L_CSD gradients swamp the cross-entropy: YelpChi stayed at chance
-# (test AUROC 0.65 after 10 epochs versus 0.86 with tau 0.5 after 6) and Amazon
-# reached 0.954 versus 0.976 after 15 epochs. That split therefore uses tau 0.5.
+# Paper Implementation Details: Adam lr 0.01, weight decay 1e-4, embedding 64,
+# batch 16, lambda = beta = 1, tau 0.8 on T-Finance and 0.01 elsewhere. The paper
+# evaluates YelpChi, Amazon, T-Finance and Elliptic, which therefore use these
+# values on every split (repo policy: paper hyperparameters where the paper
+# evaluated the dataset). Note: earlier smoke runs on the 40% split found tau 0.01
+# slow to converge (YelpChi test AUROC 0.65 after 10 epochs versus 0.86 with tau 0.5
+# after 6; Amazon 0.954 versus 0.976 after 15 epochs).
+# T-Social / FDCompCN are not in the paper: tau 0.5 / batch 256 (1024 on T-Social)
+# are only the fallback when configs/tuned/CGNN/<dataset>.json is absent.
 DATASET_DEFAULTS = {
-    'yelpchi': dict(tau=0.5, paper_tau=0.01, epochs=100, early_stop=25),
-    'amazon': dict(tau=0.5, paper_tau=0.01, epochs=100, early_stop=25),
-    'elliptic': dict(tau=0.5, paper_tau=0.01, epochs=100, early_stop=25),
-    'tfinance': dict(tau=0.8, paper_tau=0.8, epochs=100, early_stop=25),
+    'yelpchi': dict(tau=0.01, paper_tau=0.01, batch_size=16, epochs=100, early_stop=25),
+    'amazon': dict(tau=0.01, paper_tau=0.01, batch_size=16, epochs=100, early_stop=25),
+    'elliptic': dict(tau=0.01, paper_tau=0.01, batch_size=16, epochs=100, early_stop=25),
+    'tfinance': dict(tau=0.8, paper_tau=0.8, batch_size=16, epochs=100, early_stop=25),
     'tsocial': dict(tau=0.5, paper_tau=0.01, epochs=30, early_stop=10, batch_size=1024),
     'comp': dict(tau=0.5, paper_tau=0.01, epochs=100, early_stop=25),
 }
@@ -59,7 +62,7 @@ def parse_args():
     parser.add_argument('--beta', type=float, default=1.0, help='Weight of L_CL (Eq. 11 beta).')
     parser.add_argument('--tau', type=float, default=None,
                         help='Temperature of L_CSD (Eq. 3). Default: paper value (T-Finance 0.8, '
-                             'others 0.01) with --n_black, else 0.5 (T-Finance 0.8).')
+                             'others 0.01) on paper datasets or with --n_black, else tuned / 0.5.')
     parser.add_argument('--csd_nodes', type=int, default=256,
                         help='Max distinct neighbours per step whose components enter L_CSD.')
     parser.add_argument('--n_black', type=int, default=0,
@@ -67,7 +70,8 @@ def parse_args():
                              'normals from a 10%% train pool (30%% valid, 60%% test); the rest of '
                              'the pool is gray. 0 = toolbox protocol split.')
     parser.add_argument('--batch_size', type=int, default=None,
-                        help='Labeled (and gray) centres per step. Default 16 with --n_black, else 256.')
+                        help='Labeled (and gray) centres per step. Default 16 (paper) on paper '
+                             'datasets or with --n_black, else tuned / 256.')
     parser.add_argument('--eval_batch_size', type=int, default=2048)
     parser.add_argument('--thres', type=float, default=0.5, help='Decision threshold on the fraud probability.')
     parser.add_argument('--learning_rate', type=float, default=0.01)
@@ -80,7 +84,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'CGNN', parser)
 
 
 def apply_dataset_defaults(args):

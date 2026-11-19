@@ -41,7 +41,7 @@ python PCGNN_main.py --dataset comp --gpu 0
 
 ## Note
 
-- Reference hyperparameters: embedding 64, `rho=0.5`, `alpha=2`, kept-neighbour fraction 0.5, 51 epochs. YelpChi: lr `0.01`, weight decay `1e-3`, batch 1024, `thres=0.5`. Amazon: lr `0.005`, weight decay `5e-4`, batch 256, `thres=0.4`. Elliptic / T-Finance / T-Social reuse the YelpChi settings; FDCompCN uses the Amazon optimiser settings with `thres=0.5`.
+- Reference hyperparameters: embedding 64, `rho=0.5`, `alpha=2`, kept-neighbour fraction 0.5, 51 epochs. YelpChi: lr `0.01`, weight decay `1e-3`, batch 1024, `thres=0.5`. Amazon: lr `0.01`, weight decay `5e-4`, batch 1024, `thres=0.4` (lr and batch from paper Sec. 4.1.3, which overrides the reference yaml's lr `0.005` / batch 256). Elliptic / T-Finance / T-Social / FDCompCN are not in the paper and use `configs/tuned/PCGNN/<dataset>.json`; without it they fall back to the YelpChi settings (FDCompCN: lr `0.005`, weight decay `5e-4`, batch 256, `thres=0.5`).
 - The reference split is 40/20/40 stratified (`train_ratio=0.4`, `test_ratio=0.67`), the same as the toolbox protocol. The reference validated every 5 epochs; here validation runs every epoch with early stopping, and the checkpoint with the best valid AUC is restored.
 - Each relation is symmetrised and given self-loops (reference `sparse_to_adjlist`); the Pick degree uses the union of all relations.
 - Features are row-normalised (`x / (rowsum + 0.01)`) as in the reference whenever every row sums to a positive value (YelpChi, Amazon); Elliptic / T-Finance / T-Social / FDCompCN default to standard scaling. Override with `--feat_norm`.

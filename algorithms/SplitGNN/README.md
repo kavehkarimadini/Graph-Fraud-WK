@@ -29,7 +29,7 @@ python SplitGNN_main.py --dataset amazon --gpu 0
 python SplitGNN_main.py --dataset elliptic --gpu 0
 ```
 
-Defaults match the paper table for architecture (`gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100 on FDCompCN). Learning rate defaults to Adam `0.01` on every dataset. `comp.dgl` train/valid/test masks are used unless you pass `--ignore_file_masks`.
+Defaults match the paper table for architecture (`gamma=0.8`, `C=3`, `K=2`, `intra_dim=8`, early stop 100 on FDCompCN). Learning rates follow paper Sec. 4.1.3: Adam `0.01` (YelpChi), `0.1` (Amazon), `0.001` (FDCompCN). Elliptic / T-Finance / T-Social are not in the paper and use `configs/tuned/SplitGNN/<dataset>.json` (fallback lr `0.01`). `comp.dgl` train/valid/test masks are used unless you pass `--ignore_file_masks`.
 
 ## Note
 

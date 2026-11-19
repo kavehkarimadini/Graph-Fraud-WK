@@ -26,29 +26,35 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.DGAGNN.DGAGNN import DGAGNN, decision_tree_bin_encoding
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_protocol_split_args, add_save_args
 
-# Official yaml hyperparameters (reference/DGA-GNN-main/code/configs).
+# Paper "Hyperparameters": Adam lr 1e-3, weight decay 1e-3, at most 1000 iterations
+# on all five paper datasets; k (n_bins) / z and the architecture come from the
+# official per-dataset yaml configs (reference/DGA-GNN-main/code/configs).
+# FDCompCN is not in the paper: its values are only the fallback when
+# configs/tuned/DGAGNN/comp.json is absent.
+_PAPER_OPT = dict(learning_rate=1e-3, weight_decay=1e-3, epochs=1000)
 DATASET_DEFAULTS = {
     'yelpchi': dict(n_hidden=64, n_head=2, n_bins=32, z=0.025, dropout=0.3,
-                    epochs=200, early_stop=25),
+                    early_stop=25, **_PAPER_OPT),
     'yelp': dict(n_hidden=64, n_head=2, n_bins=32, z=0.025, dropout=0.3,
-                 epochs=200, early_stop=25),
+                 early_stop=25, **_PAPER_OPT),
     'amazon': dict(n_hidden=128, n_head=1, n_bins=4, z=0.05, dropout=0.3,
-                   epochs=200, early_stop=25),
+                   early_stop=25, **_PAPER_OPT),
     'elliptic': dict(n_hidden=128, n_head=2, n_bins=4, z=0.1, dropout=0.3,
-                     epochs=200, early_stop=25),
+                     early_stop=25, **_PAPER_OPT),
     'tfinance': dict(n_hidden=64, n_head=1, n_bins=4, z=0.025, dropout=0.3,
-                     epochs=200, early_stop=25),
+                     early_stop=25, **_PAPER_OPT),
     'tsocial': dict(n_hidden=32, n_head=1, n_bins=8, z=0.2, dropout=0.2,
-                    epochs=100, early_stop=10),
+                    early_stop=10, **_PAPER_OPT),
     'comp': dict(n_hidden=64, n_head=1, n_bins=4, z=0.025, dropout=0.3,
-                 epochs=200, early_stop=25),
+                 epochs=200, early_stop=25, learning_rate=0.01, weight_decay=5e-4),
     'fdcompcn': dict(n_hidden=64, n_head=1, n_bins=4, z=0.025, dropout=0.3,
-                     epochs=200, early_stop=25),
+                     epochs=200, early_stop=25, learning_rate=0.01, weight_decay=5e-4),
 }
 
 
@@ -62,8 +68,8 @@ def parse_args():
     parser.add_argument('--z', type=float, default=None, help='Grouping threshold (unclear_up/down)')
     parser.add_argument('--dropout', type=float, default=None)
     parser.add_argument('--epochs', type=int, default=None)
-    parser.add_argument('--learning_rate', type=float, default=0.01)
-    parser.add_argument('--weight_decay', type=float, default=5e-4)
+    parser.add_argument('--learning_rate', type=float, default=None)
+    parser.add_argument('--weight_decay', type=float, default=None)
     parser.add_argument('--no_bin_encoding', action='store_true',
                         help='Skip decision-tree binning; use standardized features only.')
     parser.add_argument('--gpu', type=str, default='0')
@@ -72,7 +78,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'DGAGNN', parser)
 
 
 def apply_dataset_defaults(args):

@@ -22,21 +22,25 @@ from sklearn.metrics import roc_auc_score
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.SplitGNN.SplitGNN import SplitGNN
 from utils.data_loader import load_splitgnn_graph
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_save_args
 
 # Paper table (README "Reproduce Results"), not the placeholder yaml values.
+# Learning rates follow paper Sec. 4.1.3: 0.01 (YelpChi), 0.1 (Amazon), 0.001
+# (FDCompCN). Elliptic / T-Finance / T-Social are not in the paper: their rows are
+# only the fallback when configs/tuned/SplitGNN/<dataset>.json is absent.
 DATASET_DEFAULTS = {
-    'comp': dict(learning_rate=0.01, C=3, K=2, gamma=0.8, intra_dim=8,
+    'comp': dict(learning_rate=0.001, C=3, K=2, gamma=0.8, intra_dim=8,
                  dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
-    'fdcompcn': dict(learning_rate=0.01, C=3, K=2, gamma=0.8, intra_dim=8,
+    'fdcompcn': dict(learning_rate=0.001, C=3, K=2, gamma=0.8, intra_dim=8,
                      dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
     'yelpchi': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
                     dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
     'yelp': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
                  dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=100),
-    'amazon': dict(learning_rate=0.01, C=2, K=1, gamma=0.4, intra_dim=8,
+    'amazon': dict(learning_rate=0.1, C=2, K=1, gamma=0.4, intra_dim=8,
                    dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
     'elliptic': dict(learning_rate=0.01, C=2, K=1, gamma=0.6, intra_dim=8,
                      dropout=0.1, weight_decay=5e-5, epochs=1000, early_stop=50),
@@ -63,14 +67,14 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=None)
     parser.add_argument('--early_stop', type=int, default=None,
                         help='Patience on valid AUC (0 disables).')
-    parser.add_argument('--learning_rate', type=float, default=0.01)
+    parser.add_argument('--learning_rate', type=float, default=None)
     parser.add_argument('--weight_decay', type=float, default=None)
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--seed', type=int, default=30)
     parser.add_argument('--data_prefix', type=str, default='../../dataset/')
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'SplitGNN', parser)
 
 
 def apply_dataset_defaults(args):

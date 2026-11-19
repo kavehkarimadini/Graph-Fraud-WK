@@ -39,5 +39,5 @@ python BSL_main.py --dataset yelpchi --paper_split --gpu 0
 
 - Paper hyperparameters: embedding 96, Adam `lr=0.01`, `weight_decay=1e-5`, unlabeled batch 256.
 - Relations are unioned into one homogeneous graph (paper setting). Amazon still splits only labeled nodes (`index >= 3305`).
-- T-Social uses a smaller hidden size (48) because this port is full-graph.
+- T-Social uses the paper's embedding size (96) like the other paper datasets; this port is full-graph, so pass `--hid_dim 48` if it does not fit in GPU memory. FDCompCN is not in the paper and uses `configs/tuned/BSL/comp.json`.
 - No DGL import.

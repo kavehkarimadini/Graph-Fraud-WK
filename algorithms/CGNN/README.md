@@ -53,7 +53,7 @@ Ablations as in the paper: `--lam 0` removes `L_CSD` (CGNN w/o CSD), and `--beta
 
 ## Note
 
-- **Paper settings** (Sec. 5.1): Adam with lr `0.01` and weight decay `1e-4`, embedding size 64, `lambda = beta = 1`, and batch size 16. Batch 16 and the paper temperatures (`tau = 0.8` on T-Finance, `0.01` elsewhere) are the defaults with `--n_black`.
+- **Paper settings** (Sec. 5.1): Adam with lr `0.01` and weight decay `1e-4`, embedding size 64, `lambda = beta = 1`, and batch size 16. Batch 16 and the paper temperatures (`tau = 0.8` on T-Finance, `0.01` elsewhere) are the defaults on the paper's datasets (YelpChi, Amazon, T-Finance, Elliptic) for every split, and with `--n_black`. T-Social and FDCompCN are not in the paper and use `configs/tuned/CGNN/<dataset>.json` (see the root README, Hyperparameter Policy); the notes below describe their untuned fallback and why it differs.
 - **Toolbox-split defaults differ from the paper** because the paper only trains with a few dozen labels:
   - Batch size is 256 (1024 on T-Social). With 40% of nodes labeled, batch 16 would mean hundreds of steps per epoch.
   - `tau` is 0.5 (T-Finance stays at 0.8). At `tau = 0.01` the `L_CSD` gradients are about 100 times larger than those of the cross-entropy. In smoke runs YelpChi then stayed at chance (test AUROC 0.65 after 10 epochs, versus 0.86 with `tau 0.5` after 6 epochs), and Amazon reached 0.954 versus 0.976 after 15 epochs. `--tau` overrides either default.

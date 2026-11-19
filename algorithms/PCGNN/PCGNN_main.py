@@ -27,6 +27,7 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.PCGNN.PCGNN import PCGNN, build_csr
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -35,12 +36,16 @@ from utils.training import add_protocol_split_args, add_save_args
 # Reference config/pcgnn_*.yml: emb 64, rho 0.5, alpha 2, 51 epochs;
 # YelpChi lr 0.01 / L2 1e-3 / batch 1024 / thres 0.5;
 # Amazon lr 0.005 / L2 5e-4 / batch 256 / thres 0.4.
+# Paper Sec. 4.1.3 states lr 0.01, N_epoch 100 and N_batch 1024 for both datasets,
+# so Amazon uses lr 0.01 / batch 1024 (paper) with the yaml's L2 / thres, which the
+# paper does not report. Only YelpChi / Amazon are in the paper; the other rows are
+# the fallback when configs/tuned/PCGNN/<dataset>.json is absent.
 # The reference row-normalises features; rows whose sum is not positive force
 # standard scaling instead.
 DATASET_DEFAULTS = {
     'yelpchi': dict(learning_rate=0.01, weight_decay=1e-3, batch_size=1024, thres=0.5,
                     feat_norm='row', epochs=100, early_stop=20),
-    'amazon': dict(learning_rate=0.005, weight_decay=5e-4, batch_size=256, thres=0.4,
+    'amazon': dict(learning_rate=0.01, weight_decay=5e-4, batch_size=1024, thres=0.4,
                    feat_norm='row', epochs=100, early_stop=20),
     'elliptic': dict(learning_rate=0.01, weight_decay=1e-3, batch_size=1024, thres=0.5,
                      feat_norm='standard', epochs=100, early_stop=20),
@@ -77,7 +82,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'PCGNN', parser)
 
 
 def apply_dataset_defaults(args):

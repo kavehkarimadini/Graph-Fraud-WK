@@ -26,6 +26,7 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.H2FDetector.H2FDetector import H2FDetector, build_edges
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -35,8 +36,11 @@ from utils.training import add_protocol_split_args, add_save_args
 # intra_dim 8, 4 heads, 2 layers, dropout 0.1, up to 1000 epochs). Other
 # datasets reuse the YelpChi loss weights. The reference row-normalises
 # features; rows whose sum is not positive force standard scaling instead.
+# Paper Sec. 4.1.3 sets gamma1 = gamma2 = 1.2 on YelpChi (the reference yaml has
+# gamma2 2.0); the paper value is used. Only YelpChi / Amazon are in the paper; the
+# other rows are the fallback when configs/tuned/H2FDetector/<dataset>.json is absent.
 DATASET_DEFAULTS = {
-    'yelpchi': dict(gamma1=1.2, gamma2=2.0, epochs=1000, early_stop=50, feat_norm='row'),
+    'yelpchi': dict(gamma1=1.2, gamma2=1.2, epochs=1000, early_stop=50, feat_norm='row'),
     'amazon': dict(gamma1=0.4, gamma2=1.4, epochs=1000, early_stop=200, feat_norm='row'),
     'elliptic': dict(gamma1=1.2, gamma2=2.0, epochs=1000, early_stop=50, feat_norm='standard'),
     'tfinance': dict(gamma1=1.2, gamma2=2.0, epochs=1000, early_stop=50, feat_norm='standard'),
@@ -65,7 +69,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'H2FDetector', parser)
 
 
 def apply_dataset_defaults(args):

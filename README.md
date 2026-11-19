@@ -51,6 +51,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 - [User Guide](#user-guide)
 - [Command Examples](#command-examples)
 - [Evaluation & Saved Outputs](#evaluation--saved-outputs)
+- [Hyperparameter Policy](#hyperparameter-policy)
 - [Training Arguments](#training-arguments)
 - [Implemented Models](#implemented-models)
 - [Model Comparison](#model-comparison)
@@ -181,7 +182,7 @@ Expand-Archive -Path tsocial.zip -DestinationPath . -Force
 cd ..
 ```
 
-Used by **BWGNN** and **GraphConsis** (`--file_name tfinance` or `tsocial`). T-Social is large (multi-GB); BWGNN uses a smaller hidden size (`--hid_dim 10 --order 5`).
+Used by **BWGNN** and **GraphConsis** (`--file_name tfinance` or `tsocial`). T-Social is large (multi-GB); BWGNN defaults to the paper's T-Social setting (`h = 64`, `C = 5`); pass `--hid_dim 10` if GPU memory is tight.
 
 ### Elliptic Bitcoin
 
@@ -577,8 +578,8 @@ cd algorithms/BWGNN
 # Paper defaults: 40% train, hid 64, wavelet order 2
 python BWGNN_main.py --dataset tfinance --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
 
-# T-Social is much larger — smaller hidden size and higher order (as in the paper)
-python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 --epochs 100 --gpu 0
+# T-Social: paper setting is h = 64, C = 5 (the default); add --hid_dim 10 if GPU memory is tight
+python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --epochs 100 --gpu 0
 
 # Homogeneous Amazon / YelpChi .mat
 python BWGNN_main.py --dataset amazon --gpu 0
@@ -1035,6 +1036,55 @@ state_dict = payload['state_dict']
 # List everything written for a run
 Get-ChildItem -Recurse results   # Windows PowerShell
 ```
+
+---
+
+## Hyperparameter Policy
+
+Each benchmark model (`algorithms/<Model>`) runs with one of two kinds of hyperparameters per dataset:
+
+- **Paper**: the model's original paper (`paper/papers-to-read`) reports results on the dataset, so the paper's hyperparameters are used (the per-dataset `DATASET_DEFAULTS` in each `*_main.py`; values the paper omits come from the official code).
+- **Tuned**: otherwise the hyperparameters are chosen by `tune_hparams.py`, a validation-only random search on the 40/20/40 split (train ratio 0.4, the five benchmark seeds `123, 1234, 12345, 123456, 1234567`, ranked by mean validation AUROC; the test split is never used for selection). Trial 0 is always the previous default. The winner is written to `configs/tuned/<Model>/<dataset>.json` and loaded automatically by the `*_main.py` scripts and `utils.notebook_runner`.
+
+Explicit command-line flags always win over tuned values. Every run prints, and saves in `config.json`, its `hparam_source` (`paper`, `tuned`, or `untuned_default` when a pair still needs tuning).
+
+| Model       | YelpChi | Amazon | T-Finance | T-Social | Elliptic | FDCompCN |
+| ----------- | :-----: | :----: | :-------: | :------: | :------: | :------: |
+| AMNet       | paper   | tune   | tune      | tune     | paper    | tune     |
+| BSL         | paper   | paper  | paper     | paper    | paper    | tune     |
+| BWGNN       | paper   | paper  | paper     | paper    | tune     | tune     |
+| CARE-GNN    | paper   | paper  | tune      | tune     | tune     | tune     |
+| CGNN        | paper   | paper  | paper     | tune     | paper    | tune     |
+| CIE-GAD     | paper   | paper  | paper     | tune     | paper    | tune     |
+| COFRAUD     | paper   | paper  | tune      | tune     | tune     | tune     |
+| DGA-GNN     | paper   | paper  | paper     | paper    | paper    | tune     |
+| FRAUDRE     | paper   | paper  | tune      | tune     | tune     | tune     |
+| GDN ¹       | tune    | tune   | tune      | tune     | tune     | tune     |
+| GGCN        | tune    | tune   | tune      | tune     | tune     | tune     |
+| GHRN ¹      | tune    | tune   | tune      | tune     | tune     | tune     |
+| GLHN        | paper   | paper  | paper     | paper    | tune     | tune     |
+| GraphConsis | paper   | tune   | tune      | tune     | tune     | tune     |
+| H2-FDetector| paper   | paper  | tune      | tune     | tune     | tune     |
+| H2IDE       | paper   | paper  | paper     | paper    | tune     | tune     |
+| ImGSL       | paper   | paper  | tune      | tune     | tune     | tune     |
+| PC-GNN      | paper   | paper  | tune      | tune     | tune     | tune     |
+| SparseGAD   | paper   | paper  | tune      | tune     | tune     | tune     |
+| SplitGNN    | paper   | paper  | tune      | tune     | tune     | paper    |
+| TAM         | paper   | paper  | paper     | tune     | tune     | tune     |
+
+¹ Paper not in `paper/papers-to-read`, so every dataset is tuned. Add the PDF and list its datasets in `utils/hparams.py` (`PAPER_EVALUATED`) to switch to paper settings. PMP and SEC-GFD keep their own config modules (`algorithms/PMP/pmp_config.py`, `algorithms/SEC_GFD/secgfd_config.py`), which already follow this policy.
+
+The registry (`utils/hparams.py`) cites the paper section behind every "paper" cell; the search spaces (`utils/hparam_spaces.py`) follow GADBench App. C, GLHAD §4.1.4, PMP App. D.4 and each paper's sensitivity study.
+
+```powershell
+python tune_hparams.py --list                                   # matrix above + which pairs are already tuned
+python tune_hparams.py --model BWGNN --dataset elliptic --gpu 0 # one pair (20 trials x 5 seeds by default)
+python tune_hparams.py --all --skip_dataset tsocial --gpu 0     # every pair still marked "tune"
+python tune_hparams.py --all --resume --gpu 0                   # continue an interrupted sweep
+# Budget knobs: --n_trials, --seeds 123,1234, --max_epochs, --prune_margin 0.05
+```
+
+Per-trial training output goes to `tuning_logs/<Model>/<dataset>.log` (git-ignored); the JSON keeps every trial's per-seed validation AUROC.
 
 ---
 
@@ -1744,10 +1794,10 @@ python supervised_train.py --train_prefix ../../dataset/ --file_name tsocial --s
 ```powershell
 cd algorithms/BWGNN
 python BWGNN_main.py --dataset tfinance --train_ratio 0.4 --hid_dim 64 --order 2 --epochs 100 --gpu 0
-python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --hid_dim 10 --order 5 --epochs 100 --gpu 0
+python BWGNN_main.py --dataset tsocial --train_ratio 0.4 --epochs 100 --gpu 0
 ```
 
-## T-Social is multi-GB; keep `--hid_dim 10`. BWGNN also takes `--dataset amazon` or `yelpchi`.
+T-Social is multi-GB; the paper setting is `h = 64`, `C = 5` (pass `--hid_dim 10` if GPU memory is tight). BWGNN also takes `--dataset amazon` or `yelpchi`.
 
 Elliptic is wired in as a fifth dataset for GraphConsis, BWGNN, and GraphSAGE.
 
@@ -1857,7 +1907,7 @@ python DGAGNN_main.py --dataset tfinance --gpu 0
 python DGAGNN_main.py --dataset comp --gpu 0
 ```
 
-Hyperparameters default to the official yaml per dataset (`n_hidden`, heads, bins `k`, grouping threshold `z`). `--train_ratio` still only shrinks the 40% train pool. `--no_bin_encoding` skips DT binning. T-Social uses a smaller hidden size than the paper yaml because that graph is large.
+Hyperparameters default to the official yaml per dataset (`n_hidden`, heads, bins `k`, grouping threshold `z`) with the paper's optimiser settings (Adam lr `1e-3`, weight decay `1e-3`, up to 1000 epochs) on its five datasets; FDCompCN is tuned (see [Hyperparameter Policy](#hyperparameter-policy)). `--train_ratio` still only shrinks the 40% train pool. `--no_bin_encoding` skips DT binning. T-Social uses a smaller hidden size than the paper yaml because that graph is large.
 
 **GLHN** (Guo et al., CIKM 2024; paper name GLHAD) is in the toolbox as a DGL-free port of `reference/GLHN/GLHN.md`.
 

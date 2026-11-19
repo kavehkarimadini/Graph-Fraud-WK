@@ -26,12 +26,17 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.GLHN.GLHN import GLHN, build_relation
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_protocol_split_args, add_save_args
 
 # Paper §4.1.4 plus γ1/γ2 from the sensitivity study (YelpChi / Amazon).
+# Hidden 32 on all four paper datasets (YelpChi, Amazon, T-Finance, T-Social); the
+# paper's mini-batch sizes do not apply because this implementation is full-batch.
+# Elliptic / FDCompCN are not in the paper: their rows are only the fallback when
+# configs/tuned/GLHN/<dataset>.json is absent.
 DATASET_DEFAULTS = {
     'yelpchi': dict(hid_dim=32, n_layers=2, gamma1=0.8, gamma2=1.0,
                     epochs=100, early_stop=25, graph_type='hetero'),
@@ -43,7 +48,7 @@ DATASET_DEFAULTS = {
                      epochs=100, early_stop=25, graph_type='homo'),
     'tfinance': dict(hid_dim=32, n_layers=2, gamma1=1.0, gamma2=1.0,
                      epochs=100, early_stop=25, graph_type='homo'),
-    'tsocial': dict(hid_dim=10, n_layers=2, gamma1=1.0, gamma2=1.0,
+    'tsocial': dict(hid_dim=32, n_layers=2, gamma1=1.0, gamma2=1.0,
                     epochs=50, early_stop=10, graph_type='homo'),
     'comp': dict(hid_dim=32, n_layers=2, gamma1=0.8, gamma2=1.0,
                  epochs=100, early_stop=25, graph_type='hetero'),
@@ -75,7 +80,7 @@ def parse_args():
     parser.add_argument('--run_tag', type=str, default=None)
     add_save_args(parser)
     add_protocol_split_args(parser, early_stop=None)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'GLHN', parser)
 
 
 def apply_dataset_defaults(args):

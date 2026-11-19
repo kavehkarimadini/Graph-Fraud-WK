@@ -32,7 +32,7 @@ python GLHN_main.py --dataset comp --gpu 0
 
 ## Note
 
-- Paper hyperparameters: hidden 32 (10 on T-Social), 2 layers, `τ=0.1`, Adam `lr=0.01`, `weight_decay=1e-5`. `γ1`/`γ2` follow the paper sensitivity study on YelpChi / Amazon.
+- Paper hyperparameters: hidden 32 on all four paper datasets (the paper's `{10}` T-Social grid is for baselines), 2 layers, `τ=0.1`, Adam `lr=0.01`, `weight_decay=1e-5`. `γ1`/`γ2` follow the paper sensitivity study on YelpChi / Amazon.
 - Contrastive losses use **train** labels only (no valid/test leakage). Amazon still splits only labeled nodes (`index >= 3305`).
 - T-Social is full-graph (no mini-batch neighbor sampling from the paper), so memory is higher.
 - No DGL import.

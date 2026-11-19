@@ -28,6 +28,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.TAM.TAM import LAMNet, RawGraph, local_affinity, non_neighbor_similarity, truncate
 from utils.data_loader import load_dga_arrays
+from utils.hparams import apply_tuned_hparams
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -49,6 +50,12 @@ DATASET_DEFAULTS = {
 }
 UNION_SETTING = dict(cutting=7, n_tree=1, minmax_loss=1)
 SINGLE_SETTING = dict(cutting=4, n_tree=3, minmax_loss=0)
+# Paper Sec. 4.1 / 4.3: T = 3 for all datasets and K = 7 on the large-scale graphs
+# it evaluates (Amazon-all, YelpChi-all, T-Finance). These override the reference
+# script's T = 1 on those three graphs. Elliptic / T-Social / FDCompCN are not in
+# the paper and use configs/tuned/TAM/<dataset>.json (fallback: the settings above).
+PAPER_LARGE_GRAPH = dict(cutting=7, n_tree=3)
+PAPER_LARGE_GRAPH_DATASETS = ('yelpchi', 'amazon', 'tfinance')
 
 
 def parse_args():
@@ -79,7 +86,7 @@ def parse_args():
     parser.add_argument('--train_ratio', type=float, default=0.4,
                         help='Train fraction of labeled nodes (max 0.4); only sets the anomaly-rate '
                              'estimate for the decision threshold.')
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'TAM', parser)
 
 
 def apply_dataset_defaults(args, n_relations):
@@ -92,6 +99,8 @@ def apply_dataset_defaults(args, n_relations):
         ds = 'yelpchi'
     defaults = dict(DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi']))
     defaults.update(UNION_SETTING if n_relations > 1 else SINGLE_SETTING)
+    if ds in PAPER_LARGE_GRAPH_DATASETS and (n_relations > 1 or ds == 'tfinance'):
+        defaults.update(PAPER_LARGE_GRAPH)
     for key, value in defaults.items():
         if getattr(args, key, None) is None:
             setattr(args, key, value)

@@ -10,6 +10,8 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 
+from utils.hparams import tuned_params
+
 GRAPHCONSIS_FILES = {
     'yelpchi': 'YelpChi.mat',
     'yelp': 'YelpChi.mat',
@@ -376,6 +378,8 @@ def _graphconsis_defaults(dataset, root):
     ds = normalize_dataset(dataset)
     file_name = GRAPHCONSIS_FILES[ds]
     test_size = 0.2 if ds == 'yelpchi' else 0.4
+    from algorithms.GraphConsis.supervised_train import DATASET_DEFAULTS, FALLBACK_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, FALLBACK_DEFAULTS)
     return dict(
         model='graphsage_mean',
         learning_rate=0.01,
@@ -384,14 +388,14 @@ def _graphconsis_defaults(dataset, root):
         epochs=50 if ds != 'tsocial' else 20,
         dropout=0.0,
         weight_decay=0.0,
-        dim_1=128,
+        dim_1=paper['dim_1'],
         batch_size=512 if ds != 'tsocial' else 256,
         sigmoid=True,
         context_dim=0,
         gpu='0',
         seed=123,
-        samples_1=25,
-        samples_2=10,
+        samples_1=paper['samples_1'],
+        samples_2=paper['samples_2'],
         save_dir=str(notebook_runs_dir(root)),
         test_size=test_size,
         train_ratio=0.4,
@@ -405,17 +409,20 @@ def _graphconsis_defaults(dataset, root):
 def _bwgnn_defaults(dataset, root):
     ddir = dataset_dir(root)
     ds = normalize_dataset(dataset)
-    hid_dim, order, epochs = (10, 5, 100) if ds == 'tsocial' else (64, 2, 100)
+    if ds == 'fdcompcn':
+        ds = 'comp'
+    from algorithms.BWGNN.BWGNN_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
     test_size = 0.2 if ds == 'yelpchi' else 0.4
     return dict(
         dataset=ds,
         train_ratio=0.4,
         early_stop=25,
-        hid_dim=hid_dim,
-        order=order,
-        epochs=epochs,
-        learning_rate=0.01,
-        weight_decay=0.0,
+        hid_dim=paper['hid_dim'],
+        order=paper['order'],
+        epochs=paper['epochs'],
+        learning_rate=paper['learning_rate'],
+        weight_decay=paper['weight_decay'],
         gpu='0',
         seed=123,
         data_prefix=str(ddir) + os.sep,
@@ -435,6 +442,7 @@ def run_graphconsis(dataset='yelpchi', download=True, **overrides):
     from algorithms.GraphConsis.supervised_train import train
 
     params = _graphconsis_defaults(dataset, root)
+    params.update(tuned_params('GraphConsis', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -454,6 +462,7 @@ def run_bwgnn(dataset='tfinance', download=True, **overrides):
     from algorithms.BWGNN.BWGNN_main import train
 
     params = _bwgnn_defaults(dataset, root)
+    params.update(tuned_params('BWGNN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -504,6 +513,7 @@ def run_splitgnn(dataset='comp', download=True, **overrides):
     from algorithms.SplitGNN.SplitGNN_main import train
 
     params = _splitgnn_defaults(dataset, root)
+    params.update(tuned_params('SplitGNN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -533,8 +543,8 @@ def _dgagnn_defaults(dataset, root):
         dropout=paper['dropout'],
         epochs=paper['epochs'],
         early_stop=paper['early_stop'],
-        learning_rate=0.01,
-        weight_decay=5e-4,
+        learning_rate=paper['learning_rate'],
+        weight_decay=paper['weight_decay'],
         no_bin_encoding=False,
         gpu='0',
         seed=123,
@@ -555,6 +565,7 @@ def run_dgagnn(dataset='yelpchi', download=True, **overrides):
     from algorithms.DGAGNN.DGAGNN_main import train
 
     params = _dgagnn_defaults(dataset, root)
+    params.update(tuned_params('DGAGNN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -607,6 +618,7 @@ def run_glhn(dataset='yelpchi', download=True, **overrides):
     from algorithms.GLHN.GLHN_main import train
 
     params = _glhn_defaults(dataset, root)
+    params.update(tuned_params('GLHN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -660,6 +672,7 @@ def run_bsl(dataset='yelpchi', download=True, **overrides):
     from algorithms.BSL.BSL_main import train
 
     params = _bsl_defaults(dataset, root)
+    params.update(tuned_params('BSL', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -716,6 +729,7 @@ def run_caregnn(dataset='yelpchi', download=True, **overrides):
     from algorithms.CAREGNN.CAREGNN_main import train
 
     params = _caregnn_defaults(dataset, root)
+    params.update(tuned_params('CAREGNN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -769,6 +783,7 @@ def run_h2fdetector(dataset='yelpchi', download=True, **overrides):
     from algorithms.H2FDetector.H2FDetector_main import train
 
     params = _h2fdetector_defaults(dataset, root)
+    params.update(tuned_params('H2FDetector', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -822,6 +837,7 @@ def run_fraudre(dataset='yelpchi', download=True, **overrides):
     from algorithms.FRAUDRE.FRAUDRE_main import train
 
     params = _fraudre_defaults(dataset, root)
+    params.update(tuned_params('FRAUDRE', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -876,6 +892,7 @@ def run_pcgnn(dataset='yelpchi', download=True, **overrides):
     from algorithms.PCGNN.PCGNN_main import train
 
     params = _pcgnn_defaults(dataset, root)
+    params.update(tuned_params('PCGNN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -929,6 +946,7 @@ def run_sparsegad(dataset='yelpchi', download=True, **overrides):
     from algorithms.SparseGAD.SparseGAD_main import train
 
     params = _sparsegad_defaults(dataset, root)
+    params.update(tuned_params('SparseGAD', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -985,6 +1003,7 @@ def run_amnet(dataset='yelpchi', download=True, **overrides):
     from algorithms.AMNet.AMNet_main import train
 
     params = _amnet_defaults(dataset, root)
+    params.update(tuned_params('AMNet', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1038,6 +1057,7 @@ def run_ghrn(dataset='yelpchi', download=True, **overrides):
     from algorithms.GHRN.GHRN_main import train
 
     params = _ghrn_defaults(dataset, root)
+    params.update(tuned_params('GHRN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1099,6 +1119,7 @@ def run_ggcn(dataset='yelpchi', download=True, **overrides):
     from algorithms.GGCN.GGCN_main import train
 
     params = _ggcn_defaults(dataset, root)
+    params.update(tuned_params('GGCN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1152,6 +1173,7 @@ def run_tam(dataset='yelpchi', download=True, **overrides):
     from algorithms.TAM.TAM_main import train
 
     params = _tam_defaults(dataset, root)
+    params.update(tuned_params('TAM', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1207,6 +1229,7 @@ def run_gdn(dataset='yelpchi', download=True, **overrides):
     from algorithms.GDN.GDN_main import train
 
     params = _gdn_defaults(dataset, root)
+    params.update(tuned_params('GDN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1268,6 +1291,7 @@ def run_imgsl(dataset='yelpchi', download=True, **overrides):
     from algorithms.ImGSL.ImGSL_main import train
 
     params = _imgsl_defaults(dataset, root)
+    params.update(tuned_params('ImGSL', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1327,6 +1351,7 @@ def run_cgnn(dataset='yelpchi', download=True, **overrides):
     from algorithms.CGNN.CGNN_main import train
 
     params = _cgnn_defaults(dataset, root)
+    params.update(tuned_params('CGNN', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1389,6 +1414,7 @@ def run_h2ide(dataset='yelpchi', download=True, **overrides):
     from algorithms.H2IDE.H2IDE_main import train
 
     params = _h2ide_defaults(dataset, root)
+    params.update(tuned_params('H2IDE', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1447,6 +1473,7 @@ def run_cie_gad(dataset='yelpchi', download=True, **overrides):
     from algorithms.CIEGAD.CIEGAD_main import train
 
     params = _ciegad_defaults(dataset, root)
+    params.update(tuned_params('CIEGAD', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(
@@ -1505,6 +1532,7 @@ def run_cofraud(dataset='yelpchi', download=True, **overrides):
     from algorithms.COFRAUD.COFRAUD_main import train
 
     params = _cofraud_defaults(dataset, root)
+    params.update(tuned_params('COFRAUD', params.get('dataset_str') or params.get('dataset') or dataset))
     params.update(overrides)
     if not params.get('run_tag'):
         params['run_tag'] = make_run_tag(

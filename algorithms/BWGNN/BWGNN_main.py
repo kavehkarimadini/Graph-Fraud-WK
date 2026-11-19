@@ -23,20 +23,42 @@ from utils.data_loader import (
     load_tgraph_dgl,
 )
 from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
+from utils.hparams import apply_tuned_hparams, canonical_dataset
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_protocol_split_args, add_save_args
+
+# Paper Sec. 4.1: 100 epochs, Adam lr 0.01, h = 64 and C = 2 on YelpChi / Amazon /
+# T-Finance; h = 64 and C = 5 on T-Social. Weight decay is not reported (0 in the
+# official code). Elliptic / FDCompCN are not in the paper: their values here are
+# only the fallback when configs/tuned/BWGNN/<dataset>.json is absent.
+DATASET_DEFAULTS = {
+    'yelpchi': dict(hid_dim=64, order=2, epochs=100, learning_rate=0.01, weight_decay=0.0),
+    'amazon': dict(hid_dim=64, order=2, epochs=100, learning_rate=0.01, weight_decay=0.0),
+    'tfinance': dict(hid_dim=64, order=2, epochs=100, learning_rate=0.01, weight_decay=0.0),
+    'tsocial': dict(hid_dim=64, order=5, epochs=100, learning_rate=0.01, weight_decay=0.0),
+    'elliptic': dict(hid_dim=64, order=2, epochs=100, learning_rate=0.01, weight_decay=0.0),
+    'comp': dict(hid_dim=64, order=2, epochs=100, learning_rate=0.01, weight_decay=0.0),
+}
+
+
+def apply_dataset_defaults(args):
+    defaults = DATASET_DEFAULTS.get(canonical_dataset(args.dataset), DATASET_DEFAULTS['yelpchi'])
+    for key, value in defaults.items():
+        if getattr(args, key, None) is None:
+            setattr(args, key, value)
+    return args
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='BWGNN')
     parser.add_argument('--dataset', type=str, default='tfinance',
                         help="tfinance / tsocial / yelpchi / amazon / elliptic / comp")
-    parser.add_argument('--hid_dim', type=int, default=64)
-    parser.add_argument('--order', type=int, default=2, help='Beta wavelet order C')
-    parser.add_argument('--epochs', type=int, default=100)
-    parser.add_argument('--learning_rate', type=float, default=0.01)
-    parser.add_argument('--weight_decay', type=float, default=0.0)
+    parser.add_argument('--hid_dim', type=int, default=None)
+    parser.add_argument('--order', type=int, default=None, help='Beta wavelet order C')
+    parser.add_argument('--epochs', type=int, default=None)
+    parser.add_argument('--learning_rate', type=float, default=None)
+    parser.add_argument('--weight_decay', type=float, default=None)
     parser.add_argument('--gpu', type=str, default='0')
     parser.add_argument('--seed', type=int, default=123)
     parser.add_argument('--data_prefix', type=str, default='../../dataset/')
@@ -44,7 +66,7 @@ def parse_args():
                         help='Optional suffix on the output folder (e.g. a timestamp).')
     add_save_args(parser)
     add_protocol_split_args(parser)
-    return parser.parse_args()
+    return apply_tuned_hparams(parser.parse_args(), 'BWGNN', parser)
 
 
 def load_bwgnn_graph(args):
@@ -86,6 +108,7 @@ def train(args=None):
     """Train BWGNN. ``args`` is an argparse Namespace (see ``parse_args``)."""
     if args is None:
         args = parse_args()
+    args = apply_dataset_defaults(args)
     args.dataset_str = args.dataset
     train_ratio = getattr(args, 'train_ratio', 0.4)
     if train_ratio is None:
