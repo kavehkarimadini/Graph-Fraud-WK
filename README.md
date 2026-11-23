@@ -52,6 +52,7 @@ SIGIR'20 ([PDF](https://arxiv.org/pdf/2005.00625.pdf))
 - [Command Examples](#command-examples)
 - [Evaluation & Saved Outputs](#evaluation--saved-outputs)
 - [Hyperparameter Policy](#hyperparameter-policy)
+- [Running the Full Benchmark](#running-the-full-benchmark)
 - [Training Arguments](#training-arguments)
 - [Implemented Models](#implemented-models)
 - [Model Comparison](#model-comparison)
@@ -1046,6 +1047,8 @@ Each benchmark model (`algorithms/<Model>`) runs with one of two kinds of hyperp
 - **Paper**: the model's original paper (`paper/papers-to-read`) reports results on the dataset, so the paper's hyperparameters are used (the per-dataset `DATASET_DEFAULTS` in each `*_main.py`; values the paper omits come from the official code).
 - **Tuned**: otherwise the hyperparameters are chosen by `tune_hparams.py`, a validation-only random search on the 40/20/40 split (train ratio 0.4, the five benchmark seeds `123, 1234, 12345, 123456, 1234567`, ranked by mean validation AUROC; the test split is never used for selection). Trial 0 is always the previous default. The winner is written to `configs/tuned/<Model>/<dataset>.json` and loaded automatically by the `*_main.py` scripts and `utils.notebook_runner`.
 
+**Optimizer:** every model trains with Adam (`torch.optim.Adam`); no other optimizer is used. Its learning rate and weight decay are hyperparameters like any other: paper values on the paper's datasets, tuned values (both are in every search space) elsewhere.
+
 Explicit command-line flags always win over tuned values. Every run prints, and saves in `config.json`, its `hparam_source` (`paper`, `tuned`, or `untuned_default` when a pair still needs tuning).
 
 | Model       | YelpChi | Amazon | T-Finance | T-Social | Elliptic | FDCompCN |
@@ -1085,6 +1088,132 @@ python tune_hparams.py --all --resume --gpu 0                   # continue an in
 ```
 
 Per-trial training output goes to `tuning_logs/<Model>/<dataset>.log` (git-ignored); the JSON keeps every trial's per-seed validation AUROC.
+
+---
+
+## Running the Full Benchmark
+
+The benchmark is **21 models × 6 datasets × 4 training ratios × 5 seeds** (2,520 runs), plus PMP and SEC-GFD. Training does **not** tune automatically: a run on a dataset its paper did not evaluate uses `configs/tuned/<Model>/<dataset>.json` if it exists, and otherwise falls back to untuned defaults with a warning. So the order matters: **tune first, then train**.
+
+Every command below runs from the **repo root** with the venv active. On RunPod (Linux) run them inside `tmux` (see [`docs/RUNPOD.md`](docs/RUNPOD.md)). The complete explicit list, one line per run, is in **[`docs/RUN_COMMANDS.md`](docs/RUN_COMMANDS.md)**. Regenerate it with `python docs/make_run_commands.py`.
+
+| Setting        | Values |
+| -------------- | ------ |
+| Models         | AMNet, BSL, BWGNN, CAREGNN, CGNN, CIEGAD, COFRAUD, DGAGNN, FRAUDRE, GDN, GGCN, GHRN, GLHN, GraphConsis, H2FDetector, H2IDE, ImGSL, PCGNN, SparseGAD, SplitGNN, TAM (+ PMP, SEC-GFD) |
+| Datasets       | `yelpchi`, `amazon`, `tfinance`, `tsocial`, `elliptic`, `comp` (FDCompCN) |
+| Training ratio | `0.1`, `0.2`, `0.3`, `0.4` (valid 20% / test 40% fixed) |
+| Seeds          | `123`, `1234`, `12345`, `123456`, `1234567` |
+| Output folder  | `results/<Model>/<dataset>/seed<seed>_train<pct>/` (`--run_tag train<pct>` keeps the ratios apart) |
+
+**Do not pass hyperparameter flags** (`--learning_rate`, `--weight_decay`, `--hid_dim`, `--epochs` for most models, ...) in benchmark runs. Explicit flags override both the paper and the tuned values. The one exception is GraphConsis: it gets `--sigmoid --epochs 500`, because its CLI default is only 10 epochs. Early stopping (patience 25) still ends it sooner.
+
+### Step 0: datasets
+
+`dataset/` must contain `YelpChi.mat`, `Amazon.mat`, `tfinance`, `tsocial`, `elliptic_bitcoin_dataset/` (three CSVs) and `comp.dgl` (see [Datasets](#datasets)).
+
+```bash
+ls dataset/YelpChi.mat dataset/Amazon.mat dataset/tfinance dataset/tsocial dataset/comp.dgl dataset/elliptic_bitcoin_dataset/
+```
+
+### Step 1: tune the pairs without paper settings (73 pairs, once)
+
+```bash
+python tune_hparams.py --list                 # TUNE = still to do, tuned = done, paper = never tuned
+python tune_hparams.py --all --gpu 0          # all 73 pairs: 20 trials x 5 seeds each on the 40% split
+python tune_hparams.py --all --resume --gpu 0 # after an interruption: finished pairs are skipped, the open one resumes
+python tune_hparams.py --list                 # repeat until no TUNE cell is left
+```
+
+Per-pair commands, to split the work across pods or run small datasets first, are in [`docs/RUN_COMMANDS.md`](docs/RUN_COMMANDS.md#step-1---hyperparameter-tuning-pairs-not-evaluated-in-the-original-paper). An example:
+
+```bash
+python tune_hparams.py --model GGCN --dataset comp --gpu 0
+python tune_hparams.py --all --dataset comp,elliptic --gpu 0    # every model, two datasets
+python tune_hparams.py --all --skip_dataset tsocial --gpu 0     # everything except T-Social
+```
+
+Commit the resulting `configs/tuned/**/*.json` (or copy them to every machine that trains), so training runs pick them up.
+
+### Step 2: train every model × dataset × ratio × seed
+
+**bash (RunPod / Linux):** completed runs (`metrics.json` present) are skipped, so the loop can be restarted at any time.
+
+```bash
+mkdir -p logs
+MODELS="AMNet BSL BWGNN CAREGNN CGNN CIEGAD COFRAUD DGAGNN FRAUDRE GDN GGCN GHRN GLHN H2FDetector H2IDE ImGSL PCGNN SparseGAD SplitGNN TAM"
+DATASETS="yelpchi amazon tfinance tsocial elliptic comp"
+RATIOS="0.1 0.2 0.3 0.4"
+SEEDS="123 1234 12345 123456 1234567"
+declare -A GC_FILE=([yelpchi]=YelpChi.mat [amazon]=Amazon.mat [tfinance]=tfinance [tsocial]=tsocial [elliptic]=elliptic [comp]=comp)
+
+for M in $MODELS GraphConsis; do for D in $DATASETS; do for R in $RATIOS; do for S in $SEEDS; do
+  P=$(awk "BEGIN{print int($R*100+0.5)}")
+  [ -f "results/$M/$D/seed${S}_train$P/metrics.json" ] && continue
+  echo ">>> $M $D train=$R seed=$S"
+  if [ "$M" = "GraphConsis" ]; then
+    python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name "${GC_FILE[$D]}" \
+      --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
+  else
+    python algorithms/$M/${M}_main.py --dataset $D --data_prefix dataset/ \
+      --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
+  fi || echo "FAILED: $M $D train=$R seed=$S (see logs/${M}_${D}_train${P}_seed${S}.log)"
+done; done; done; done
+```
+
+To run a subset, shorten `MODELS` / `DATASETS` (e.g. `MODELS="BWGNN"`, `DATASETS="comp"`).
+
+**PowerShell (Windows):**
+
+```powershell
+New-Item -ItemType Directory -Force logs | Out-Null
+$Models   = 'AMNet','BSL','BWGNN','CAREGNN','CGNN','CIEGAD','COFRAUD','DGAGNN','FRAUDRE','GDN','GGCN','GHRN','GLHN','H2FDetector','H2IDE','ImGSL','PCGNN','SparseGAD','SplitGNN','TAM','GraphConsis'
+$Datasets = 'yelpchi','amazon','tfinance','tsocial','elliptic','comp'
+$Ratios   = 0.1,0.2,0.3,0.4
+$Seeds    = 123,1234,12345,123456,1234567
+$GcFile   = @{ yelpchi='YelpChi.mat'; amazon='Amazon.mat'; tfinance='tfinance'; tsocial='tsocial'; elliptic='elliptic'; comp='comp' }
+
+foreach ($M in $Models) { foreach ($D in $Datasets) { foreach ($R in $Ratios) { foreach ($S in $Seeds) {
+  $P = [int][math]::Round($R * 100)
+  if (Test-Path "results/$M/$D/seed${S}_train$P/metrics.json") { continue }
+  Write-Host ">>> $M $D train=$R seed=$S"
+  $log = "logs/${M}_${D}_train${P}_seed${S}.log"
+  if ($M -eq 'GraphConsis') {
+    python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name $GcFile[$D] --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 --run_tag "train$P" *> $log
+  } else {
+    python "algorithms/$M/${M}_main.py" --dataset $D --data_prefix dataset/ --seed $S --train_ratio $R --gpu 0 --run_tag "train$P" *> $log
+  }
+  if ($LASTEXITCODE -ne 0) { Write-Host "FAILED: $M $D train=$R seed=$S (see $log)" }
+}}}}
+```
+
+A single run looks like this (the full list is in [`docs/RUN_COMMANDS.md`](docs/RUN_COMMANDS.md#step-2---training-every-model-x-dataset-x-training-ratio-x-seed)):
+
+```bash
+python algorithms/BWGNN/BWGNN_main.py --dataset elliptic --data_prefix dataset/ --seed 123 --train_ratio 0.4 --gpu 0 --run_tag train40
+python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name YelpChi.mat --sigmoid --epochs 500 --seed 123 --train_ratio 0.4 --gpu 0 --run_tag train40
+```
+
+### Step 3: PMP and SEC-GFD
+
+These use their own runners and import DGL, which the uv environment does not install, so run them in an environment with DGL. `--all --resume` covers 4 ratios × 5 seeds per dataset. PMP has no T-Social option.
+
+```bash
+for D in yelp amazon tfinance elliptic fdcompcn; do python algorithms/PMP/PMP_benchmark.py --dataset $D --all --resume; done
+for D in yelp amazon tfinance tsocial elliptic fdcompcn; do python algorithms/SEC_GFD/SEC_GFD_benchmark.py --dataset $D --all --resume; done
+```
+
+Outputs: `results/PMP/<dataset>/seed_<seed>/train_<pct>/` and `results/SEC_GFD/<dataset>/seed_<seed>/train_<pct>/`.
+
+### Step 4: check the runs
+
+```bash
+# Count finished runs per model (expect 120 = 6 datasets x 4 ratios x 5 seeds)
+python -c "import glob,collections,pathlib; c=collections.Counter(pathlib.Path(p).parts[1] for p in glob.glob('results/*/*/seed*_train*/metrics.json')); print(dict(sorted(c.items())))"
+# Runs that trained without a tuned config (should print 0: re-tune that pair and re-run)
+python -c "import glob,json; b=[p for p in glob.glob('results/*/*/seed*_train*/config.json') if json.load(open(p)).get('hparam_source')=='untuned_default']; print(len(b)); print(*b[:20], sep='\n')"
+```
+
+Both commands work on Linux and Windows. Download `results/` as described in [`docs/RUNPOD.md`](docs/RUNPOD.md#9-zip-results-on-the-pod-and-download-to-your-pc).
 
 ---
 

@@ -14,6 +14,10 @@ For every (model, dataset) pair of the benchmark:
 
 Explicit command-line flags always take precedence over tuned values.
 
+Every model uses the Adam optimizer. Its learning rate and weight decay follow the
+same rule as everything else: paper values on paper datasets, tuned otherwise
+(both are part of every search space in ``utils/hparam_spaces.py``).
+
 PMP and SEC-GFD keep their own config modules (``algorithms/PMP/pmp_config.py``,
 ``algorithms/SEC_GFD/secgfd_config.py``), which already follow this policy.
 """

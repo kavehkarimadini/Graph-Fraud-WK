@@ -9,6 +9,7 @@
 __pycache__/
 Graph-Fraud-WK.tar.gz/
 paper/
+dataset.zip
 dataset/YelpChi.mat
 dataset/YelpChi_hand.zip
 dataset/YelpChi_hand.mat

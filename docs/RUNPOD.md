@@ -1,6 +1,6 @@
-# Run Graph-Fraud-WK on RunPod (COFRAUD)
+# Run Graph-Fraud-WK on RunPod
 
-End-to-end: SSH into a GPU pod → download the project zip from Google Drive with `gdown` → unzip → `uv sync` → train **COFRAUD**.
+End-to-end: SSH into a GPU pod → download the project zip from Google Drive with `gdown` → unzip → `uv sync` → **tune, then train every model** (section 7) or a single model such as **COFRAUD** (section 8) → download `results/` (section 9).
 
 ## 1. Prepare the Google Drive zip
 
@@ -131,9 +131,98 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available(), tor
 
 Do **not** run a plain `pip install torch` from PyPI afterward — it can replace the GPU wheel with CPU.
 
-## 7. Run COFRAUD
+## 7. Full benchmark: tune, then train every model
 
-Still from the repo root, with the venv active:
+The benchmark is 21 models × 6 datasets × 4 training ratios (`0.1 0.2 0.3 0.4`) × 5 seeds (`123 1234 12345 123456 1234567`), plus PMP and SEC-GFD. Training does **not** tune by itself: a model on a dataset its paper did not evaluate needs `configs/tuned/<Model>/<dataset>.json`, otherwise it trains with untuned defaults (and warns). So run step 7.2 before 7.3. Every command below runs from the **repo root** with the venv active (section 6). The full explicit list (one line per run) is in [`docs/RUN_COMMANDS.md`](RUN_COMMANDS.md); background on the policy is in the root `README.md` ("Hyperparameter Policy", "Running the Full Benchmark").
+
+**Do not add hyperparameter flags** (`--learning_rate`, `--hid_dim`, ...): explicit flags override the paper / tuned values.
+
+### 7.1 Check data and start tmux
+
+```bash
+cd /workspace/Graph-Fraud-WK            # the folder with pyproject.toml
+source .venv/bin/activate               # or: source /tmp/gf-venv/bin/activate (section 6)
+ls dataset/YelpChi.mat dataset/Amazon.mat dataset/tfinance dataset/tsocial dataset/comp.dgl dataset/elliptic_bitcoin_dataset/
+tmux new -s bench                       # detach: Ctrl-b d, reattach: tmux attach -t bench
+```
+
+T-Social (5.8M nodes) needs a large-memory GPU; run it on its own pod if needed (`--skip_dataset tsocial` / `DATASETS=...` below).
+
+### 7.2 Hyperparameter tuning (73 pairs, once)
+
+```bash
+python tune_hparams.py --list                    # TUNE = still to do
+python tune_hparams.py --all --gpu 0             # 20 trials x 5 seeds per pair, 40% split, validation AUROC only
+python tune_hparams.py --all --resume --gpu 0    # after a disconnect / pod restart
+python tune_hparams.py --list                    # done when no TUNE cell is left
+```
+
+Split across pods, e.g. small datasets on one pod and T-Social on another:
+
+```bash
+python tune_hparams.py --all --dataset comp,elliptic,amazon --gpu 0
+python tune_hparams.py --all --dataset yelpchi,tfinance --gpu 0
+python tune_hparams.py --all --dataset tsocial --gpu 0
+```
+
+Every training pod needs the tuned configs. Download them (`zip -r /workspace/tuned.zip configs/tuned`, then `scp` as in section 9) and either commit them to the repo or copy them into `configs/tuned/` on the other pods.
+
+### 7.3 Train every model × dataset × ratio × seed
+
+Finished runs (`metrics.json` present) are skipped, so re-running the loop after an interruption continues where it stopped. Per-run logs go to `logs/`.
+
+```bash
+mkdir -p logs
+MODELS="AMNet BSL BWGNN CAREGNN CGNN CIEGAD COFRAUD DGAGNN FRAUDRE GDN GGCN GHRN GLHN H2FDetector H2IDE ImGSL PCGNN SparseGAD SplitGNN TAM"
+DATASETS="yelpchi amazon tfinance tsocial elliptic comp"
+RATIOS="0.1 0.2 0.3 0.4"
+SEEDS="123 1234 12345 123456 1234567"
+declare -A GC_FILE=([yelpchi]=YelpChi.mat [amazon]=Amazon.mat [tfinance]=tfinance [tsocial]=tsocial [elliptic]=elliptic [comp]=comp)
+
+for M in $MODELS GraphConsis; do for D in $DATASETS; do for R in $RATIOS; do for S in $SEEDS; do
+  P=$(awk "BEGIN{print int($R*100+0.5)}")
+  [ -f "results/$M/$D/seed${S}_train$P/metrics.json" ] && continue
+  echo ">>> $M $D train=$R seed=$S"
+  if [ "$M" = "GraphConsis" ]; then
+    python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name "${GC_FILE[$D]}" \
+      --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
+  else
+    python algorithms/$M/${M}_main.py --dataset $D --data_prefix dataset/ \
+      --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
+  fi || echo "FAILED: $M $D train=$R seed=$S (see logs/${M}_${D}_train${P}_seed${S}.log)"
+done; done; done; done
+```
+
+Run a subset by shortening the lists, e.g. one model on all datasets: `MODELS="BWGNN"`, or skip T-Social: `DATASETS="yelpchi amazon tfinance elliptic comp"`. Follow a run live with `tail -f logs/<file>.log`.
+
+Results: `results/<Model>/<dataset>/seed<seed>_train<pct>/` (`config.json`, `metrics.json`, `predictions.npz`, `split.npz`, `checkpoint.pt`).
+
+### 7.4 PMP and SEC-GFD
+
+They import DGL, which `uv sync` does not install (the toolbox reads graphs without DGL), so run them in an environment with DGL installed for the pod's CUDA version. Each command runs 4 ratios × 5 seeds and skips finished runs:
+
+```bash
+for D in yelp amazon tfinance elliptic fdcompcn; do python algorithms/PMP/PMP_benchmark.py --dataset $D --all --resume; done
+for D in yelp amazon tfinance tsocial elliptic fdcompcn; do python algorithms/SEC_GFD/SEC_GFD_benchmark.py --dataset $D --all --resume; done
+```
+
+### 7.5 Check, then download
+
+```bash
+# finished runs per model: expect 120 each (6 datasets x 4 ratios x 5 seeds)
+python -c "import glob,collections,pathlib; c=collections.Counter(pathlib.Path(p).parts[1] for p in glob.glob('results/*/*/seed*_train*/metrics.json')); print(dict(sorted(c.items())))"
+# runs without a tuned config: should print 0
+python -c "import glob,json; b=[p for p in glob.glob('results/*/*/seed*_train*/config.json') if json.load(open(p)).get('hparam_source')=='untuned_default']; print(len(b)); print(*b[:20], sep='\n')"
+grep -l "FAILED\|Traceback" logs/*.log | head      # failed runs, if any
+
+zip -r /workspace/benchmark_results.zip results configs/tuned
+```
+
+Then download `/workspace/benchmark_results.zip` with `scp` (section 9.2).
+
+## 8. Run a single model (COFRAUD example)
+
+Still from the repo root, with the venv active. On Amazon / YelpChi (COFRAUD's paper datasets) `--learning_rate 0.02 --epochs 500` equal the paper defaults; on other datasets **leave hyperparameter flags out** so the tuned values from section 7 apply.
 
 ```bash
 cd algorithms/COFRAUD
@@ -184,11 +273,11 @@ tmux new -s cofraud
 tmux attach -t cofraud
 ```
 
-## 8. Zip results on the pod and download to your PC
+## 9. Zip results on the pod and download to your PC
 
 COFRAUD writes under `algorithms/COFRAUD/results/` (or `--save_dir`). Zip that folder on the pod, then pull the archive with `scp` from your laptop.
 
-### 8.1 On the pod — create the zip
+### 9.1 On the pod — create the zip
 
 ```bash
 # Go to the COFRAUD algorithm folder (adjust nested path if needed)
@@ -218,7 +307,7 @@ tar -czf /workspace/cofraud_results.tar.gz -C algorithms/COFRAUD results
 
 Leave the SSH session open or note the pod **IP** and **PORT** from **Connect → SSH** (e.g. `root@157.157.221.29 -p 50642`).
 
-### 8.2 On your PC — download with `scp`
+### 9.2 On your PC — download with `scp`
 
 **PowerShell** (Windows), from any folder you want the file in:
 
@@ -253,7 +342,7 @@ scp -P PORT -i ~/.ssh/id_ed25519 \
   ./cofraud_results.zip
 ```
 
-### 8.3 On your PC — unzip
+### 9.3 On your PC — unzip
 
 ```powershell
 Expand-Archive -Path .\cofraud_results.zip -DestinationPath .\cofraud_results -Force
@@ -262,7 +351,7 @@ Expand-Archive -Path .\cofraud_results.zip -DestinationPath .\cofraud_results -F
 
 You should see paths like `cofraud_results\results\COFRAUD\<dataset>\seed<SEED>\metrics.json`.
 
-### 8.4 Alternative: copy the folder without zipping
+### 9.4 Alternative: copy the folder without zipping
 
 Slower for many small files, but fine for one run:
 
@@ -272,7 +361,7 @@ scp -P PORT -i $env:USERPROFILE\.ssh\id_ed25519 -r `
   .\cofraud_results
 ```
 
-### 8.5 Alternative: upload the zip to Google Drive from the pod
+### 9.5 Alternative: upload the zip to Google Drive from the pod
 
 If `scp` is awkward, upload from the pod (needs Drive credentials / `rclone` or a shared upload tool). Simplest path for this project is still **zip +** `scp`.
 
@@ -308,5 +397,7 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 cd algorithms/COFRAUD
 uv run python COFRAUD_main.py --dataset amazon --gpu 0 --seed 123 --learning_rate 0.02 --train_ratio 0.4 --epochs 500
 ```
+
+For the full benchmark instead of the last two lines, stay in the repo root and follow section 7 (`python tune_hparams.py --all --gpu 0`, then the 7.3 loop).
 
 More COFRAUD flags and multi-seed commands: root `README.md` (COFRAUD section) and `algorithms/COFRAUD/README.md`.
