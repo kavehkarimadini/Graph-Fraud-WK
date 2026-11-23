@@ -22,7 +22,8 @@ from utils.data_loader import (
     is_comp_name, load_comp_graph, load_elliptic_graph, load_mat_homo_graph,
     load_tgraph_dgl,
 )
-from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
+from utils.evaluation import compute_classification_metrics, run_dir_from_args, save_run_outputs
+from utils.run_guard import run_guarded
 from utils.hparams import apply_tuned_hparams, canonical_dataset
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
@@ -200,9 +201,7 @@ def train(args=None):
         config['model'] = 'BWGNN'
         config['best_valid_auc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
-        out_dir = run_output_dir(
-            args.save_dir, 'BWGNN', args.dataset, args.seed,
-            run_tag=getattr(args, 'run_tag', None))
+        out_dir = run_dir_from_args(args, 'BWGNN')
         save_run_outputs(
             out_dir, 'BWGNN', config, split_info,
             test_metrics, model=model, train_metrics=train_metrics,
@@ -218,7 +217,7 @@ def train(args=None):
 
 
 def main():
-    train(parse_args())
+    run_guarded(train, parse_args(), 'BWGNN')
 
 
 if __name__ == '__main__':

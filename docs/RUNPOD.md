@@ -133,9 +133,19 @@ Do **not** run a plain `pip install torch` from PyPI afterward — it can replac
 
 ## 7. Full benchmark: tune, then train every model
 
-The benchmark is 21 models × 6 datasets × 4 training ratios (`0.1 0.2 0.3 0.4`) × 5 seeds (`123 1234 12345 123456 1234567`), plus PMP and SEC-GFD. Training does **not** tune by itself: a model on a dataset its paper did not evaluate needs `configs/tuned/<Model>/<dataset>.json`, otherwise it trains with untuned defaults (and warns). So run step 7.2 before 7.3. Every command below runs from the **repo root** with the venv active (section 6). The full explicit list (one line per run) is in [`docs/RUN_COMMANDS.md`](RUN_COMMANDS.md); background on the policy is in the root `README.md` ("Hyperparameter Policy", "Running the Full Benchmark").
+The benchmark is 23 models (including PMP and SEC-GFD) × 6 datasets × 4 training ratios (`0.1 0.2 0.3 0.4`) × 5 seeds (`123 1234 12345 123456 1234567`), 2,760 runs. Training does **not** tune by itself: a model on a dataset its paper did not evaluate needs `configs/tuned/<Model>/<dataset>.json`, otherwise it trains with untuned defaults (and warns). So run step 7.2 before 7.3. Every command below runs from the **repo root** with the venv active (section 6). The full explicit list (one line per run) is in [`docs/RUN_COMMANDS.md`](RUN_COMMANDS.md); background on the policy is in the root `README.md` ("Hyperparameter Policy", "Running the Full Benchmark").
 
 **Do not add hyperparameter flags** (`--learning_rate`, `--hid_dim`, ...): explicit flags override the paper / tuned values.
+
+**Limits per run.**
+- A run that takes more than **4 hours** is stopped and leaves `OOT.txt` in its run folder.
+- A run that needs more than **100 GB of GPU memory** is stopped and leaves `OOM.txt` there.
+- Each file's first line is `OOT` or `OOM`, followed by the details; a stopped run writes no other result files.
+- **Pick a GPU with more than 100 GB** (H200 141 GB, B200 180 GB) if the OOM column should mean exactly "more than 100 GB". On an 80 GB A100/H100 a run is already marked OOM when it needs more than 80 GB.
+
+Details are in the root `README.md` ("Time and memory limits").
+
+**Folder names.** Every run writes to `results/<Model>/<dataset>/seed<seed>_train<pct>/`, built from its arguments. All 2,760 commands map to different folders, so running them from top to bottom, model after model, never overwrites anything.
 
 ### 7.1 Check data and start tmux
 
@@ -148,7 +158,7 @@ tmux new -s bench                       # detach: Ctrl-b d, reattach: tmux attac
 
 T-Social (5.8M nodes) needs a large-memory GPU; run it on its own pod if needed (`--skip_dataset tsocial` / `DATASETS=...` below).
 
-### 7.2 Hyperparameter tuning (73 pairs, once)
+### 7.2 Hyperparameter tuning (77 pairs, once)
 
 ```bash
 python tune_hparams.py --list                    # TUNE = still to do
@@ -169,11 +179,11 @@ Every training pod needs the tuned configs. Download them (`zip -r /workspace/tu
 
 ### 7.3 Train every model × dataset × ratio × seed
 
-Finished runs (`metrics.json` present) are skipped, so re-running the loop after an interruption continues where it stopped. Per-run logs go to `logs/`.
+Finished runs (`metrics.json`) and stopped runs (`OOT.txt` / `OOM.txt`) are skipped, so re-running the loop after an interruption continues where it stopped. Per-run logs go to `logs/`.
 
 ```bash
 mkdir -p logs
-MODELS="AMNet BSL BWGNN CAREGNN CGNN CIEGAD COFRAUD DGAGNN FRAUDRE GDN GGCN GHRN GLHN H2FDetector H2IDE ImGSL PCGNN SparseGAD SplitGNN TAM"
+MODELS="AMNet BSL BWGNN CAREGNN CGNN CIEGAD COFRAUD DGAGNN FRAUDRE GDN GGCN GHRN GLHN H2FDetector H2IDE ImGSL PCGNN PMP SEC_GFD SparseGAD SplitGNN TAM"
 DATASETS="yelpchi amazon tfinance tsocial elliptic comp"
 RATIOS="0.1 0.2 0.3 0.4"
 SEEDS="123 1234 12345 123456 1234567"
@@ -181,39 +191,40 @@ declare -A GC_FILE=([yelpchi]=YelpChi.mat [amazon]=Amazon.mat [tfinance]=tfinanc
 
 for M in $MODELS GraphConsis; do for D in $DATASETS; do for R in $RATIOS; do for S in $SEEDS; do
   P=$(awk "BEGIN{print int($R*100+0.5)}")
-  [ -f "results/$M/$D/seed${S}_train$P/metrics.json" ] && continue
+  RUN="results/$M/$D/seed${S}_train$P"
+  LOG="logs/${M}_${D}_train${P}_seed${S}.log"
+  if [ -f "$RUN/metrics.json" ] || [ -f "$RUN/OOT.txt" ] || [ -f "$RUN/OOM.txt" ]; then continue; fi
   echo ">>> $M $D train=$R seed=$S"
   if [ "$M" = "GraphConsis" ]; then
     python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name "${GC_FILE[$D]}" \
-      --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
+      --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 > "$LOG" 2>&1
   else
     python algorithms/$M/${M}_main.py --dataset $D --data_prefix dataset/ \
-      --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
-  fi || echo "FAILED: $M $D train=$R seed=$S (see logs/${M}_${D}_train${P}_seed${S}.log)"
+      --seed $S --train_ratio $R --gpu 0 > "$LOG" 2>&1
+  fi
+  case $? in
+    0)   ;;
+    124) echo "OOT: $M $D train=$R seed=$S (over 4 h, see $RUN/OOT.txt)" ;;
+    125) echo "OOM: $M $D train=$R seed=$S (over 100 GB GPU memory, see $RUN/OOM.txt)" ;;
+    *)   echo "FAILED: $M $D train=$R seed=$S (see $LOG)" ;;
+  esac
 done; done; done; done
 ```
 
 Run a subset by shortening the lists, e.g. one model on all datasets: `MODELS="BWGNN"`, or skip T-Social: `DATASETS="yelpchi amazon tfinance elliptic comp"`. Follow a run live with `tail -f logs/<file>.log`.
 
-Results: `results/<Model>/<dataset>/seed<seed>_train<pct>/` (`config.json`, `metrics.json`, `predictions.npz`, `split.npz`, `checkpoint.pt`).
+Results: `results/<Model>/<dataset>/seed<seed>_train<pct>/`. A finished run has `config.json`, `metrics.json`, `predictions.npz`, `split.npz` and `checkpoint.pt`; a stopped run has only `OOT.txt` or `OOM.txt`.
 
-### 7.4 PMP and SEC-GFD
-
-They import DGL, which `uv sync` does not install (the toolbox reads graphs without DGL), so run them in an environment with DGL installed for the pod's CUDA version. Each command runs 4 ratios × 5 seeds and skips finished runs:
+### 7.4 Check, then download
 
 ```bash
-for D in yelp amazon tfinance elliptic fdcompcn; do python algorithms/PMP/PMP_benchmark.py --dataset $D --all --resume; done
-for D in yelp amazon tfinance tsocial elliptic fdcompcn; do python algorithms/SEC_GFD/SEC_GFD_benchmark.py --dataset $D --all --resume; done
-```
-
-### 7.5 Check, then download
-
-```bash
-# finished runs per model: expect 120 each (6 datasets x 4 ratios x 5 seeds)
-python -c "import glob,collections,pathlib; c=collections.Counter(pathlib.Path(p).parts[1] for p in glob.glob('results/*/*/seed*_train*/metrics.json')); print(dict(sorted(c.items())))"
-# runs without a tuned config: should print 0
+# Per model: done / OOT / OOM (total should be 120 = 6 datasets x 4 ratios x 5 seeds)
+python -c "import glob,collections,pathlib as P; K={'metrics.json':'done','OOT.txt':'OOT','OOM.txt':'OOM'}; c=collections.defaultdict(collections.Counter); fs=glob.glob('results/*/*/seed*_train*/*'); [c[P.Path(f).parts[1]].update([K[P.Path(f).name]]) for f in fs if P.Path(f).name in K]; [print(m, dict(v), 'total', sum(v.values())) for m,v in sorted(c.items())]"
+# List every stopped run
+python -c "import glob; print(*sorted(glob.glob('results/*/*/seed*_train*/OO[TM].txt')), sep='\n')"
+# Runs that trained without a tuned config (should print 0: re-tune that pair and re-run)
 python -c "import glob,json; b=[p for p in glob.glob('results/*/*/seed*_train*/config.json') if json.load(open(p)).get('hparam_source')=='untuned_default']; print(len(b)); print(*b[:20], sep='\n')"
-grep -l "FAILED\|Traceback" logs/*.log | head      # failed runs, if any
+grep -l "FAILED\|Traceback" logs/*.log | head      # crashed runs, if any (OOT / OOM runs are listed above)
 
 zip -r /workspace/benchmark_results.zip results configs/tuned
 ```
@@ -246,7 +257,7 @@ Other datasets: `elliptic`, `tfinance`, `tsocial`, `comp` (need the matching fil
 Artifacts land under something like:
 
 ```text
-algorithms/COFRAUD/results/COFRAUD/<dataset>/seed<SEED>/
+algorithms/COFRAUD/results/COFRAUD/<dataset>/seed<SEED>_train40/
 ```
 
 (or `--save_dir` if you set one). Useful files: `metrics.json`, `checkpoint.pt`.

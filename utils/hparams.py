@@ -18,8 +18,8 @@ Every model uses the Adam optimizer. Its learning rate and weight decay follow t
 same rule as everything else: paper values on paper datasets, tuned otherwise
 (both are part of every search space in ``utils/hparam_spaces.py``).
 
-PMP and SEC-GFD keep their own config modules (``algorithms/PMP/pmp_config.py``,
-``algorithms/SEC_GFD/secgfd_config.py``), which already follow this policy.
+PMP and SEC-GFD (``algorithms/PMP/PMP_main.py``, ``algorithms/SEC_GFD/SEC_GFD_main.py``)
+follow the same policy as every other model.
 """
 from __future__ import print_function
 
@@ -110,6 +110,16 @@ PAPER_EVALUATED = {
         datasets={'yelpchi', 'amazon'},
         source='IGSL (Machine Learning 2024) Sec. 5.3: lr 0.01, weight decay 1e-3, 150 epochs, '
                'batch 256 / 1024, beta 0.5, epsilon 0.5 / 0, tau- 0.2, alpha 2.'),
+    'PMP': dict(
+        datasets={'yelpchi', 'amazon', 'tfinance', 'tsocial'},
+        source='PMP (ICLR 2024) App. D.4 Table 5: Adam, 1 layer; lr / wd / dropout / batch / '
+               'hidden = Yelp 0.01/0/0/512/256, Amazon 0.01/0/0.6/128/128, T-Finance '
+               '0.01/0/0.4/256/64, T-Social 0.001/0/0/2^17/128.'),
+    'SEC_GFD': dict(
+        datasets={'yelpchi', 'amazon', 'tfinance', 'tsocial'},
+        source='SEC-GFD (AAAI 2024) released code (reference/SEC-GFD-main.zip; the paper '
+               'evaluates YelpChi, Amazon, T-Finance, T-Social): Adam lr 0.01, hidden 64, '
+               'C = 2, high-order 2, lambda 0.2; T-Social hidden 16, C = 5.'),
     'PCGNN': dict(
         datasets={'yelpchi', 'amazon'},
         source='PC-GNN (WWW 2021) Sec. 4.1.3: Adam lr 0.01, 100 epochs, L = 1, d = 64, '

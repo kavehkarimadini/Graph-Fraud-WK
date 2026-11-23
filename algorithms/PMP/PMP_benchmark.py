@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import random
+import subprocess
 import sys
 import time
 
@@ -21,6 +22,7 @@ from algorithms.PMP.LASAGE_S import LASAGE_S
 from algorithms.PMP.pmp_config import canonical_dataset_name, get_pmp_config
 from algorithms.PMP.pmp_data import load_pmp_dataset
 from utils.evaluation import compute_classification_metrics, save_run_outputs
+from utils.run_guard import guarded_call, stopped_status
 
 MODEL_NAME = "PMP"
 ALLOWED_SEEDS = [123, 1234, 12345, 123456, 1234567]
@@ -60,6 +62,12 @@ def run_complete(dataset, seed, train_ratio):
         "split.npz", "predictions.npz", "checkpoint.pt",
     ]
     return all(os.path.exists(os.path.join(out, name)) for name in required)
+
+
+def run_finished(dataset, seed, train_ratio):
+    """Complete, or stopped with OOT.txt / OOM.txt (no point re-running it)."""
+    return run_complete(dataset, seed, train_ratio) or bool(
+        stopped_status(output_dir_for(dataset, seed, train_ratio)))
 
 
 def load_split(dataset, seed, train_ratio):
@@ -329,21 +337,32 @@ def main():
     dataset = canonical_dataset_name(args.dataset)
 
     if args.all:
+        # One process per run, so an OOT stop (4 h limit) ends only that run.
         for ratio in ALLOWED_TRAIN_RATIOS:
             for seed in ALLOWED_SEEDS:
-                if args.resume and run_complete(dataset, seed, ratio):
-                    print(f"SKIP complete: {dataset} seed={seed} train_ratio={ratio}")
+                if args.resume and run_finished(dataset, seed, ratio):
+                    print(f"SKIP finished: {dataset} seed={seed} train_ratio={ratio}")
                     continue
-                train_one_run(dataset, seed, ratio)
+                cmd = [sys.executable, os.path.abspath(__file__), "--dataset", args.dataset,
+                       "--seed", str(seed), "--train-ratio", str(ratio)]
+                if args.resume:
+                    cmd.append("--resume")
+                code = subprocess.call(cmd)
+                if code != 0:
+                    status = stopped_status(output_dir_for(dataset, seed, ratio)) or "FAILED"
+                    print(f"{status}: {dataset} seed={seed} train_ratio={ratio} (exit code {code})")
         return
 
     if args.seed is None or args.train_ratio is None:
         raise SystemExit("Single-run mode requires both --seed and --train-ratio, or use --all.")
 
-    if args.resume and run_complete(dataset, args.seed, args.train_ratio):
-        print(f"SKIP complete: {dataset} seed={args.seed} train_ratio={args.train_ratio}")
+    if args.resume and run_finished(dataset, args.seed, args.train_ratio):
+        print(f"SKIP finished: {dataset} seed={args.seed} train_ratio={args.train_ratio}")
         return
-    train_one_run(dataset, args.seed, args.train_ratio)
+    out_dir = output_dir_for(dataset, args.seed, args.train_ratio)
+    guarded_call(lambda: train_one_run(dataset, args.seed, args.train_ratio), out_dir,
+                 dict(model=MODEL_NAME, dataset=dataset, seed=args.seed,
+                      train_ratio=args.train_ratio, run_dir=out_dir), gpu=0)
 
 
 if __name__ == "__main__":

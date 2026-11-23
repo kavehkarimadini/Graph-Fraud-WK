@@ -17,13 +17,10 @@ DATASET_LABEL = {'yelpchi': 'YelpChi', 'amazon': 'Amazon', 'tfinance': 'T-Financ
                  'tsocial': 'T-Social', 'elliptic': 'Elliptic', 'comp': 'FDCompCN'}
 GRAPHCONSIS_FILE = {'yelpchi': 'YelpChi.mat', 'amazon': 'Amazon.mat', 'tfinance': 'tfinance',
                     'tsocial': 'tsocial', 'elliptic': 'elliptic', 'comp': 'comp'}
-PMP_DATASETS = ['yelp', 'amazon', 'tfinance', 'elliptic', 'fdcompcn']              # PMP has no T-Social option
-SECGFD_DATASETS = ['yelp', 'amazon', 'tfinance', 'tsocial', 'elliptic', 'fdcompcn']
 
 
 def train_cmd(model, ds, ratio, seed):
-    tag = 'train{}'.format(int(round(ratio * 100)))
-    common = '--seed {} --train_ratio {} --gpu 0 --run_tag {}'.format(seed, ratio, tag)
+    common = '--seed {} --train_ratio {} --gpu 0'.format(seed, ratio)
     if model == 'GraphConsis':
         return ('python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ '
                 '--file_name {} --sigmoid --epochs 500 {}'.format(GRAPHCONSIS_FILE[ds], common))
@@ -48,13 +45,17 @@ def main():
       'override the paper / tuned values.')
     w('- Seeds: {}. Training ratios: {} (valid 20% and test 40% stay fixed).'.format(
         ', '.join(map(str, SEEDS)), ', '.join(str(r) for r in RATIOS)))
-    w('- Outputs: `results/<Model>/<dataset>/seed<seed>_train<pct>/` (`--run_tag` keeps the four '
-      'training ratios apart; `config.json` records `train_ratio` and `hparam_source`).')
+    w('- Outputs: `results/<Model>/<dataset>/seed<seed>_train<pct>/`. The folder name is built from '
+      'the arguments, so no two commands below share a folder and running the list from top to '
+      'bottom never overwrites anything (`config.json` records `train_ratio` and `hparam_source`).')
+    w('- Limits per run: more than 4 hours stops the run and writes `OOT.txt` (exit code 124); more '
+      'than 100 GB of GPU memory stops it and writes `OOM.txt` (exit code 125), both in the run folder. '
+      'Skip a command whose folder already has `metrics.json`, `OOT.txt` or `OOM.txt`.')
     w('')
     n_tune = sum(1 for m in models for d in DATASETS if not uses_paper_hparams(m, d))
     n_train = len(models) * len(DATASETS) * len(RATIOS) * len(SEEDS)
-    w('Totals: {} tuning commands (step 1), {} training commands (step 2), plus PMP / SEC-GFD (step 3).'.format(
-        n_tune, n_train))
+    w('Totals: {} tuning commands (step 1), {} training commands (step 2), {} models.'.format(
+        n_tune, n_train, len(models)))
     w('')
 
     w('## Step 1 - Hyperparameter tuning (pairs not evaluated in the original paper)')
@@ -90,34 +91,6 @@ def main():
                     w(train_cmd(model, d, ratio, seed))
             w('```')
             w('')
-
-    w('## Step 3 - PMP and SEC-GFD (separate runners, need DGL)')
-    w('')
-    w('These two use their own config modules (`algorithms/PMP/pmp_config.py`, '
-      '`algorithms/SEC_GFD/secgfd_config.py`) and import DGL, which the uv environment does not '
-      'install. They write to `results/PMP/<dataset>/seed_<seed>/train_<pct>/` and '
-      '`results/SEC_GFD/<dataset>/seed_<seed>/train_<pct>/`. Per dataset, `--all --resume` runs all 4 ratios x 5 seeds:')
-    w('')
-    w('```bash')
-    for d in PMP_DATASETS:
-        w('python algorithms/PMP/PMP_benchmark.py --dataset {} --all --resume'.format(d))
-    for d in SECGFD_DATASETS:
-        w('python algorithms/SEC_GFD/SEC_GFD_benchmark.py --dataset {} --all --resume'.format(d))
-    w('```')
-    w('')
-    w('Single runs, if you prefer explicit commands:')
-    w('')
-    for name, script, dsets in (('PMP', 'algorithms/PMP/PMP_benchmark.py', PMP_DATASETS),
-                                ('SEC-GFD', 'algorithms/SEC_GFD/SEC_GFD_benchmark.py', SECGFD_DATASETS)):
-        w('### {}'.format(name))
-        w('')
-        w('```bash')
-        for d in dsets:
-            for ratio in RATIOS:
-                for seed in SEEDS:
-                    w('python {} --dataset {} --seed {} --train-ratio {}'.format(script, d, seed, ratio))
-        w('```')
-        w('')
 
     path = os.path.join(ROOT, 'docs', 'RUN_COMMANDS.md')
     with open(path, 'w', encoding='utf-8', newline='\n') as f:

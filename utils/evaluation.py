@@ -95,18 +95,45 @@ def count_model_parameters(model):
     return total, trainable
 
 
-def run_output_dir(save_dir, model_name, dataset_name=None, seed=None, run_tag=None):
+def run_output_dir(save_dir, model_name, dataset_name=None, seed=None, run_tag=None, train_ratio=None):
+    """``<save_dir>/<model>/<dataset>/seed<seed>_train<pct>[_<run_tag>]``.
+
+    The dataset name is canonicalised (``YelpChi.mat`` / ``yelp`` -> ``yelpchi``,
+    ``fdcompcn`` -> ``comp``) so every model writes to the same dataset folder names.
+    With ``train_ratio`` the folder always carries the training percentage, so runs that
+    differ in model, dataset, seed or training ratio can never share a folder. A
+    ``run_tag`` equal to ``train<pct>`` is not repeated.
+    """
+    from utils.hparams import canonical_dataset
     parts = [save_dir, model_name]
     if dataset_name:
-        parts.append(str(dataset_name))
+        parts.append(canonical_dataset(dataset_name))
+    tags = []
+    if train_ratio is not None:
+        tags.append('train{}'.format(int(round(float(train_ratio) * 100))))
+    if run_tag and str(run_tag) not in tags:
+        tags.append(str(run_tag))
     if seed is not None:
-        seed_part = 'seed{}'.format(seed)
-        if run_tag:
-            seed_part = '{}_{}'.format(seed_part, run_tag)
-        parts.append(seed_part)
-    elif run_tag:
-        parts.append(str(run_tag))
+        parts.append('_'.join(['seed{}'.format(seed)] + tags))
+    elif tags:
+        parts.append('_'.join(tags))
     return os.path.join(*parts)
+
+
+def run_dir_from_args(args, model_name, run_tag=None):
+    """Run folder of a benchmark ``*_main.py`` from its parsed arguments.
+
+    Used both when the run starts (OOT / OOM status files) and when it saves its
+    results, so the two always agree.
+    """
+    dataset = (getattr(args, 'dataset', None) or getattr(args, 'file_name', None)
+               or getattr(args, 'dataset_str', None) or 'unknown')
+    if run_tag is None:
+        run_tag = getattr(args, 'run_tag', None)
+    train_ratio = getattr(args, 'train_ratio', None)
+    return run_output_dir(getattr(args, 'save_dir', 'results'), model_name, dataset,
+                          getattr(args, 'seed', None), run_tag=run_tag,
+                          train_ratio=0.4 if train_ratio is None else train_ratio)
 
 
 def save_run_outputs(

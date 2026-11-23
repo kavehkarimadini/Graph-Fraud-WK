@@ -7,6 +7,7 @@ import copy
 import json
 import os
 import random
+import subprocess
 import sys
 import time
 
@@ -35,6 +36,7 @@ from utils.evaluation import (
     compute_classification_metrics,
     save_run_outputs,
 )
+from utils.run_guard import guarded_call, stopped_status
 
 
 MODEL_NAME = "SEC_GFD"
@@ -151,6 +153,13 @@ def run_complete(dataset, seed, train_ratio):
             os.path.join(out, name)
         )
         for name in required
+    )
+
+
+def run_finished(dataset, seed, train_ratio):
+    """Complete, or stopped with OOT.txt / OOM.txt (no point re-running it)."""
+    return run_complete(dataset, seed, train_ratio) or bool(
+        stopped_status(output_dir_for(dataset, seed, train_ratio))
     )
 
 
@@ -1321,20 +1330,21 @@ def main():
 
     if args.all:
 
+        # One process per run, so an OOT stop (4 h limit) ends only that run.
         for ratio in ALLOWED_TRAIN_RATIOS:
 
             for seed in ALLOWED_SEEDS:
 
                 if (
                     args.resume
-                    and run_complete(
+                    and run_finished(
                         dataset,
                         seed,
                         ratio,
                     )
                 ):
                     print(
-                        "SKIP complete: "
+                        "SKIP finished: "
                         "{} seed={} "
                         "train_ratio={}".format(
                             dataset,
@@ -1344,12 +1354,26 @@ def main():
                     )
                     continue
 
-                train_one_run(
-                    dataset=dataset,
-                    seed=seed,
-                    train_ratio=ratio,
-                    resume=args.resume,
-                )
+                cmd = [
+                    sys.executable,
+                    os.path.abspath(__file__),
+                    "--dataset", args.dataset,
+                    "--seed", str(seed),
+                    "--train-ratio", str(ratio),
+                ]
+                if args.resume:
+                    cmd.append("--resume")
+                code = subprocess.call(cmd)
+                if code != 0:
+                    status = stopped_status(
+                        output_dir_for(dataset, seed, ratio)
+                    ) or "FAILED"
+                    print(
+                        "{}: {} seed={} train_ratio={} "
+                        "(exit code {})".format(
+                            status, dataset, seed, ratio, code,
+                        )
+                    )
 
         return
 
@@ -1365,14 +1389,14 @@ def main():
 
     if (
         args.resume
-        and run_complete(
+        and run_finished(
             dataset,
             args.seed,
             args.train_ratio,
         )
     ):
         print(
-            "SKIP complete: "
+            "SKIP finished: "
             "{} seed={} train_ratio={}".format(
                 dataset,
                 args.seed,
@@ -1381,11 +1405,23 @@ def main():
         )
         return
 
-    train_one_run(
-        dataset=dataset,
-        seed=args.seed,
-        train_ratio=args.train_ratio,
-        resume=args.resume,
+    out_dir = output_dir_for(dataset, args.seed, args.train_ratio)
+    guarded_call(
+        lambda: train_one_run(
+            dataset=dataset,
+            seed=args.seed,
+            train_ratio=args.train_ratio,
+            resume=args.resume,
+        ),
+        out_dir,
+        dict(
+            model=MODEL_NAME,
+            dataset=dataset,
+            seed=args.seed,
+            train_ratio=args.train_ratio,
+            run_dir=out_dir,
+        ),
+        gpu=0,
     )
 
 

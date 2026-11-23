@@ -1544,6 +1544,91 @@ def run_cofraud(dataset='yelpchi', download=True, **overrides):
     return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
 
 
+def _canonical_runner_dataset(dataset):
+    ds = normalize_dataset(dataset)
+    return {'fdcompcn': 'comp', 'yelp': 'yelpchi'}.get(ds, ds)
+
+
+def _pmp_defaults(dataset, root):
+    ds = _canonical_runner_dataset(dataset)
+    from algorithms.PMP.PMP_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    params = dict(
+        dataset=ds,
+        train_ratio=0.4,
+        early_stop=25,
+        eval_batch_size=65536,
+        gpu='0',
+        seed=123,
+        data_prefix=str(dataset_dir(root)) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+    params.update(paper)
+    return params
+
+
+def run_pmp(dataset='amazon', download=True, **overrides):
+    """Train PMP, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.PMP.PMP_main import train
+
+    params = _pmp_defaults(dataset, root)
+    params.update(tuned_params('PMP', params['dataset']))
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'], hid_dim=params['hid_dim'])
+    print('PMP', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
+def _sec_gfd_defaults(dataset, root):
+    ds = _canonical_runner_dataset(dataset)
+    from algorithms.SEC_GFD.SEC_GFD_main import DATASET_DEFAULTS
+    paper = DATASET_DEFAULTS.get(ds, DATASET_DEFAULTS['yelpchi'])
+    params = dict(
+        dataset=ds,
+        train_ratio=0.4,
+        early_stop=25,
+        gpu='0',
+        seed=123,
+        data_prefix=str(dataset_dir(root)) + os.sep,
+        save_dir=str(notebook_runs_dir(root)),
+        test_size=None,
+        no_save=False,
+        run_tag=None,
+    )
+    params.update(paper)
+    return params
+
+
+def run_sec_gfd(dataset='tfinance', download=True, **overrides):
+    """Train SEC-GFD, save artifacts, zip the run folder, download on Colab."""
+    root = repo_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from algorithms.SEC_GFD.SEC_GFD_main import train
+
+    params = _sec_gfd_defaults(dataset, root)
+    params.update(tuned_params('SEC_GFD', params['dataset']))
+    params.update(overrides)
+    if not params.get('run_tag'):
+        params['run_tag'] = make_run_tag(
+            epochs=params['epochs'], learning_rate=params['learning_rate'],
+            hid_dim=params['hid_dim'], order=params['order'])
+    print('SEC-GFD', params['dataset'], '->', params['save_dir'])
+    metrics, out_dir = train(argparse.Namespace(**params))
+    zip_path = zip_and_download(out_dir) if download else (zip_run_folder(out_dir) if out_dir else None)
+    return {'metrics': metrics, 'out_dir': out_dir, 'zip_path': zip_path, 'params': params}
+
+
 def zip_all_notebook_runs(root=None, download=True):
     """Zip the entire notebook_runs/ tree (every model/dataset/run)."""
     runs = notebook_runs_dir(root)

@@ -201,7 +201,7 @@ Multi-relation company graph from [Wu et al., CIKM 2023](https://dl.acm.org/doi/
 
 Used by **GraphConsis** (`--file_name comp`, three non-homo relations), **BWGNN** (`--dataset comp`, homo edges), **SplitGNN** (`--dataset comp`, all relations + signed homo edges), **DGA-GNN**, **GLHN**, **BSL**, **CARE-GNN**, **H2-FDetector**, **FRAUDRE**, **PC-GNN**, **SparseGAD**, **AMNet**, **GHRN**, **GGCN**, **TAM**, **GDN**, **ImGSL**, **CGNN**, **H2IDE**, **CIE-GAD**, and **COFRAUD**. Loaded without importing DGL.
 
-### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE, CIE-GAD, COFRAUD)
+### Train / valid / test protocol (GraphConsis, BWGNN, SplitGNN, DGA-GNN, GLHN, BSL, CARE-GNN, H2-FDetector, FRAUDRE, PC-GNN, SparseGAD, AMNet, GHRN, GGCN, TAM, GDN, ImGSL, CGNN, H2IDE, CIE-GAD, COFRAUD, PMP, SEC-GFD)
 
 All three models use the same stratified split of **labeled** nodes:
 
@@ -272,6 +272,8 @@ Each algorithm folder has its own `*_main.py` (or `supervised_train.py` / `main.
 | H2IDE       | `cd algorithms/H2IDE` then `python H2IDE_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                          |
 | CIE-GAD     | `cd algorithms/CIEGAD` then `python CIEGAD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                        |
 | COFRAUD     | `cd algorithms/COFRAUD` then `python COFRAUD_main.py --dataset yelpchi --gpu 0` (also `amazon`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
+| PMP         | `cd algorithms/PMP` then `python PMP_main.py --dataset amazon --gpu 0` (also `yelpchi`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                              |
+| SEC-GFD     | `cd algorithms/SEC_GFD` then `python SEC_GFD_main.py --dataset amazon --gpu 0` (also `yelpchi`, `elliptic`, `tfinance`, `tsocial`, `comp`)                                                                      |
 | HACUD       | `cd algorithms/HACUD` then `python main.py --dataset dblp --gpu 0 --epoch 100 --embed_size 16 --batch_size 64 --lr 1e-4`                                                                                        |
 
 ### Running on your own data
@@ -291,7 +293,7 @@ Models are `torch.nn.Module` subclasses. Use:
 
 - `fit_batch(...)` for a training step (do not confuse with `nn.Module.train()`, which only sets train mode)
 - `evaluate(...)` for evaluation (returns `acc, pred, prob, tags`)
-- `save(path)` / `load(path)` for checkpoints (legacy single-file `.pt`; unified runs use `checkpoint.pt` under `results/<Model>/<dataset>/seed<seed>/`)
+- `save(path)` / `load(path)` for checkpoints (legacy single-file `.pt`; unified runs use `checkpoint.pt` under `results/<Model>/<dataset>/seed<seed>_train<pct>/`)
 
 After `main.py` training, evaluation artifacts are written via `utils.training.finalize_run` / `utils.evaluation.save_run_outputs` (see [Evaluation & Saved Outputs](#evaluation--saved-outputs)).
 
@@ -880,6 +882,38 @@ python COFRAUD_main.py --dataset comp --gpu 0
 cd ../..
 ```
 
+#### PMP (`algorithms/PMP/PMP_main.py`)
+
+Partitioning Message Passing (ICLR 2024), implemented from `paper/papers-to-read/PMP.pdf` with the official code's details: neighbours are summed separately by their training label (fraud / benign / unlabelled), with root-specific weights, an adaptive fraud/benign mix for unlabelled neighbours, and one layer per relation followed by concatenation and an MLP. With one layer (the paper's setting) the partitioned neighbour sums are precomputed once, so training is mini-batched over nodes and scales to T-Social. No DGL; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/PMP
+python PMP_main.py --dataset yelpchi --gpu 0
+python PMP_main.py --dataset amazon --gpu 0
+python PMP_main.py --dataset elliptic --gpu 0
+python PMP_main.py --dataset tfinance --gpu 0
+python PMP_main.py --dataset tsocial --gpu 0
+python PMP_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+#### SEC-GFD (`algorithms/SEC_GFD/SEC_GFD_main.py`)
+
+Spectrum-based fraud detector (AAAI 2024), re-implemented from the released code in `reference/SEC-GFD-main.zip`. It combines Beta-wavelet band-pass filters with high-pass Laplacian filters (the hybrid filtering module), and a GCN-based local environmental constraint loss. Full-batch on `torch.sparse`; no DGL; same 40/20/40 protocol.
+
+```powershell
+cd algorithms/SEC_GFD
+python SEC_GFD_main.py --dataset yelpchi --gpu 0
+python SEC_GFD_main.py --dataset amazon --gpu 0
+python SEC_GFD_main.py --dataset elliptic --gpu 0
+python SEC_GFD_main.py --dataset tfinance --gpu 0
+python SEC_GFD_main.py --dataset tsocial --gpu 0
+python SEC_GFD_main.py --dataset comp --gpu 0
+cd ../..
+```
+
+The older DGL runners (`algorithms/PMP/PMP_benchmark.py`, `algorithms/SEC_GFD/SEC_GFD_benchmark.py`) remain only to reproduce earlier results in `results/<Model>/<dataset>/seed_<seed>/train_<pct>/`. They are not part of the benchmark.
+
 #### HACUD (`algorithms/HACUD/main.py`)
 
 Requires extracted DBLP `.mat` (see `get_data.py` path).
@@ -927,12 +961,13 @@ Every training entry point (`main.py`, `*_main.py`, GraphSAGE/GraphConsis `super
 ### Unified run layout
 
 ```
-results/<Model>/<dataset>/seed<seed>/
+results/<Model>/<dataset>/seed<seed>_train<pct>/   # benchmark models (legacy models: seed<seed>/)
   config.json       # full CLI / hyperparameter snapshot
   metrics.json      # train + test metrics, split counts, train time, parameter count
   split.npz         # train_idx, test_idx, y_train, y_test
   predictions.npz   # test predictions + probabilities
   checkpoint.pt     # {state_dict, config, model_name}
+  OOT.txt / OOM.txt # only when the run was stopped by the 4 h / 100 GB limit (then no other files)
 ```
 
 | File              | Contents                                                                                                                    |
@@ -947,7 +982,7 @@ Examples:
 
 - `results/GAS/example/seed123/metrics.json`
 - `results/Player2Vec/dblp/seed123/checkpoint.pt`
-- `results/GraphSage/YelpChi/seed123/predictions.npz`
+- `results/GraphSage/yelpchi/seed123/predictions.npz`
 - `results/HACUD/dblp/seed123/split.npz`
 
 ### Stratified split defaults
@@ -995,7 +1030,7 @@ cd algorithms/GraphSage
 python supervised_train.py `
   --train_prefix ../../dataset --file_name YelpChi.mat `
   --sigmoid --epochs 10 --gpu 0 --seed 123
-# → results/GraphSage/YelpChi/seed123/
+# → results/GraphSage/yelpchi/seed123/
 
 cd ../GraphConsis
 python supervised_train.py `
@@ -1071,11 +1106,15 @@ Explicit command-line flags always win over tuned values. Every run prints, and 
 | H2IDE       | paper   | paper  | paper     | paper    | tune     | tune     |
 | ImGSL       | paper   | paper  | tune      | tune     | tune     | tune     |
 | PC-GNN      | paper   | paper  | tune      | tune     | tune     | tune     |
+| PMP         | paper   | paper  | paper     | paper    | tune     | tune     |
+| SEC-GFD ²   | paper   | paper  | paper     | paper    | tune     | tune     |
 | SparseGAD   | paper   | paper  | tune      | tune     | tune     | tune     |
 | SplitGNN    | paper   | paper  | tune      | tune     | tune     | paper    |
 | TAM         | paper   | paper  | paper     | tune     | tune     | tune     |
 
-¹ Paper not in `paper/papers-to-read`, so every dataset is tuned. Add the PDF and list its datasets in `utils/hparams.py` (`PAPER_EVALUATED`) to switch to paper settings. PMP and SEC-GFD keep their own config modules (`algorithms/PMP/pmp_config.py`, `algorithms/SEC_GFD/secgfd_config.py`), which already follow this policy.
+¹ Paper not in `paper/papers-to-read`, so every dataset is tuned. Add the PDF and list its datasets in `utils/hparams.py` (`PAPER_EVALUATED`) to switch to paper settings.
+
+² The SEC-GFD paper is not in `paper/papers-to-read`. Its four datasets and settings come from the released code (`reference/SEC-GFD-main.zip`).
 
 The registry (`utils/hparams.py`) cites the paper section behind every "paper" cell; the search spaces (`utils/hparam_spaces.py`) follow GADBench App. C, GLHAD §4.1.4, PMP App. D.4 and each paper's sensitivity study.
 
@@ -1093,19 +1132,38 @@ Per-trial training output goes to `tuning_logs/<Model>/<dataset>.log` (git-ignor
 
 ## Running the Full Benchmark
 
-The benchmark is **21 models × 6 datasets × 4 training ratios × 5 seeds** (2,520 runs), plus PMP and SEC-GFD. Training does **not** tune automatically: a run on a dataset its paper did not evaluate uses `configs/tuned/<Model>/<dataset>.json` if it exists, and otherwise falls back to untuned defaults with a warning. So the order matters: **tune first, then train**.
+The benchmark is **23 models × 6 datasets × 4 training ratios × 5 seeds** (2,760 runs). Training does **not** tune automatically: a run on a dataset its paper did not evaluate uses `configs/tuned/<Model>/<dataset>.json` if it exists, and otherwise falls back to untuned defaults with a warning. So the order matters: **tune first, then train**.
 
 Every command below runs from the **repo root** with the venv active. On RunPod (Linux) run them inside `tmux` (see [`docs/RUNPOD.md`](docs/RUNPOD.md)). The complete explicit list, one line per run, is in **[`docs/RUN_COMMANDS.md`](docs/RUN_COMMANDS.md)**. Regenerate it with `python docs/make_run_commands.py`.
 
 | Setting        | Values |
 | -------------- | ------ |
-| Models         | AMNet, BSL, BWGNN, CAREGNN, CGNN, CIEGAD, COFRAUD, DGAGNN, FRAUDRE, GDN, GGCN, GHRN, GLHN, GraphConsis, H2FDetector, H2IDE, ImGSL, PCGNN, SparseGAD, SplitGNN, TAM (+ PMP, SEC-GFD) |
+| Models         | AMNet, BSL, BWGNN, CAREGNN, CGNN, CIEGAD, COFRAUD, DGAGNN, FRAUDRE, GDN, GGCN, GHRN, GLHN, GraphConsis, H2FDetector, H2IDE, ImGSL, PCGNN, PMP, SEC_GFD, SparseGAD, SplitGNN, TAM |
 | Datasets       | `yelpchi`, `amazon`, `tfinance`, `tsocial`, `elliptic`, `comp` (FDCompCN) |
 | Training ratio | `0.1`, `0.2`, `0.3`, `0.4` (valid 20% / test 40% fixed) |
 | Seeds          | `123`, `1234`, `12345`, `123456`, `1234567` |
-| Output folder  | `results/<Model>/<dataset>/seed<seed>_train<pct>/` (`--run_tag train<pct>` keeps the ratios apart) |
+| Output folder  | `results/<Model>/<dataset>/seed<seed>_train<pct>/`, for example `results/BWGNN/comp/seed123_train10/` |
+| Limits per run | 4 hours (otherwise `OOT.txt`) and 100 GB of GPU memory (otherwise `OOM.txt`) |
+
+**Folder names are built automatically** from the model, dataset, seed and training ratio, so no two commands in the benchmark write to the same folder, across models too. You can run the command list from top to bottom without anything being overwritten. Dataset names are normalised (`YelpChi.mat` / `yelp` → `yelpchi`, `fdcompcn` → `comp`), so every model uses the same six dataset folder names. You don't need `--run_tag`. If you add one, it is appended (`seed123_train10_<tag>`). Running the *same* command twice reuses its folder, which the loops below avoid by skipping finished runs.
 
 **Do not pass hyperparameter flags** (`--learning_rate`, `--weight_decay`, `--hid_dim`, `--epochs` for most models, ...) in benchmark runs. Explicit flags override both the paper and the tuned values. The one exception is GraphConsis: it gets `--sigmoid --epochs 500`, because its CLI default is only 10 epochs. Early stopping (patience 25) still ends it sooner.
+
+### Time and memory limits (OOT / OOM)
+
+Every run is checked against two limits (`utils/run_guard.py`):
+
+| Limit | What happens | Exit code |
+| --- | --- | --- |
+| **OOT**: the run takes more than **4 hours** (wall clock from start, including data loading) | The run is stopped and `OOT.txt` is written to its run folder | `124` |
+| **OOM**: the run needs more than **100 GB of GPU memory** | PyTorch's allocator is capped at 100 GB (GiB). The first allocation past the cap stops the run and writes `OOM.txt` | `125` |
+
+- The status file's first line is just `OOT` or `OOM`. After it come the model, dataset, seed, training ratio, elapsed time, GPU, the error message (OOM) and the exact command.
+- A stopped run writes no other result files.
+- The loops below don't retry stopped runs. To retry one, delete its `OOT.txt` / `OOM.txt`. Starting the same run again also removes the old status file.
+- **GPU size matters for OOM.** The 100 GB criterion is exact only on a GPU with more than 100 GB, such as an H200 (141 GB) or B200 (180 GB). On a smaller GPU, for example an 80 GB A100/H100, the device itself is the limit: a run that needs 85 GB is marked OOM, and `OOM.txt` notes this.
+- A process killed by the operating system for using too much **CPU RAM** cannot write a file. It shows up as `FAILED` in the loop.
+- For a quick test of the mechanism you can lower the limits, e.g. `GFW_TIME_LIMIT_HOURS=0.01` or `GFW_VRAM_LIMIT_GB=1`. Leave them unset for the benchmark.
 
 ### Step 0: datasets
 
@@ -1115,11 +1173,11 @@ Every command below runs from the **repo root** with the venv active. On RunPod 
 ls dataset/YelpChi.mat dataset/Amazon.mat dataset/tfinance dataset/tsocial dataset/comp.dgl dataset/elliptic_bitcoin_dataset/
 ```
 
-### Step 1: tune the pairs without paper settings (73 pairs, once)
+### Step 1: tune the pairs without paper settings (77 pairs, once)
 
 ```bash
 python tune_hparams.py --list                 # TUNE = still to do, tuned = done, paper = never tuned
-python tune_hparams.py --all --gpu 0          # all 73 pairs: 20 trials x 5 seeds each on the 40% split
+python tune_hparams.py --all --gpu 0          # all 77 pairs: 20 trials x 5 seeds each on the 40% split
 python tune_hparams.py --all --resume --gpu 0 # after an interruption: finished pairs are skipped, the open one resumes
 python tune_hparams.py --list                 # repeat until no TUNE cell is left
 ```
@@ -1136,11 +1194,11 @@ Commit the resulting `configs/tuned/**/*.json` (or copy them to every machine th
 
 ### Step 2: train every model × dataset × ratio × seed
 
-**bash (RunPod / Linux):** completed runs (`metrics.json` present) are skipped, so the loop can be restarted at any time.
+**bash (RunPod / Linux):** finished runs are skipped: those with `metrics.json` (done), `OOT.txt` or `OOM.txt` (stopped). So the loop can be restarted at any time.
 
 ```bash
 mkdir -p logs
-MODELS="AMNet BSL BWGNN CAREGNN CGNN CIEGAD COFRAUD DGAGNN FRAUDRE GDN GGCN GHRN GLHN H2FDetector H2IDE ImGSL PCGNN SparseGAD SplitGNN TAM"
+MODELS="AMNet BSL BWGNN CAREGNN CGNN CIEGAD COFRAUD DGAGNN FRAUDRE GDN GGCN GHRN GLHN H2FDetector H2IDE ImGSL PCGNN PMP SEC_GFD SparseGAD SplitGNN TAM"
 DATASETS="yelpchi amazon tfinance tsocial elliptic comp"
 RATIOS="0.1 0.2 0.3 0.4"
 SEEDS="123 1234 12345 123456 1234567"
@@ -1148,15 +1206,23 @@ declare -A GC_FILE=([yelpchi]=YelpChi.mat [amazon]=Amazon.mat [tfinance]=tfinanc
 
 for M in $MODELS GraphConsis; do for D in $DATASETS; do for R in $RATIOS; do for S in $SEEDS; do
   P=$(awk "BEGIN{print int($R*100+0.5)}")
-  [ -f "results/$M/$D/seed${S}_train$P/metrics.json" ] && continue
+  RUN="results/$M/$D/seed${S}_train$P"
+  LOG="logs/${M}_${D}_train${P}_seed${S}.log"
+  if [ -f "$RUN/metrics.json" ] || [ -f "$RUN/OOT.txt" ] || [ -f "$RUN/OOM.txt" ]; then continue; fi
   echo ">>> $M $D train=$R seed=$S"
   if [ "$M" = "GraphConsis" ]; then
     python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name "${GC_FILE[$D]}" \
-      --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
+      --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 > "$LOG" 2>&1
   else
     python algorithms/$M/${M}_main.py --dataset $D --data_prefix dataset/ \
-      --seed $S --train_ratio $R --gpu 0 --run_tag train$P > "logs/${M}_${D}_train${P}_seed${S}.log" 2>&1
-  fi || echo "FAILED: $M $D train=$R seed=$S (see logs/${M}_${D}_train${P}_seed${S}.log)"
+      --seed $S --train_ratio $R --gpu 0 > "$LOG" 2>&1
+  fi
+  case $? in
+    0)   ;;
+    124) echo "OOT: $M $D train=$R seed=$S (over 4 h, see $RUN/OOT.txt)" ;;
+    125) echo "OOM: $M $D train=$R seed=$S (over 100 GB GPU memory, see $RUN/OOM.txt)" ;;
+    *)   echo "FAILED: $M $D train=$R seed=$S (see $LOG)" ;;
+  esac
 done; done; done; done
 ```
 
@@ -1166,54 +1232,49 @@ To run a subset, shorten `MODELS` / `DATASETS` (e.g. `MODELS="BWGNN"`, `DATASETS
 
 ```powershell
 New-Item -ItemType Directory -Force logs | Out-Null
-$Models   = 'AMNet','BSL','BWGNN','CAREGNN','CGNN','CIEGAD','COFRAUD','DGAGNN','FRAUDRE','GDN','GGCN','GHRN','GLHN','H2FDetector','H2IDE','ImGSL','PCGNN','SparseGAD','SplitGNN','TAM','GraphConsis'
+$Models   = 'AMNet','BSL','BWGNN','CAREGNN','CGNN','CIEGAD','COFRAUD','DGAGNN','FRAUDRE','GDN','GGCN','GHRN','GLHN','H2FDetector','H2IDE','ImGSL','PCGNN','PMP','SEC_GFD','SparseGAD','SplitGNN','TAM','GraphConsis'
 $Datasets = 'yelpchi','amazon','tfinance','tsocial','elliptic','comp'
 $Ratios   = 0.1,0.2,0.3,0.4
 $Seeds    = 123,1234,12345,123456,1234567
 $GcFile   = @{ yelpchi='YelpChi.mat'; amazon='Amazon.mat'; tfinance='tfinance'; tsocial='tsocial'; elliptic='elliptic'; comp='comp' }
 
 foreach ($M in $Models) { foreach ($D in $Datasets) { foreach ($R in $Ratios) { foreach ($S in $Seeds) {
-  $P = [int][math]::Round($R * 100)
-  if (Test-Path "results/$M/$D/seed${S}_train$P/metrics.json") { continue }
-  Write-Host ">>> $M $D train=$R seed=$S"
+  $P   = [int][math]::Round($R * 100)
+  $run = "results/$M/$D/seed${S}_train$P"
   $log = "logs/${M}_${D}_train${P}_seed${S}.log"
+  if ((Test-Path "$run/metrics.json") -or (Test-Path "$run/OOT.txt") -or (Test-Path "$run/OOM.txt")) { continue }
+  Write-Host ">>> $M $D train=$R seed=$S"
   if ($M -eq 'GraphConsis') {
-    python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name $GcFile[$D] --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 --run_tag "train$P" *> $log
+    python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name $GcFile[$D] --sigmoid --epochs 500 --seed $S --train_ratio $R --gpu 0 *> $log
   } else {
-    python "algorithms/$M/${M}_main.py" --dataset $D --data_prefix dataset/ --seed $S --train_ratio $R --gpu 0 --run_tag "train$P" *> $log
+    python "algorithms/$M/${M}_main.py" --dataset $D --data_prefix dataset/ --seed $S --train_ratio $R --gpu 0 *> $log
   }
-  if ($LASTEXITCODE -ne 0) { Write-Host "FAILED: $M $D train=$R seed=$S (see $log)" }
+  $code = $LASTEXITCODE
+  if ($code -eq 124)     { Write-Host "OOT: $M $D train=$R seed=$S (over 4 h, see $run/OOT.txt)" }
+  elseif ($code -eq 125) { Write-Host "OOM: $M $D train=$R seed=$S (over 100 GB GPU memory, see $run/OOM.txt)" }
+  elseif ($code -ne 0)   { Write-Host "FAILED: $M $D train=$R seed=$S (see $log)" }
 }}}}
 ```
 
 A single run looks like this (the full list is in [`docs/RUN_COMMANDS.md`](docs/RUN_COMMANDS.md#step-2---training-every-model-x-dataset-x-training-ratio-x-seed)):
 
 ```bash
-python algorithms/BWGNN/BWGNN_main.py --dataset elliptic --data_prefix dataset/ --seed 123 --train_ratio 0.4 --gpu 0 --run_tag train40
-python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name YelpChi.mat --sigmoid --epochs 500 --seed 123 --train_ratio 0.4 --gpu 0 --run_tag train40
+python algorithms/BWGNN/BWGNN_main.py --dataset elliptic --data_prefix dataset/ --seed 123 --train_ratio 0.4 --gpu 0
+python algorithms/GraphConsis/supervised_train.py --train_prefix dataset/ --file_name YelpChi.mat --sigmoid --epochs 500 --seed 123 --train_ratio 0.4 --gpu 0
 ```
 
-### Step 3: PMP and SEC-GFD
-
-These use their own runners and import DGL, which the uv environment does not install, so run them in an environment with DGL. `--all --resume` covers 4 ratios × 5 seeds per dataset. PMP has no T-Social option.
+### Step 3: check the runs
 
 ```bash
-for D in yelp amazon tfinance elliptic fdcompcn; do python algorithms/PMP/PMP_benchmark.py --dataset $D --all --resume; done
-for D in yelp amazon tfinance tsocial elliptic fdcompcn; do python algorithms/SEC_GFD/SEC_GFD_benchmark.py --dataset $D --all --resume; done
-```
-
-Outputs: `results/PMP/<dataset>/seed_<seed>/train_<pct>/` and `results/SEC_GFD/<dataset>/seed_<seed>/train_<pct>/`.
-
-### Step 4: check the runs
-
-```bash
-# Count finished runs per model (expect 120 = 6 datasets x 4 ratios x 5 seeds)
-python -c "import glob,collections,pathlib; c=collections.Counter(pathlib.Path(p).parts[1] for p in glob.glob('results/*/*/seed*_train*/metrics.json')); print(dict(sorted(c.items())))"
+# Per model: done / OOT / OOM (total should be 120 = 6 datasets x 4 ratios x 5 seeds)
+python -c "import glob,collections,pathlib as P; K={'metrics.json':'done','OOT.txt':'OOT','OOM.txt':'OOM'}; c=collections.defaultdict(collections.Counter); fs=glob.glob('results/*/*/seed*_train*/*'); [c[P.Path(f).parts[1]].update([K[P.Path(f).name]]) for f in fs if P.Path(f).name in K]; [print(m, dict(v), 'total', sum(v.values())) for m,v in sorted(c.items())]"
+# List every stopped run
+python -c "import glob; print(*sorted(glob.glob('results/*/*/seed*_train*/OO[TM].txt')), sep='\n')"
 # Runs that trained without a tuned config (should print 0: re-tune that pair and re-run)
 python -c "import glob,json; b=[p for p in glob.glob('results/*/*/seed*_train*/config.json') if json.load(open(p)).get('hparam_source')=='untuned_default']; print(len(b)); print(*b[:20], sep='\n')"
 ```
 
-Both commands work on Linux and Windows. Download `results/` as described in [`docs/RUNPOD.md`](docs/RUNPOD.md#9-zip-results-on-the-pod-and-download-to-your-pc).
+All three commands work on Linux and Windows. Download `results/` as described in [`docs/RUNPOD.md`](docs/RUNPOD.md#9-zip-results-on-the-pod-and-download-to-your-pc).
 
 ---
 
@@ -1677,6 +1738,41 @@ Same as GraphSAGE, plus:
 | `--epochs`          | `500`       | Max epochs, early stop on valid AUC with patience 50 (T-Social: 200 / 20)                   |
 | `--gpu`             | `0`         | Device                                                                                      |
 
+### PMP (`algorithms/PMP/PMP_main.py`)
+
+Defaults are the paper's App. D.4 Table 5 values on YelpChi / Amazon / T-Finance / T-Social; on Elliptic / FDCompCN they come from `configs/tuned/PMP/<dataset>.json`.
+
+| Argument            | Default        | Description                                                                 |
+| ------------------- | -------------- | --------------------------------------------------------------------------- |
+| `--dataset`         | `amazon`       | `yelpchi` / `amazon` / `tfinance` / `tsocial` / `elliptic` / `comp`         |
+| `--train_ratio`     | `0.4`          | Train fraction of labeled nodes (valid/test fixed 20/40)                    |
+| `--hid_dim`         | per dataset    | Hidden size d' (256 / 128 / 64 / 128 on Yelp / Amazon / T-Fin. / T-Soc.)    |
+| `--num_layers`      | `1`            | PMP layers L (paper: 1 on every dataset; >1 propagates over the full graph) |
+| `--dropout`         | per dataset    | Dropout before the output layer (0 / 0.6 / 0.4 / 0)                         |
+| `--batch_size`      | per dataset    | Training nodes per mini-batch (512 / 128 / 256 / 2^17)                      |
+| `--learning_rate`   | per dataset    | Adam learning rate (0.01; T-Social 0.001)                                   |
+| `--weight_decay`    | `0`            | Adam weight decay                                                           |
+| `--epochs`          | `500`          | Max epochs, early stop on valid AUC (`--early_stop`, patience 25)           |
+| `--eval_batch_size` | `65536`        | Nodes per forward pass at evaluation (memory only)                          |
+| `--gpu`             | `0`            | Device                                                                      |
+
+### SEC-GFD (`algorithms/SEC_GFD/SEC_GFD_main.py`)
+
+Defaults are the released code's values on YelpChi / Amazon / T-Finance / T-Social; on Elliptic / FDCompCN they come from `configs/tuned/SEC_GFD/<dataset>.json`.
+
+| Argument          | Default      | Description                                                              |
+| ----------------- | ------------ | ------------------------------------------------------------------------ |
+| `--dataset`       | `tfinance`   | `yelpchi` / `amazon` / `tfinance` / `tsocial` / `elliptic` / `comp`      |
+| `--train_ratio`   | `0.4`        | Train fraction of labeled nodes (valid/test fixed 20/40)                 |
+| `--hid_dim`       | `64`         | Hidden size (T-Social `16`)                                              |
+| `--order`         | `2`          | Beta-wavelet order C (T-Social `5`)                                      |
+| `--high_order`    | `2`          | Number of high-pass filters `L, L^2, ...`                                |
+| `--lemda`         | `0.2`        | Weight of the local environmental constraint loss                        |
+| `--learning_rate` | `0.01`       | Adam learning rate                                                       |
+| `--weight_decay`  | `0`          | Adam weight decay                                                        |
+| `--epochs`        | `500`        | Max epochs, early stop on valid AUC (`--early_stop`, patience 25)        |
+| `--gpu`           | `0`          | Device                                                                   |
+
 ### HACUD (`algorithms/HACUD/main.py`)
 
 | Argument       | Default       | Description               |
@@ -1727,6 +1823,8 @@ Same as GraphSAGE, plus:
 | **H2IDE**       | [Nowhere to H²IDE: Fraud Detection From Multi-Relation Graphs via Disentangled Homophily and Heterophily Identification](https://doi.org/10.1109/TKDE.2024.3523107)                 | TKDE 2025  | [BibTex](algorithms/H2IDE/README.md#paper)                                            |
 | **CIE-GAD**     | [Correlation Information Enhanced Graph Anomaly Detection via Hypergraph Transformation](https://doi.org/10.1109/TCYB.2025.3558941)                                                  | TCYB 2025  | [BibTex](algorithms/CIEGAD/README.md#paper)                                           |
 | **COFRAUD**     | [Don't Ignore Alienation and Marginalization: Correlating Fraud Detection](https://doi.org/10.24963/ijcai.2023/551)                                                                  | IJCAI 2023 | [BibTex](algorithms/COFRAUD/README.md#paper)                                          |
+| **PMP**         | [Partitioning Message Passing for Graph Fraud Detection](https://github.com/Xtra-Computing/PMP) | ICLR 2024 | [BibTex](algorithms/PMP/README.md#paper) |
+| **SEC-GFD**     | Revisiting Graph-based Fraud Detection in Sight of Heterophily and Spectrum | AAAI 2024 | [BibTex](algorithms/SEC_GFD/README.md#paper) |
 
 ### Backend notes (PyTorch Geometric)
 
@@ -1753,6 +1851,8 @@ Same as GraphSAGE, plus:
 - **H2IDE:** factor-wise embeddings + cosine edge homophily with prototype-weighted factor mixing (hinge loss on labeled edges) + signed per-relation per-factor attention (segment softmax over CSR gathers) + CLUB pairwise MI penalty; two-hop GraphSAGE-style sampling for training and chunked exact layer-wise inference (no DGL / PyG)
 - **CIE-GAD:** Jacobi spectral banks on shared CSR `A_hat` + node-level attention fusion + dual-hypergraph HCRE as `D^{-1/2}(A+D)/√2` (no dense incidence matrix) + deep supervision; full-batch (no DGL / PyG)
 - **COFRAUD:** per-relation tanh frequency attention with degree-normalised residual aggregation (CSR gathers) + inter-relation crossing + relation-semantic fusion; full-batch multi-relation (no DGL / PyG)
+- **PMP:** label-partitioned neighbour sums (fraud / benign / unlabelled) with root-specific weight generators and an adaptive unlabelled mix, one layer per relation + concatenation MLP; one-layer sums precomputed with `scipy.sparse`, so training is mini-batched over nodes (no DGL)
+- **SEC-GFD:** Beta-wavelet band-pass + high-pass Laplacian filters over shared `torch.sparse` Laplacian powers + GCN-based local environmental constraint loss; full-batch (no DGL)
 - **GAS / SemiGNN / GEM / HACUD:** custom PyTorch modules with sparse / dense graph ops
 
 ---
@@ -1790,6 +1890,8 @@ Same as GraphSAGE, plus:
 | **H2IDE**       | Opinion / Financial Fraud | Heterogeneous | Disentangled signed GAT + MI independence |
 | **CIE-GAD**     | Graph Anomaly   | Homogeneous   | Jacobi spectral GNN + hypergraph HCRE |
 | **COFRAUD**     | Opinion Fraud   | Heterogeneous | Intra/inter relation attention + fusion |
+| **PMP**         | Opinion / Financial Fraud | Heterogeneous | Label-partitioned message passing |
+| **SEC-GFD**     | Opinion / Financial Fraud | Homogeneous   | Hybrid spectral filters + environment loss |
 
 ---
 
@@ -1878,7 +1980,7 @@ python supervised_train.py `
   --gpu 0
 ```
 
-Outputs: `algorithms/GraphConsis/results/GraphConsis/YelpChi/seed123/` and `.../Amazon/seed123/`. Amazon’s `net_usu` is dense, so the first epoch can take a while to load.
+Outputs: `algorithms/GraphConsis/results/GraphConsis/yelpchi/seed123_train40/` and `.../amazon/seed123_train40/`. Amazon’s `net_usu` is dense, so the first epoch can take a while to load.
 
 ---
 
@@ -2591,7 +2693,7 @@ cd ../..
 
 Each command prints train / valid / test metrics. Artifacts:
 
-`algorithms/<MODEL>/results/<MODEL>/<dataset>/seed<SEED>/`
+`algorithms/<MODEL>/results/<MODEL>/<dataset>/seed<SEED>_train<pct>/`
 
 - `metrics.json` — test metrics plus `valid_auc`
 - `checkpoint.pt` — best valid-AUC weights

@@ -29,7 +29,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from algorithms.TAM.TAM import LAMNet, RawGraph, local_affinity, non_neighbor_similarity, truncate
 from utils.data_loader import load_dga_arrays
 from utils.hparams import apply_tuned_hparams
-from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
+from utils.evaluation import compute_classification_metrics, run_dir_from_args, save_run_outputs
+from utils.run_guard import run_guarded
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
 
@@ -248,9 +249,7 @@ def train(args=None):
         config['decision_threshold'] = threshold
         config['train_anomaly_rate'] = rate
         config['truncation_log'] = cut_log
-        out_dir = run_output_dir(
-            args.save_dir, 'TAM', args.dataset_str, args.seed,
-            run_tag=getattr(args, 'run_tag', None))
+        out_dir = run_dir_from_args(args, 'TAM')
         save_run_outputs(
             out_dir, 'TAM', config, split_info,
             test_metrics, model=models, train_metrics=train_metrics,
@@ -266,7 +265,7 @@ def train(args=None):
 
 
 def main():
-    train(parse_args())
+    run_guarded(train, parse_args(), 'TAM')
 
 
 if __name__ == '__main__':

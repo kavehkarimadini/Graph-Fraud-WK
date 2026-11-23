@@ -93,6 +93,14 @@ SPACES = {
         emb_size=[32, 64, 128], rho=[0.3, 0.5, 0.7], alpha=[1.0, 2.0, 4.0],
         thres=[0.4, 0.5], batch_size=BATCH,
         learning_rate=[1e-3, 5e-3, 1e-2, 5e-2], weight_decay=[1e-4, 5e-4, 1e-3]),
+    'PMP': dict(                                                # PMP App. D.4 search ranges
+        hid_dim=[32, 64, 128, 256, 512], dropout=[0.0, 0.2, 0.4, 0.6, 0.8],
+        batch_size=[64, 128, 256, 512, 1024],
+        learning_rate=[1e-3, 5e-3, 1e-2], weight_decay=[0.0, 5e-5, 1e-4]),
+    'SEC_GFD': dict(
+        hid_dim=HIDDEN, order=[2, 3, 4, 5],                     # Beta-wavelet order C
+        high_order=[1, 2, 3], lemda=[0.1, 0.2, 0.5, 1.0],       # high-pass filters, env. loss weight
+        learning_rate=LR, weight_decay=[0.0, 1e-5, 1e-4, 1e-3]),
     'SparseGAD': dict(
         hidden=[16, 32, 64], dropout=[0.0, 0.1, 0.2],           # SparseGAD grid
         learning_rate=[1e-3, 5e-3, 1e-2], k=[5, 10, 20],        # SparseGAD grid

@@ -5,7 +5,7 @@ datasets its paper evaluates; on every other benchmark dataset its
 hyperparameters are chosen here and saved to ``configs/tuned/<Model>/<dataset>.json``,
 which the ``*_main.py`` scripts and ``utils.notebook_runner`` then load automatically.
 
-Selection protocol (same as the PMP / SEC-GFD tuning already in the repo):
+Selection protocol:
   * train_ratio 0.4 (the 40/20/40 protocol split),
   * every trial runs on the five benchmark seeds,
   * trials are ranked by mean validation AUROC (ties: lower std),
@@ -70,6 +70,8 @@ MODELS = {
     'H2IDE': ('_h2ide_defaults', 'algorithms.H2IDE.H2IDE_main'),
     'ImGSL': ('_imgsl_defaults', 'algorithms.ImGSL.ImGSL_main'),
     'PCGNN': ('_pcgnn_defaults', 'algorithms.PCGNN.PCGNN_main'),
+    'PMP': ('_pmp_defaults', 'algorithms.PMP.PMP_main'),
+    'SEC_GFD': ('_sec_gfd_defaults', 'algorithms.SEC_GFD.SEC_GFD_main'),
     'SparseGAD': ('_sparsegad_defaults', 'algorithms.SparseGAD.SparseGAD_main'),
     'SplitGNN': ('_splitgnn_defaults', 'algorithms.SplitGNN.SplitGNN_main'),
     'TAM': ('_tam_defaults', 'algorithms.TAM.TAM_main'),

@@ -27,7 +27,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from algorithms.H2FDetector.H2FDetector import H2FDetector, build_edges
 from utils.data_loader import load_dga_arrays
 from utils.hparams import apply_tuned_hparams
-from utils.evaluation import compute_classification_metrics, run_output_dir, save_run_outputs
+from utils.evaluation import compute_classification_metrics, run_dir_from_args, save_run_outputs
+from utils.run_guard import run_guarded
 from utils.split import protocol_split
 from utils.torch_helpers import get_device, set_seed
 from utils.training import add_protocol_split_args, add_save_args
@@ -258,9 +259,7 @@ def train(args=None):
         config['feat_dim'] = int(feat.size(1))
         config['train_edges_pos'] = int(len(edge_pos))
         config['train_edges_neg'] = int(len(edge_neg))
-        out_dir = run_output_dir(
-            args.save_dir, 'H2FDetector', args.dataset_str, args.seed,
-            run_tag=getattr(args, 'run_tag', None))
+        out_dir = run_dir_from_args(args, 'H2FDetector')
         save_run_outputs(
             out_dir, 'H2FDetector', config, split_info,
             test_metrics, model=model, train_metrics=train_metrics,
@@ -276,7 +275,7 @@ def train(args=None):
 
 
 def main():
-    train(parse_args())
+    run_guarded(train, parse_args(), 'H2FDetector')
 
 
 if __name__ == '__main__':
