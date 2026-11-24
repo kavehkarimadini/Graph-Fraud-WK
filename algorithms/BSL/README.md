@@ -17,7 +17,7 @@ The BSL model is proposed by the [paper](https://ojs.aaai.org/index.php/AAAI/art
 
 Barely Supervised Learning (BSL) encodes the graph with a GCN, splits the latent vector into NA / AA / NN subspaces, and trains edge-type classification plus an attention contrast so same-class subspaces dominate. Unlabeled nodes are then weakly and strongly augmented with labeled normal/fraud prototypes; consistency and inconsistency losses use those views. This port follows `reference/BSL/BSL.md`; GCN uses `torch.sparse` instead of DGL.
 
-Default training uses the toolbox 40/20/40 split (valid-AUC checkpoint). Pass `--paper_split` for the paper's 1% / 10% / 89% setting (0.01% / 0.1% / rest on T-Social), which checkpoints on train loss because there is no validation set.
+Default training uses the toolbox 40/20/40 split (valid-AUPRC checkpoint). Pass `--paper_split` for the paper's 1% / 10% / 89% setting (0.01% / 0.1% / rest on T-Social), which checkpoints on train loss because there is no validation set.
 
 ## Run
 

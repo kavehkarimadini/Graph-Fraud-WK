@@ -8,7 +8,7 @@ which the ``*_main.py`` scripts and ``utils.notebook_runner`` then load automati
 Selection protocol:
   * train_ratio 0.4 (the 40/20/40 protocol split),
   * every trial runs on the five benchmark seeds,
-  * trials are ranked by mean validation AUROC (ties: lower std),
+  * trials are ranked by mean validation AUPRC (average precision; ties: lower std),
   * test metrics are never read.
 Trial 0 is always the current (untuned) default configuration, so the tuned
 config is never worse than the default on validation.
@@ -49,6 +49,7 @@ from utils.hparams import (  # noqa: E402
 
 BENCHMARK_SEEDS = [123, 1234, 12345, 123456, 1234567]
 LOG_DIR = os.path.join(REPO_ROOT, 'tuning_logs')
+SELECTION_METRIC = 'auprc'   # validation metric that ranks trials (the mains early-stop on it too)
 
 # model -> (notebook_runner defaults function, module with ``train(args)``)
 MODELS = {
@@ -98,7 +99,7 @@ def parse_args():
     p.add_argument('--max_epochs', type=int, default=None,
                    help='Optional cap on epochs per trial (budget); recorded in the output.')
     p.add_argument('--prune_margin', type=float, default=None,
-                   help='Skip a trial\'s remaining seeds when its first-seed valid AUROC is this far '
+                   help='Skip a trial\'s remaining seeds when its first-seed valid AUPRC is this far '
                         'below the best mean so far (off by default).')
     p.add_argument('--gpu', type=str, default='0')
     p.add_argument('--data_dir', type=str, default=None, help='Dataset folder (default: <repo>/dataset).')
@@ -184,7 +185,7 @@ def run_one(model, train_fn, defaults, trial_params, seed, args, log_file):
         with contextlib.redirect_stdout(log_file):
             out = train_fn(ns)
     metrics = out[0] if isinstance(out, tuple) else out
-    auc = metrics.get('valid_auc') if isinstance(metrics, dict) else None
+    auc = metrics.get('valid_auprc') if isinstance(metrics, dict) else None
     return None if auc is None else float(auc)
 
 
@@ -202,8 +203,13 @@ def tune_pair(model, ds, args, seeds):
     out_path = tuned_path(model, ds)
     partial_path = out_path.replace('.json', '.partial.json')
     if os.path.isfile(out_path) and not args.force:
-        print('[skip] {} / {}: already tuned ({})'.format(model, ds, os.path.relpath(out_path, ROOT)))
-        return
+        with open(out_path, 'r', encoding='utf-8') as f:
+            old_metric = json.load(f).get('selection_metric', 'auroc')
+        if old_metric == SELECTION_METRIC:
+            print('[skip] {} / {}: already tuned ({})'.format(model, ds, os.path.relpath(out_path, ROOT)))
+            return
+        print('[re-tune] {} / {}: {} was selected by validation {}, not {}'.format(
+            model, ds, os.path.relpath(out_path, ROOT), old_metric.upper(), SELECTION_METRIC.upper()))
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     os.makedirs(os.path.join(LOG_DIR, model), exist_ok=True)
 
@@ -222,8 +228,12 @@ def tune_pair(model, ds, args, seeds):
     done = []
     if args.resume and os.path.isfile(partial_path):
         with open(partial_path, 'r', encoding='utf-8') as f:
-            done = json.load(f).get('trials', [])
-        print('Resuming {} / {} from trial {}'.format(model, ds, len(done)))
+            partial = json.load(f)
+        if partial.get('selection_metric', 'auroc') == SELECTION_METRIC:
+            done = partial.get('trials', [])
+            print('Resuming {} / {} from trial {}'.format(model, ds, len(done)))
+        else:
+            print('Not resuming {} / {}: the partial run ranked trials by AUROC; starting over'.format(model, ds))
 
     train_fn = importlib.import_module(MODELS[model][1]).train
     log_path = os.path.join(LOG_DIR, model, '{}.log'.format(ds))
@@ -260,17 +270,17 @@ def tune_pair(model, ds, args, seeds):
             mean, std = _mean_std(aucs)
             if error is not None:
                 mean = std = None
-            rec = dict(trial=i, params=trial, seeds=seeds[:len(aucs)], valid_auroc=aucs,
+            rec = dict(trial=i, params=trial, seeds=seeds[:len(aucs)], valid_auprc=aucs,
                        mean=mean, std=std, time_sec=round(time.perf_counter() - t0, 1), error=error)
             done.append(rec)
             if mean is not None and (best is None or (mean, -std) > (best['mean'], -best['std'])):
                 best = rec
-            print('  trial {:>2}/{} valid AUROC {} | best {:.4f} (trial {}) | {:.0f}s{}'.format(
+            print('  trial {:>2}/{} valid AUPRC {} | best {:.4f} (trial {}) | {:.0f}s{}'.format(
                 i, len(trials) - 1, 'n/a' if mean is None else '{:.4f} +/- {:.4f}'.format(mean, std),
                 best['mean'] if best else float('nan'), best['trial'] if best else -1,
                 rec['time_sec'], '' if error is None else ' [{}]'.format(error)))
             with open(partial_path, 'w', encoding='utf-8') as f:
-                json.dump(dict(model=model, dataset=ds, trials=done), f, indent=2)
+                json.dump(dict(model=model, dataset=ds, selection_metric=SELECTION_METRIC, trials=done), f, indent=2)
 
     if best is None:
         print('!!! {} / {}: every trial failed; nothing saved (see {})'.format(model, ds, log_path))
@@ -279,11 +289,12 @@ def tune_pair(model, ds, args, seeds):
         model=model, dataset=ds,
         policy='Not evaluated in the original paper (paper/papers-to-read); hyperparameters '
                'selected by validation-only random search.',
-        selection='mean validation AUROC over seeds; test split not used',
+        selection='mean validation AUPRC over seeds; test split not used',
+        selection_metric=SELECTION_METRIC,
         params=best['params'],
-        mean_valid_auroc=best['mean'], std_valid_auroc=best['std'],
+        mean_valid_auprc=best['mean'], std_valid_auprc=best['std'],
         best_trial=best['trial'],
-        default_trial_mean_valid_auroc=done[0]['mean'] if done else None,
+        default_trial_mean_valid_auprc=done[0]['mean'] if done else None,
         seeds=seeds, train_ratio=args.train_ratio, n_trials=len(trials),
         sampler_seed=args.sampler_seed, max_epochs=args.max_epochs, prune_margin=args.prune_margin,
         search_space=space, created=datetime.now().isoformat(timespec='seconds'),
@@ -293,10 +304,10 @@ def tune_pair(model, ds, args, seeds):
         json.dump(record, f, indent=2)
     if os.path.isfile(partial_path):
         os.remove(partial_path)
-    print('>>> {} / {}: best trial {} valid AUROC {:.4f} +/- {:.4f} (default {}) -> {}'.format(
+    print('>>> {} / {}: best trial {} valid AUPRC {:.4f} +/- {:.4f} (default {}) -> {}'.format(
         model, ds, best['trial'], best['mean'], best['std'],
-        'n/a' if record['default_trial_mean_valid_auroc'] is None
-        else '{:.4f}'.format(record['default_trial_mean_valid_auroc']),
+        'n/a' if record['default_trial_mean_valid_auprc'] is None
+        else '{:.4f}'.format(record['default_trial_mean_valid_auprc']),
         os.path.relpath(out_path, ROOT)))
 
 

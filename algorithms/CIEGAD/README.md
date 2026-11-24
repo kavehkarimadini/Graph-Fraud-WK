@@ -57,7 +57,7 @@ Ablations as in the paper:
   - Jacobi weights `a, b`: default `1.0`, **learnable** and clamped to `> -1` (`--learn_jacobi 0` freezes them; `--jacobi_a` / `--jacobi_b` set the init / fixed values).
   - Preliminary MLP: `Linear-ReLU-Linear-ReLU` into `C`.
   - No dropout by default (`--dropout`).
-- **Training** is full-batch. Validation AUROC selects the checkpoint; predictions use threshold `0.5` (`--thres`).
+- **Training** is full-batch. Validation AUPRC selects the checkpoint; predictions use threshold `0.5` (`--thres`).
 - **HCRE memory:** only the sparse adjacency is kept. Degrees come from `A 1`; isolated nodes produce a zero hyperedge embedding.
 - **Smoke tests** (CPU): Amazon reached test AUROC **0.975** / AUPRC **0.875** / Macro-F1 **0.921** after 80 epochs (paper Table III: 98.69 / 92.84 / 93.33). YelpChi reached test AUROC **0.864** / AUPRC **0.560** / Macro-F1 **0.725** after 200 epochs (best valid @ 160; paper: 88.32 / 64.98 / 75.31)—still short of a full 1000-epoch Optuna run.
 - Amazon splits only labeled nodes (`index >= 3305`); unlabeled users stay in the graph.

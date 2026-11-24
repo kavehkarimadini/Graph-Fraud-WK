@@ -46,7 +46,7 @@ Hyperparameters follow the root README's Hyperparameter Policy:
   | T-Social | 0.001 | 0 | 0 | 2^17 | 128 |
 - **Elliptic, FDCompCN:** not in the paper, so they use `configs/tuned/PMP/<dataset>.json` from `python tune_hparams.py --model PMP --dataset elliptic,comp`. The search ranges are the paper's App. D.4 ranges.
 
-The paper gives no epoch budget. Training stops early on validation AUROC (patience 25), with at most 500 epochs.
+The paper gives no epoch budget. Training stops early on validation AUPRC (patience 25), with at most 500 epochs.
 
 Sanity check (seed 123, 40% train, test AUROC): Amazon 0.980 (paper 0.9757), YelpChi 0.934 (paper 0.9397).
 

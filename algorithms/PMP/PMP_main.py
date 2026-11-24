@@ -15,7 +15,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.PMP.PMP import PMP
@@ -115,11 +115,11 @@ def label_masks(n, labels, train_idx):
     return [m.astype(np.float32) for m in (fr, be, unk)]
 
 
-def _split_auc(prob_pos, labels_np, idx):
+def _split_auprc(prob_pos, labels_np, idx):
     y = labels_np[idx]
     if len(np.unique(y)) < 2:
         return None
-    return float(roc_auc_score(y, prob_pos[idx]))
+    return float(average_precision_score(y, prob_pos[idx]))
 
 
 def train(args=None):
@@ -197,14 +197,14 @@ def train(args=None):
             optimizer.step()
             total_loss += float(loss.item()) * batch.numel()
         prob_pos = torch.softmax(predict_all(), dim=-1)[:, 1].cpu().numpy()
-        auc = _split_auc(prob_pos, labels_np, valid_np)
+        auc = _split_auprc(prob_pos, labels_np, valid_np)
         auc = -1.0 if auc is None else auc
         if auc > best_auc:
             best_auc, best_epoch, stop_steps = float(auc), epoch, 1
             best_state = copy.deepcopy(model.state_dict())
         else:
             stop_steps += 1
-        print('Epoch {:d} loss: {:.4f} valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+        print('Epoch {:d} loss: {:.4f} valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
             epoch, total_loss / max(n_train, 1), float(auc), best_auc, best_epoch))
         if early_stop and stop_steps >= early_stop:
             print('Early stop at epoch {:d}'.format(epoch))
@@ -224,6 +224,7 @@ def train(args=None):
     train_metrics, valid_metrics = split_metrics(train_np), split_metrics(valid_np)
     test_metrics = dict(split_metrics(test_np))
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     print('Train metrics:', train_metrics)
     print('Valid metrics:', valid_metrics)
     print('Test metrics:', test_metrics)
@@ -231,7 +232,7 @@ def train(args=None):
     out_dir = None
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
-        config.update(model='PMP', relations=rel_names, best_valid_auc=best_auc if best_auc >= 0 else None,
+        config.update(model='PMP', relations=rel_names, best_valid_auprc=best_auc if best_auc >= 0 else None,
                       best_epoch=best_epoch, feature_normalization='x / (sum(x) + 0.01) (official PMP)')
         out_dir = run_dir_from_args(args, 'PMP')
         save_run_outputs(

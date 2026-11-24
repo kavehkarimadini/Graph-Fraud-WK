@@ -231,6 +231,7 @@ def train(args=None):
     test_metrics = compute_classification_metrics(y_test, onehot_all[test_np], prob_all[test_np], sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     test_metrics['best_epoch'] = epochs_executed
     test_metrics['epochs_executed'] = epochs_executed
     print('Decision threshold {:.4f} (train anomaly rate {:.4f})'.format(threshold, rate))

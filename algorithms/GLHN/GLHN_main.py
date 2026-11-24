@@ -20,7 +20,7 @@ import time
 import numpy as np
 import torch
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -106,7 +106,7 @@ def _to_homo(relations):
     return [('homo', np.concatenate(srcs), np.concatenate(dsts))]
 
 
-def _split_auc(logits, labels, idx):
+def _split_auprc(logits, labels, idx):
     if idx is None or idx.numel() == 0:
         return None
     y = labels[idx].detach().cpu().numpy()
@@ -115,7 +115,7 @@ def _split_auc(logits, labels, idx):
     scores = torch.softmax(logits[idx], dim=-1)[:, 1].detach().cpu().numpy()
     if not np.isfinite(scores).all():
         return None
-    return float(roc_auc_score(y, scores))
+    return float(average_precision_score(y, scores))
 
 
 def _ce_weight(labels, train_idx, n_class, device):
@@ -202,7 +202,7 @@ def train(args=None):
         model.eval()
         with torch.no_grad():
             val_logits, _, _ = model(rels, feat)
-        auc = _split_auc(val_logits, labels, valid_idx)
+        auc = _split_auprc(val_logits, labels, valid_idx)
         if auc is None:
             auc = -1.0
         if auc > best_auc:
@@ -213,7 +213,7 @@ def train(args=None):
         else:
             stop_steps += 1
         print('Epoch {:d} loss: {:.4f} (ce {:.4f} Lk {:.4f} Lu {:.4f}) '
-              'valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+              'valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
                   epoch, loss.item(), loss_ce.item(), loss_k.item(), loss_u.item(),
                   float(auc), best_auc, best_epoch))
         if early_stop and stop_steps >= early_stop:
@@ -241,6 +241,7 @@ def train(args=None):
         y_test, pred[test_idx].cpu().numpy(), prob[test_idx].cpu().numpy(), sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     print('Train metrics:', train_metrics)
     print('Valid metrics:', valid_metrics)
     print('Test metrics:', test_metrics)
@@ -249,7 +250,7 @@ def train(args=None):
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'GLHN'
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         config['feat_dim'] = int(feat.size(1))
         out_dir = run_dir_from_args(args, 'GLHN')

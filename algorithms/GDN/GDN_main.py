@@ -21,7 +21,7 @@ import time
 import numpy as np
 import torch
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -152,11 +152,11 @@ def predict_fraud_prob(model, idx, rels, batch_size):
     return torch.cat(probs, dim=0)
 
 
-def _auc(labels, prob):
+def _auprc(labels, prob):
     y = labels.cpu().numpy()
     if len(np.unique(y)) < 2:
         return None
-    return float(roc_auc_score(y, prob.cpu().numpy()))
+    return float(average_precision_score(y, prob.cpu().numpy()))
 
 
 def train(args=None):
@@ -232,7 +232,7 @@ def train(args=None):
             epoch_loss += loss
 
         val_prob = predict_fraud_prob(model, valid_idx, rels, args.eval_batch_size)
-        auc = _auc(labels[valid_idx], val_prob)
+        auc = _auprc(labels[valid_idx], val_prob)
         if auc is None:
             auc = -1.0
         if auc > best_auc:
@@ -242,7 +242,7 @@ def train(args=None):
             stop_steps = 1
         else:
             stop_steps += 1
-        print('Epoch {:d} loss: {:.4f} valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+        print('Epoch {:d} loss: {:.4f} valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
             epoch, epoch_loss / num_batches, float(auc), best_auc, best_epoch))
         if early_stop and stop_steps >= early_stop:
             print('Early stop at epoch {:d}'.format(epoch))
@@ -271,6 +271,7 @@ def train(args=None):
     test_metrics = compute_classification_metrics(y_test, pred_test, prob_test, sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     test_metrics['best_epoch'] = best_epoch
     test_metrics['epochs_executed'] = epochs_executed
     print('Train metrics:', train_metrics)
@@ -282,7 +283,7 @@ def train(args=None):
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'GDN'
         config['relations'] = rel_names
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         config['epochs_executed'] = epochs_executed
         config['feat_dim'] = n_feat

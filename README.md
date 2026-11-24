@@ -211,7 +211,7 @@ All three models use the same stratified split of **labeled** nodes:
 | Valid | **0.20** (fixed)                           | Checkpoint selection / hyperparameter tuning |
 | Test  | **0.40** (fixed)                           | Final metrics only                           |
 
-If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUC checkpoint before reporting test metrics. `--early_stop` defaults to **25** (pass `0` to train every epoch).
+If you lower `--train_ratio` (for example `0.2`), valid and test stay at 20% / 40%. The unused part of the 40% train pool is **discarded**, not moved into valid or test. Training restores the best valid-AUPRC checkpoint before reporting test metrics. `--early_stop` defaults to **25** (pass `0` to train every epoch).
 
 ---
 
@@ -967,7 +967,7 @@ results/<Model>/<dataset>/seed<seed>_train<pct>/   # benchmark models (legacy mo
   split.npz         # train_idx, test_idx, y_train, y_test
   predictions.npz   # test predictions + probabilities
   checkpoint.pt     # {state_dict, config, model_name}
-  OOT.txt / OOM.txt # only when the run was stopped by the 4 h / 100 GB limit (then no other files)
+  OOT.txt / OOM.txt # only when the run was stopped by the 4 h / 95 GB limit (then no other files)
 ```
 
 | File              | Contents                                                                                                                    |
@@ -1080,9 +1080,16 @@ Get-ChildItem -Recurse results   # Windows PowerShell
 Each benchmark model (`algorithms/<Model>`) runs with one of two kinds of hyperparameters per dataset:
 
 - **Paper**: the model's original paper (`paper/papers-to-read`) reports results on the dataset, so the paper's hyperparameters are used (the per-dataset `DATASET_DEFAULTS` in each `*_main.py`; values the paper omits come from the official code).
-- **Tuned**: otherwise the hyperparameters are chosen by `tune_hparams.py`, a validation-only random search on the 40/20/40 split (train ratio 0.4, the five benchmark seeds `123, 1234, 12345, 123456, 1234567`, ranked by mean validation AUROC; the test split is never used for selection). Trial 0 is always the previous default. The winner is written to `configs/tuned/<Model>/<dataset>.json` and loaded automatically by the `*_main.py` scripts and `utils.notebook_runner`.
+- **Tuned**: otherwise the hyperparameters are chosen by `tune_hparams.py`, a validation-only random search on the 40/20/40 split (train ratio 0.4, the five benchmark seeds `123, 1234, 12345, 123456, 1234567`, ranked by mean validation AUPRC; the test split is never used for selection). Trial 0 is always the previous default. The winner is written to `configs/tuned/<Model>/<dataset>.json` and loaded automatically by the `*_main.py` scripts and `utils.notebook_runner`.
 
 **Optimizer:** every model trains with Adam (`torch.optim.Adam`); no other optimizer is used. Its learning rate and weight decay are hyperparameters like any other: paper values on the paper's datasets, tuned values (both are in every search space) elsewhere.
+
+**Selection metric: validation AUPRC.**
+- **Early stopping and checkpoints:** every model early-stops on validation AUPRC (average precision of the fraud class) and restores its best-AUPRC checkpoint before testing.
+- **Tuning:** `tune_hparams.py` ranks trials by mean validation AUPRC.
+- **Exceptions:** TAM is unsupervised and has no early stopping. AMNet's `--select_metric auroc` switches it back to AUROC.
+- **Where to find it:** `metrics.json` reports `valid_auprc`, the selection metric, next to `valid_auc`, the AUROC. `config.json` stores `best_valid_auprc`.
+- **Old tuned configs:** a config in `configs/tuned/` that was selected by AUROC is re-tuned automatically the next time `tune_hparams.py` runs on that pair.
 
 Explicit command-line flags always win over tuned values. Every run prints, and saves in `config.json`, its `hparam_source` (`paper`, `tuned`, or `untuned_default` when a pair still needs tuning).
 
@@ -1126,7 +1133,7 @@ python tune_hparams.py --all --resume --gpu 0                   # continue an in
 # Budget knobs: --n_trials, --seeds 123,1234, --max_epochs, --prune_margin 0.05
 ```
 
-Per-trial training output goes to `tuning_logs/<Model>/<dataset>.log` (git-ignored); the JSON keeps every trial's per-seed validation AUROC.
+Per-trial training output goes to `tuning_logs/<Model>/<dataset>.log` (git-ignored); the JSON keeps every trial's per-seed validation AUPRC.
 
 ---
 
@@ -1143,7 +1150,7 @@ Every command below runs from the **repo root** with the venv active. On RunPod 
 | Training ratio | `0.1`, `0.2`, `0.3`, `0.4` (valid 20% / test 40% fixed) |
 | Seeds          | `123`, `1234`, `12345`, `123456`, `1234567` |
 | Output folder  | `results/<Model>/<dataset>/seed<seed>_train<pct>/`, for example `results/BWGNN/comp/seed123_train10/` |
-| Limits per run | 4 hours (otherwise `OOT.txt`) and 100 GB of GPU memory (otherwise `OOM.txt`) |
+| Limits per run | 4 hours (otherwise `OOT.txt`) and 95 GB of GPU memory (otherwise `OOM.txt`) |
 
 **Folder names are built automatically** from the model, dataset, seed and training ratio, so no two commands in the benchmark write to the same folder, across models too. You can run the command list from top to bottom without anything being overwritten. Dataset names are normalised (`YelpChi.mat` / `yelp` → `yelpchi`, `fdcompcn` → `comp`), so every model uses the same six dataset folder names. You don't need `--run_tag`. If you add one, it is appended (`seed123_train10_<tag>`). Running the *same* command twice reuses its folder, which the loops below avoid by skipping finished runs.
 
@@ -1156,12 +1163,12 @@ Every run is checked against two limits (`utils/run_guard.py`):
 | Limit | What happens | Exit code |
 | --- | --- | --- |
 | **OOT**: the run takes more than **4 hours** (wall clock from start, including data loading) | The run is stopped and `OOT.txt` is written to its run folder | `124` |
-| **OOM**: the run needs more than **100 GB of GPU memory** | PyTorch's allocator is capped at 100 GB (GiB). The first allocation past the cap stops the run and writes `OOM.txt` | `125` |
+| **OOM**: the run needs more than **95 GB of GPU memory** | PyTorch's allocator is capped at 95 GB (GiB). The first allocation past the cap stops the run and writes `OOM.txt` | `125` |
 
 - The status file's first line is just `OOT` or `OOM`. After it come the model, dataset, seed, training ratio, elapsed time, GPU, the error message (OOM) and the exact command.
 - A stopped run writes no other result files.
 - The loops below don't retry stopped runs. To retry one, delete its `OOT.txt` / `OOM.txt`. Starting the same run again also removes the old status file.
-- **GPU size matters for OOM.** The 100 GB criterion is exact only on a GPU with more than 100 GB, such as an H200 (141 GB) or B200 (180 GB). On a smaller GPU, for example an 80 GB A100/H100, the device itself is the limit: a run that needs 85 GB is marked OOM, and `OOM.txt` notes this.
+- **GPU size matters for OOM.** The 95 GB criterion is exact only on a GPU with more than 95 GB, such as an H200 (141 GB) or B200 (180 GB). On a smaller GPU, for example an 80 GB A100/H100, the device itself is the limit: a run that needs 85 GB is marked OOM, and `OOM.txt` notes this.
 - A process killed by the operating system for using too much **CPU RAM** cannot write a file. It shows up as `FAILED` in the loop.
 - For a quick test of the mechanism you can lower the limits, e.g. `GFW_TIME_LIMIT_HOURS=0.01` or `GFW_VRAM_LIMIT_GB=1`. Leave them unset for the benchmark.
 
@@ -1220,7 +1227,7 @@ for M in $MODELS GraphConsis; do for D in $DATASETS; do for R in $RATIOS; do for
   case $? in
     0)   ;;
     124) echo "OOT: $M $D train=$R seed=$S (over 4 h, see $RUN/OOT.txt)" ;;
-    125) echo "OOM: $M $D train=$R seed=$S (over 100 GB GPU memory, see $RUN/OOM.txt)" ;;
+    125) echo "OOM: $M $D train=$R seed=$S (over 95 GB GPU memory, see $RUN/OOM.txt)" ;;
     *)   echo "FAILED: $M $D train=$R seed=$S (see $LOG)" ;;
   esac
 done; done; done; done
@@ -1251,7 +1258,7 @@ foreach ($M in $Models) { foreach ($D in $Datasets) { foreach ($R in $Ratios) { 
   }
   $code = $LASTEXITCODE
   if ($code -eq 124)     { Write-Host "OOT: $M $D train=$R seed=$S (over 4 h, see $run/OOT.txt)" }
-  elseif ($code -eq 125) { Write-Host "OOM: $M $D train=$R seed=$S (over 100 GB GPU memory, see $run/OOM.txt)" }
+  elseif ($code -eq 125) { Write-Host "OOM: $M $D train=$R seed=$S (over 95 GB GPU memory, see $run/OOM.txt)" }
   elseif ($code -ne 0)   { Write-Host "FAILED: $M $D train=$R seed=$S (see $log)" }
 }}}}
 ```
@@ -1365,7 +1372,7 @@ Same as GraphSAGE, plus:
 | --------------- | --------------------------- | ------------------------------------------ |
 | `--context_dim` | `0`                         | Context embedding dim (`0` disables)       |
 | `--train_perc`  | `1.`                        | Fraction of the 80% train split to use     |
-| `--early_stop`  | `25`                        | Valid-AUC patience (`0` trains all epochs) |
+| `--early_stop`  | `25`                        | Valid-AUPRC patience (`0` trains all epochs) |
 | `--save_dir`    | `../../results/GraphConsis` | Eval output directory                      |
 | `--no_save`     | flag                        | Skip writing eval outputs                  |
 
@@ -1378,7 +1385,7 @@ Same as GraphSAGE, plus:
 | `--hid_dim`       | `64`       | Hidden size (`10` recommended for T-Social)                            |
 | `--order`         | `2`        | Beta wavelet order C (`5` for T-Social)                                |
 | `--epochs`        | `100`      | Epochs                                                                 |
-| `--early_stop`    | `25`       | Valid-AUC patience (`0` trains all epochs)                             |
+| `--early_stop`    | `25`       | Valid-AUPRC patience (`0` trains all epochs)                             |
 | `--learning_rate` | `0.01`     | Learning rate                                                          |
 | `--gpu`           | `0`        | Device                                                                 |
 
@@ -1391,7 +1398,7 @@ Same as GraphSAGE, plus:
 | `--intra_dim`     | paper table | Hidden size (`8`)                                                      |
 | `--C` / `--K`     | paper table | Wavelet order / positive-band cutoff (`3` / `2` on comp)               |
 | `--gamma`         | paper table | Homo-edge hinge weight (`0.8` on comp)                                 |
-| `--epochs`        | `1000`      | Max epochs (early stop on valid AUC)                                   |
+| `--epochs`        | `1000`      | Max epochs (early stop on valid AUPRC)                                   |
 | `--early_stop`    | paper table | Patience (`100` on comp; `0` disables)                                 |
 | `--learning_rate` | `0.01`      | Adam learning rate (same default on every dataset)                     |
 | `--gpu`           | `0`         | Device                                                                 |
@@ -1406,7 +1413,7 @@ Same as GraphSAGE, plus:
 | `--n_head`        | paper yaml | Attention heads                                                     |
 | `--n_bins`        | paper yaml | Decision-tree bins per feature (`k`)                                |
 | `--z`             | paper yaml | Grouping threshold                                                  |
-| `--epochs`        | `200`      | Max epochs (early stop on valid AUC)                                |
+| `--epochs`        | `200`      | Max epochs (early stop on valid AUPRC)                                |
 | `--learning_rate` | `0.01`     | Learning rate                                                       |
 | `--gpu`           | `0`        | Device                                                              |
 
@@ -1421,7 +1428,7 @@ Same as GraphSAGE, plus:
 | `--tau`                 | `0.1`     | InfoNCE temperature                                                 |
 | `--gamma1` / `--gamma2` | paper     | Weights of `L_k` / `L_u` (0.8/1.0 on YelpChi)                       |
 | `--graph_type`          | dataset   | `hetero` (mean-pool relations) or `homo`                            |
-| `--epochs`              | `100`     | Max epochs (early stop on valid AUC)                                |
+| `--epochs`              | `100`     | Max epochs (early stop on valid AUPRC)                                |
 | `--learning_rate`       | `0.01`    | Learning rate                                                       |
 | `--gpu`                 | `0`       | Device                                                              |
 
@@ -1435,7 +1442,7 @@ Same as GraphSAGE, plus:
 | `--hid_dim`          | `96`          | Latent size, divisible by 3 (`48` on T-Social)                      |
 | `--alpha` / `--beta` | `0.4` / `0.8` | Weights of `L_D` / `L_bsl`                                          |
 | `--batch_size`       | `256`         | Unlabeled aux batch for `L_bsl`                                     |
-| `--epochs`           | `100`         | Max epochs (early stop on valid AUC)                                |
+| `--epochs`           | `100`         | Max epochs (early stop on valid AUPRC)                                |
 | `--learning_rate`    | `0.01`        | Learning rate                                                       |
 | `--gpu`              | `0`           | Device                                                              |
 
@@ -1453,7 +1460,7 @@ Same as GraphSAGE, plus:
 | `--step_size`      | `0.02`    | RL threshold step                                                   |
 | `--under_sample`   | `1.0`     | Negatives drawn per positive each epoch                             |
 | `--no_rl`          | off       | Freeze thresholds at `--init_threshold` (0.5)                       |
-| `--epochs`         | `100`     | Max epochs (early stop on valid AUC)                                |
+| `--epochs`         | `100`     | Max epochs (early stop on valid AUPRC)                                |
 | `--learning_rate`  | `0.01`    | Learning rate                                                       |
 | `--gpu`            | `0`       | Device                                                              |
 
@@ -1470,7 +1477,7 @@ Same as GraphSAGE, plus:
 | `--gamma1`        | dataset   | Edge hinge-loss weight: 1.2 (YelpChi and others) / 0.4 (Amazon)      |
 | `--gamma2`        | dataset   | Prototype-loss weight: 2.0 (YelpChi and others) / 1.4 (Amazon)       |
 | `--feat_norm`     | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
-| `--epochs`        | `1000`    | Max epochs, early stop on valid AUC (T-Social: 200)                  |
+| `--epochs`        | `1000`    | Max epochs, early stop on valid AUPRC (T-Social: 200)                  |
 | `--learning_rate` | `0.1`     | Learning rate                                                        |
 | `--weight_decay`  | `5e-5`    | L2 weight                                                            |
 | `--gpu`           | `0`       | Device                                                               |
@@ -1489,7 +1496,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`   | dataset   | 0.001 (YelpChi) / 0.1 (Amazon) / 0.01 (others)                       |
 | `--weight_decay`    | `1e-4`    | L2 weight                                                            |
 | `--feat_norm`       | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
-| `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
+| `--epochs`          | `100`     | Max epochs, early stop on valid AUPRC (T-Social: 50)                   |
 | `--gpu`             | `0`       | Device                                                               |
 
 ### PC-GNN (`algorithms/PCGNN/PCGNN_main.py`)
@@ -1507,7 +1514,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`   | dataset   | 0.01 (YelpChi and large graphs) / 0.005 (Amazon, comp)               |
 | `--weight_decay`    | dataset   | 1e-3 (YelpChi and large graphs) / 5e-4 (Amazon, comp)                |
 | `--feat_norm`       | dataset   | `row` (YelpChi, Amazon) / `standard` (others) / `none`               |
-| `--epochs`          | `100`     | Max epochs, early stop on valid AUC (T-Social: 50)                   |
+| `--epochs`          | `100`     | Max epochs, early stop on valid AUPRC (T-Social: 50)                   |
 | `--gpu`             | `0`       | Device                                                               |
 
 ### SparseGAD (`algorithms/SparseGAD/SparseGAD_main.py`)
@@ -1523,7 +1530,7 @@ Same as GraphSAGE, plus:
 | `--k`                | `10`      | Neighbours per node in the kNN graph update                          |
 | `--update_adj_epoch` | dataset   | kNN graph update interval: 200 (T-Social: 0 = off)                   |
 | `--feat_norm`        | dataset   | `minmax` (YelpChi) / `row` (Amazon) / `standard` (others) / `none`   |
-| `--epochs`           | `1000`    | Max epochs, early stop on valid AUC with patience 200 (T-Social: 300 / 50) |
+| `--epochs`           | `1000`    | Max epochs, early stop on valid AUPRC with patience 200 (T-Social: 300 / 50) |
 | `--learning_rate`    | `0.01`    | Learning rate                                                        |
 | `--weight_decay`     | `5e-4`    | L2 weight                                                            |
 | `--gpu`              | `0`       | Device                                                               |
@@ -1562,7 +1569,7 @@ Same as GraphSAGE, plus:
 | `--adj_type`      | `sym`     | Indicator normalisation: `sym` / `rw`                                               |
 | `--self_loop`     | dataset   | Self-loops on the union graph: 1 (YelpChi, Amazon, FDCompCN) / 0 (others)           |
 | `--feat_norm`     | dataset   | `none` (YelpChi, Amazon, T-Finance, T-Social) / `standard` (Elliptic, FDCompCN)     |
-| `--epochs`        | `100`     | Max epochs per stage, early stop on valid AUC (patience 25)                         |
+| `--epochs`        | `100`     | Max epochs per stage, early stop on valid AUPRC (patience 25)                         |
 | `--learning_rate` | `0.01`    | Learning rate                                                                       |
 | `--weight_decay`  | `0.0`     | L2 weight                                                                           |
 | `--gpu`           | `0`       | Device                                                                              |
@@ -1582,7 +1589,7 @@ Same as GraphSAGE, plus:
 | `--no_sign` / `--no_degree` / `--no_decay` | off | Disable signed messages / degree correction / decaying aggregation |
 | `--feat_norm`     | `standard` | `row` (reference) / `minmax` / `standard` / `none`                            |
 | `--loss_weight`   | `none`     | `none` (reference) / `balanced` CE class weights                              |
-| `--epochs`        | `1500`     | Max epochs, early stop on valid AUC with patience 100 (T-Social: 500 / 50)    |
+| `--epochs`        | `1500`     | Max epochs, early stop on valid AUPRC with patience 100 (T-Social: 500 / 50)    |
 | `--learning_rate` | `0.01`     | Learning rate                                                                 |
 | `--weight_decay`  | `4e-3`     | L2 weight                                                                     |
 | `--gpu`           | `0`        | Device                                                                        |
@@ -1622,7 +1629,7 @@ Same as GraphSAGE, plus:
 | `--feat_learning_rate` | `1e-5`      | Learning rate of the trainable feature table                                |
 | `--feat_weight_decay`  | `0.1`       | L2 weight of the trainable feature table                                    |
 | `--feat_norm`          | per dataset | `none` (YelpChi) / `row` (Amazon) / `standard` (others)                     |
-| `--epochs`             | `100`       | Max epochs, early stop on valid AUC with patience 20 (T-Social: 50 / 10)    |
+| `--epochs`             | `100`       | Max epochs, early stop on valid AUPRC with patience 20 (T-Social: 50 / 10)    |
 | `--gpu`                | `0`         | Device                                                                      |
 
 ### ImGSL (`algorithms/ImGSL/ImGSL_main.py`)
@@ -1647,7 +1654,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`    | `0.01`      | Learning rate                                                                       |
 | `--weight_decay`     | `1e-3`      | L2 weight                                                                           |
 | `--feat_norm`        | `standard`  | `row` / `standard` / `none`                                                         |
-| `--epochs`           | `150`       | Max epochs, early stop on valid AUC with patience 30 (T-Social: 50 / 10)            |
+| `--epochs`           | `150`       | Max epochs, early stop on valid AUPRC with patience 30 (T-Social: 50 / 10)            |
 | `--gpu`              | `0`         | Device                                                                              |
 
 ### CGNN (`algorithms/CGNN/CGNN_main.py`)
@@ -1667,7 +1674,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`   | `0.01`      | Learning rate                                                                                     |
 | `--weight_decay`    | `1e-4`      | L2 weight                                                                                         |
 | `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                       |
-| `--epochs`          | `100`       | Max epochs, early stop on valid AUC with patience 25 (T-Social: 30 / 10)                          |
+| `--epochs`          | `100`       | Max epochs, early stop on valid AUPRC with patience 25 (T-Social: 30 / 10)                          |
 | `--gpu`             | `0`         | Device                                                                                            |
 
 ### H2IDE (`algorithms/H2IDE/H2IDE_main.py`)
@@ -1692,7 +1699,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`    | `0.005`     | Learning rate (also used by the CLUB estimators)                                             |
 | `--weight_decay`     | `5e-5`      | Adam weight decay                                                                            |
 | `--feat_norm`        | `standard`  | `row` / `standard` / `none`                                                                  |
-| `--epochs`           | `500`       | Max epochs, early stop on valid AUC with patience 100 (T-Social: 50 / 10)                    |
+| `--epochs`           | `500`       | Max epochs, early stop on valid AUPRC with patience 100 (T-Social: 50 / 10)                    |
 | `--gpu`              | `0`         | Device                                                                                       |
 
 ### CIE-GAD (`algorithms/CIEGAD/CIEGAD_main.py`)
@@ -1713,7 +1720,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`   | `0.01`      | Adam learning rate (not reported in the paper)                                              |
 | `--weight_decay`    | `5e-5`      | Adam weight decay                                                                           |
 | `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                 |
-| `--epochs`          | `1000`      | Max epochs, early stop on valid AUC with patience 100 (T-Social: 200 / 20)                  |
+| `--epochs`          | `1000`      | Max epochs, early stop on valid AUPRC with patience 100 (T-Social: 200 / 20)                  |
 | `--gpu`             | `0`         | Device                                                                                      |
 
 ### COFRAUD (`algorithms/COFRAUD/COFRAUD_main.py`)
@@ -1735,7 +1742,7 @@ Same as GraphSAGE, plus:
 | `--learning_rate`   | `0.02`      | Adam learning rate (official)                                                               |
 | `--weight_decay`    | `0`         | Adam weight decay                                                                           |
 | `--feat_norm`       | `standard`  | `row` / `standard` / `none`                                                                 |
-| `--epochs`          | `500`       | Max epochs, early stop on valid AUC with patience 50 (T-Social: 200 / 20)                   |
+| `--epochs`          | `500`       | Max epochs, early stop on valid AUPRC with patience 50 (T-Social: 200 / 20)                   |
 | `--gpu`             | `0`         | Device                                                                                      |
 
 ### PMP (`algorithms/PMP/PMP_main.py`)
@@ -1752,7 +1759,7 @@ Defaults are the paper's App. D.4 Table 5 values on YelpChi / Amazon / T-Finance
 | `--batch_size`      | per dataset    | Training nodes per mini-batch (512 / 128 / 256 / 2^17)                      |
 | `--learning_rate`   | per dataset    | Adam learning rate (0.01; T-Social 0.001)                                   |
 | `--weight_decay`    | `0`            | Adam weight decay                                                           |
-| `--epochs`          | `500`          | Max epochs, early stop on valid AUC (`--early_stop`, patience 25)           |
+| `--epochs`          | `500`          | Max epochs, early stop on valid AUPRC (`--early_stop`, patience 25)           |
 | `--eval_batch_size` | `65536`        | Nodes per forward pass at evaluation (memory only)                          |
 | `--gpu`             | `0`            | Device                                                                      |
 
@@ -1770,7 +1777,7 @@ Defaults are the released code's values on YelpChi / Amazon / T-Finance / T-Soci
 | `--lemda`         | `0.2`        | Weight of the local environmental constraint loss                        |
 | `--learning_rate` | `0.01`       | Adam learning rate                                                       |
 | `--weight_decay`  | `0`          | Adam weight decay                                                        |
-| `--epochs`        | `500`        | Max epochs, early stop on valid AUC (`--early_stop`, patience 25)        |
+| `--epochs`        | `500`        | Max epochs, early stop on valid AUPRC (`--early_stop`, patience 25)        |
 | `--gpu`           | `0`          | Device                                                                   |
 
 ### HACUD (`algorithms/HACUD/main.py`)
@@ -2110,7 +2117,7 @@ GraphConsis, BWGNN, and SplitGNN now share one stratified split of **labeled** n
 
 If you set `--train_ratio 0.2`, valid and test stay 20/40. The unused half of the 40% train pool is **discarded**, not moved into valid or test. Same seed → same valid and test nodes.
 
-After training, each model reloads the **best valid-AUC** checkpoint, then reports train / valid / test. `--early_stop` defaults to **25** (stop if valid AUC does not improve for 25 epochs). Pass `--early_stop 0` to train all epochs.
+After training, each model reloads the **best valid-AUPRC** checkpoint, then reports train / valid / test. `--early_stop` defaults to **25** (stop if valid AUPRC does not improve for 25 epochs). Pass `--early_stop 0` to train all epochs.
 
 ```powershell
 # default 40 / 20 / 40
@@ -2125,7 +2132,7 @@ python SplitGNN_main.py --dataset comp --train_ratio 0.4 --gpu 0
 
 **DGA-GNN** (Duan et al., AAAI 2024) is in the toolbox as a DGL-free port of `reference/DGA-GNN-main`.
 
-It follows the official pieces: decision-tree binning of attributes, mean aggregation on the full neighborhood plus two feedback groups, then attention fusion. Training uses this repo’s 40/20/40 split, valid-AUC checkpointing, and the same `metrics.json` / `checkpoint.pt` artifacts. No DGL, Lightning, Hydra, wandb, or `toad` (binning is scikit-learn).
+It follows the official pieces: decision-tree binning of attributes, mean aggregation on the full neighborhood plus two feedback groups, then attention fusion. Training uses this repo’s 40/20/40 split, valid-AUPRC checkpointing, and the same `metrics.json` / `checkpoint.pt` artifacts. No DGL, Lightning, Hydra, wandb, or `toad` (binning is scikit-learn).
 
 A 2-epoch run on FDCompCN completed (57-d features → 265 after binning).
 
@@ -2142,7 +2149,7 @@ Hyperparameters default to the official yaml per dataset (`n_hidden`, heads, bin
 
 **GLHN** (Guo et al., CIKM 2024; paper name GLHAD) is in the toolbox as a DGL-free port of `reference/GLHN/GLHN.md`.
 
-It predicts node-level local homophily, mixes low-pass (`I-L`) and high-pass (`L`) signals with that weight, and adds the two camouflage-resistant InfoNCE losses. Training uses this repo’s 40/20/40 split, valid-AUC checkpointing, and the same `metrics.json` / `checkpoint.pt` artifacts. No DGL.
+It predicts node-level local homophily, mixes low-pass (`I-L`) and high-pass (`L`) signals with that weight, and adds the two camouflage-resistant InfoNCE losses. Training uses this repo’s 40/20/40 split, valid-AUPRC checkpointing, and the same `metrics.json` / `checkpoint.pt` artifacts. No DGL.
 
 ```powershell
 cd algorithms\GLHN
@@ -2173,7 +2180,7 @@ python BSL_main.py --dataset yelpchi --paper_split --gpu 0
 
 Early stopping is now **on by default** for GraphConsis and BWGNN.
 
-`--early_stop` defaults to **25**: training stops if valid AUC does not improve for 25 epochs. The best valid-AUC checkpoint is still restored before test metrics.
+`--early_stop` defaults to **25**: training stops if valid AUPRC does not improve for 25 epochs. The best valid-AUPRC checkpoint is still restored before test metrics.
 
 Pass `--early_stop 0` if you want to run every epoch. SplitGNN / DGA-GNN / GLHN / BSL keep their own per-dataset patience values.
 
@@ -2189,7 +2196,7 @@ LR=          # e.g. 0.01
 TRAIN_RATIO= # e.g. 0.4   (max 0.4; valid=0.20 and test=0.40 stay fixed)
 ```
 
-Validation is already inside each run: train on train, checkpoint on **valid AUC** (`--early_stop` defaults on), then print and save **test** metrics under `results/` (or `--save_dir`). You do not run a separate validate job.
+Validation is already inside each run: train on train, checkpoint on **valid AUPRC** (`--early_stop` defaults on), then print and save **test** metrics under `results/` (or `--save_dir`). You do not run a separate validate job.
 
 Work from the **repo root** with the venv activated and datasets already in `dataset/` (`YelpChi.mat`, `Amazon.mat`, `tfinance`, `tsocial`, `elliptic` folder, `comp.dgl`).
 
@@ -2695,8 +2702,8 @@ Each command prints train / valid / test metrics. Artifacts:
 
 `algorithms/<MODEL>/results/<MODEL>/<dataset>/seed<SEED>_train<pct>/`
 
-- `metrics.json` — test metrics plus `valid_auc`
-- `checkpoint.pt` — best valid-AUC weights
+- `metrics.json` — test metrics plus `valid_auprc` (the selection metric) and `valid_auc` (AUROC)
+- `checkpoint.pt` — best valid-AUPRC weights
 - predictions / split indices
 
 On PowerShell, either `set SEED=123` and use `%SEED%`, or type the numbers in place of `$SEED`, `$LR`, `$TRAIN_RATIO`. Run T-Social last and one model at a time; it is the only graph that commonly OOMs.

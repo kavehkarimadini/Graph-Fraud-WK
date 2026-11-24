@@ -42,7 +42,7 @@ python H2FDetector_main.py --dataset comp --gpu 0
 ## Note
 
 - Paper / reference hyperparameters: full-batch Adam `lr=0.1`, weight decay `5e-5`, `intra_dim=8`, 4 heads, 2 layers, dropout 0.1, up to 1000 epochs. YelpChi uses `gamma1=1.2`, `gamma2=1.2` (paper Sec. 4.1.3; the reference yaml has `gamma2=2`), early stop 50; Amazon uses `gamma1=0.4`, `gamma2=1.4`, early stop 200. Elliptic / T-Finance / T-Social / FDCompCN are not in the paper and use `configs/tuned/H2FDetector/<dataset>.json`; without it they fall back to the YelpChi weights (T-Social capped at 200 epochs, early stop 20).
-- The reference split is 40/20/40 stratified, the same as the toolbox protocol; selection uses the best valid AUC.
+- The reference split is 40/20/40 stratified, the same as the toolbox protocol; selection uses the best valid AUPRC.
 - Each relation is symmetrised, de-duplicated and given one self-loop per node (reference `data_preprocess.py`). The `homo` graph used for edge labels is the union of all relations.
 - Features are row-normalised (`x / (rowsum + 0.01)`) as in the reference whenever every row sums to a positive value (YelpChi, Amazon); otherwise they are standardised. Elliptic / T-Finance / T-Social / FDCompCN default to standard scaling. Override with `--feat_norm`.
 - Amazon splits only labeled nodes (`index >= 3305`); unlabeled users stay in the graph as neighbours.

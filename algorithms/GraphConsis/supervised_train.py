@@ -133,7 +133,7 @@ def train(args=None):
 
         model.eval()
         valid_metrics, _, _ = predict_split(model, x, edge_indices, y, valid_idx, args.sigmoid)
-        auc = valid_metrics.get('auroc')
+        auc = valid_metrics.get('auprc')
         if auc is None:
             auc = -1.0
         if auc > best_auc:
@@ -143,7 +143,7 @@ def train(args=None):
             stop_steps = 1
         else:
             stop_steps += 1
-        print('Epoch {:d} loss: {:.4f} valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+        print('Epoch {:d} loss: {:.4f} valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
             epoch, total_loss / max(steps, 1), float(auc), best_auc, best_epoch))
         if early_stop and stop_steps >= early_stop:
             print('Early stop at epoch {:d}'.format(epoch))
@@ -159,6 +159,7 @@ def train(args=None):
     test_metrics, y_true, y_pred = predict_split(model, x, edge_indices, y, test_idx, args.sigmoid)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     print('Train metrics:', train_metrics)
     print('Valid metrics:', valid_metrics)
     print('Test metrics:', test_metrics)
@@ -167,7 +168,7 @@ def train(args=None):
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'GraphConsis'
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         out_dir = run_dir_from_args(args, 'GraphConsis')
         save_run_outputs(

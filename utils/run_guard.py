@@ -6,7 +6,7 @@ Every benchmark entry point runs its training through :func:`run_guarded` (or
 * **OOT** - the run (data loading + training + evaluation) has been going for more
   than ``TIME_LIMIT_HOURS`` (default 4 h). A watchdog thread writes ``OOT.txt`` into
   the run folder and ends the process with exit code 124.
-* **OOM** - the run needs more than ``VRAM_LIMIT_GB`` of GPU memory (default 100,
+* **OOM** - the run needs more than ``VRAM_LIMIT_GB`` of GPU memory (default 95,
   counted in GiB = 1024**3 bytes, the unit PyTorch reports). The PyTorch allocator is
   capped at that size, so asking for more raises a CUDA out-of-memory error; the
   guard catches it, writes ``OOM.txt`` and exits with code 125. On a GPU with less
@@ -29,7 +29,7 @@ import time
 from datetime import datetime
 
 TIME_LIMIT_HOURS = float(os.environ.get('GFW_TIME_LIMIT_HOURS', 4))
-VRAM_LIMIT_GB = float(os.environ.get('GFW_VRAM_LIMIT_GB', 100))
+VRAM_LIMIT_GB = float(os.environ.get('GFW_VRAM_LIMIT_GB', 95))
 OOT_EXIT_CODE = 124
 OOM_EXIT_CODE = 125
 OOT_FILE = 'OOT.txt'

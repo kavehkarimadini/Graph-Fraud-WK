@@ -41,7 +41,7 @@ python FRAUDRE_main.py --dataset comp --gpu 0
 
 - Reference hyperparameters: embedding 64, classifier hidden 64, Adam with weight decay `1e-4`, lr `0.1` / batch 256 on Amazon and lr `0.001` / batch 1024 on YelpChi, 61 epochs. Elliptic / T-Finance / T-Social use lr `0.01`, batch 1024; FDCompCN lr `0.01`, batch 256.
 - Each relation is symmetrised and given self-loops; every node then keeps a fixed random sample of at most `--max_neighbors` (10) neighbours, drawn once before training as in the reference `sparse_to_adjlist` (seeded per relation).
-- Training iterates over all train nodes in shuffled mini-batches (no under-sampling; the prior shift handles imbalance). The reference evaluated the test set every 10 epochs with a 20/80 (YelpChi) or 10/90 (Amazon) split; here the toolbox 40/20/40 split is used with valid-AUC checkpointing and early stopping.
+- Training iterates over all train nodes in shuffled mini-batches (no under-sampling; the prior shift handles imbalance). The reference evaluated the test set every 10 epochs with a 20/80 (YelpChi) or 10/90 (Amazon) split; here the toolbox 40/20/40 split is used with valid-AUPRC checkpointing and early stopping.
 - Probabilities are `softmax(logits)` (the reference reported `sigmoid` of the fraud logit); hard predictions are identical.
 - Features are row-normalised (`x / rowsum`) as in the reference whenever every row sums to a positive value (YelpChi, Amazon); Elliptic / T-Finance / T-Social / FDCompCN default to standard scaling. Override with `--feat_norm`.
 - The reference's unused auxiliary MLP head (`weight_mlp`, its loss is commented out) is omitted.

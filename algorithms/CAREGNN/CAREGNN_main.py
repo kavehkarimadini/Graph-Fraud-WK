@@ -21,7 +21,7 @@ import time
 import numpy as np
 import torch
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -114,11 +114,11 @@ def predict_proba(model, feat, idx, rels, batch_size):
     return torch.cat(probs, dim=0)
 
 
-def _auc(labels, prob):
+def _auprc(labels, prob):
     y = labels.cpu().numpy()
     if len(np.unique(y)) < 2:
         return None
-    return float(roc_auc_score(y, prob[:, 1].cpu().numpy()))
+    return float(average_precision_score(y, prob[:, 1].cpu().numpy()))
 
 
 def _epoch_relation_scores(batch_scores, n_rel):
@@ -203,7 +203,7 @@ def train(args=None):
             batch_scores.append(rel_scores)
 
         val_prob = predict_proba(model, feat, valid_idx, rels, args.eval_batch_size)
-        auc = _auc(labels[valid_idx], val_prob)
+        auc = _auprc(labels[valid_idx], val_prob)
         if auc is None:
             auc = -1.0
         if auc > best_auc:
@@ -219,7 +219,7 @@ def train(args=None):
             model.rl_update(prev_scores, epoch_scores)
         prev_scores = epoch_scores
         thresholds_log.append(model.thresholds.tolist())
-        print('Epoch {:d} loss: {:.4f} valid AUC: {:.4f} (best {:.4f} @ {:d}) thresholds: {}'.format(
+        print('Epoch {:d} loss: {:.4f} valid AUPRC: {:.4f} (best {:.4f} @ {:d}) thresholds: {}'.format(
             epoch, epoch_loss / num_batches, float(auc), best_auc, best_epoch,
             [round(t, 3) for t in model.thresholds.tolist()]))
         if early_stop and stop_steps >= early_stop:
@@ -249,6 +249,7 @@ def train(args=None):
         y_test, _hard(prob_test), prob_test.cpu().numpy(), sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     test_metrics['best_epoch'] = best_epoch
     test_metrics['epochs_executed'] = epochs_executed
     print('Train metrics:', train_metrics)
@@ -260,7 +261,7 @@ def train(args=None):
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'CAREGNN'
         config['relations'] = rel_names
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         config['epochs_executed'] = epochs_executed
         config['feat_dim'] = int(feat.size(1))

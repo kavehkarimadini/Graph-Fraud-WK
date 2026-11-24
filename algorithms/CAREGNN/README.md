@@ -15,7 +15,7 @@ The CARE-GNN model is proposed by the [paper](https://arxiv.org/pdf/2008.08692.p
 
 CAmouflage-REsistant GNN (CARE-GNN) targets fraudsters who hide by connecting to benign entities. A linear label predictor scores every node; neighbours are ranked by the L1 distance between their score and the centre node's score, and only the closest `ceil(deg * p_r)` are kept under each relation. The per-relation thresholds `p_r` are adjusted by a reinforcement-learning rule (+/- `step_size` each epoch depending on whether the average neighbour distance of fraud nodes went down). Kept neighbours are mean-aggregated per relation, and relations are combined with `p_r` as weights. The loss is GNN cross-entropy plus `lambda_1` times the label-predictor cross-entropy, trained on under-sampled (balanced) batches.
 
-This port follows `reference/CARE-GNN-master` (official code). Neighbour filtering is vectorised over CSR adjacency instead of per-node Python loops, so it scales to T-Finance / Elliptic; the selection rule is unchanged. Training uses the toolbox 40/20/40 split with valid-AUC checkpointing (the reference used a 40/60 train/test split and fixed 31 epochs).
+This port follows `reference/CARE-GNN-master` (official code). Neighbour filtering is vectorised over CSR adjacency instead of per-node Python loops, so it scales to T-Finance / Elliptic; the selection rule is unchanged. Training uses the toolbox 40/20/40 split with valid-AUPRC checkpointing (the reference used a 40/60 train/test split and fixed 31 epochs).
 
 ## Run
 

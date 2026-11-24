@@ -18,7 +18,7 @@ def add_protocol_split_args(parser, train_ratio=0.4, early_stop=25):
                         help='Train fraction of all labeled nodes (max 0.4). '
                              'Valid is fixed at 20%% and test at 40%%; unused train-pool nodes are discarded.')
     parser.add_argument('--early_stop', type=int, default=early_stop,
-                        help='Patience on valid AUC (default 25; 0 trains all epochs; '
+                        help='Patience on valid AUPRC (default 25; 0 trains all epochs; '
                              'best valid checkpoint is still kept).')
 
 

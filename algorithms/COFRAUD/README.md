@@ -50,7 +50,7 @@ Ablations as in the paper:
 
 - **Paper settings** (Sec. 4): training ratios 10% / 40%; remaining split valid:test 1:2; select by max valid **F1** in the paper (this toolbox selects by valid **AUROC**); metrics AUC / macro-Rec / macro-F1; 2 layers, hidden 32; Amazon and Yelp only in the paper; CE loss; batch 1024 mentioned for timing.
 - **From the official script** (documented defaults): 8 heads, relation embedding / hidden 16, dropout 0.5, residual on, Adam lr `0.02`, weight decay `0`, 500 epochs, patience 50. T-Social uses 4 heads / 200 epochs / patience 20.
-- **Training** is full-batch over all relations (official uses neighbour sampling + batch 1280). Validation AUROC selects the checkpoint; predictions use threshold `0.5` (`--thres`).
+- **Training** is full-batch over all relations (official uses neighbour sampling + batch 1280). Validation AUPRC selects the checkpoint; predictions use threshold `0.5` (`--thres`).
 - Relation embeddings are learnable vectors of size `--relation_dim` (default 16), not fixed one-hots; the paper initialises with one-hot encodings of relation type.
 - **Smoke tests** (CPU, reduced `hidden=16` / `n_heads=2`): Amazon reached test AUROC **0.963** / AUPRC **0.876** / Macro-F1 **0.909** after 10 epochs (paper Table 2 @ 40%: 97.21 / Rec 89.08 / F1 91.53). YelpChi reached test AUROC **0.810** / AUPRC **0.489** / Macro-F1 **0.661** after 15 epochs and was still climbing (paper: 91.52 / 79.70 / 79.71)—short of a full 500-epoch 8-head run.
 - Amazon splits only labeled nodes (`index >= 3305`); unlabeled users stay in the graph.

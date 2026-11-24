@@ -17,7 +17,7 @@ import time
 
 import numpy as np
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.SplitGNN.SplitGNN import SplitGNN
@@ -97,14 +97,14 @@ def apply_dataset_defaults(args):
     return args
 
 
-def _split_auc(logits, labels, idx):
+def _split_auprc(logits, labels, idx):
     if idx is None or idx.numel() == 0:
         return None
     y = labels[idx].detach().cpu().numpy()
     if len(np.unique(y)) < 2:
         return None
     prob = torch.softmax(logits[idx], dim=-1)[:, 1].detach().cpu().numpy()
-    return float(roc_auc_score(y, prob))
+    return float(average_precision_score(y, prob))
 
 
 def train(args=None):
@@ -154,7 +154,7 @@ def train(args=None):
             model.eval()
             with torch.no_grad():
                 logits = model(graph)
-            auc = _split_auc(logits, labels, valid_idx_t)
+            auc = _split_auprc(logits, labels, valid_idx_t)
             if auc is not None:
                 if auc > best_auc:
                     best_auc = auc
@@ -166,7 +166,7 @@ def train(args=None):
                     if stop_steps >= args.early_stop:
                         do_stop = True
                 if epoch % 10 == 0:
-                    print('Epoch {:d} loss: {:.4f} valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+                    print('Epoch {:d} loss: {:.4f} valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
                         epoch, loss.item(), auc, best_auc, best_epoch))
             elif epoch % 10 == 0:
                 print('Epoch {:d} loss: {:.4f}'.format(epoch, loss.item()))
@@ -199,6 +199,7 @@ def train(args=None):
             y_valid, pred[valid_idx_t].cpu().numpy(), prob[valid_idx_t].cpu().numpy(), sigmoid=False)
         test_metrics = dict(test_metrics)
         test_metrics['valid_auc'] = valid_metrics.get('auroc')
+        test_metrics['valid_auprc'] = valid_metrics.get('auprc')
         print('Valid metrics:', valid_metrics)
     print('Train metrics:', train_metrics)
     print('Test metrics:', test_metrics)
@@ -207,7 +208,7 @@ def train(args=None):
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'SplitGNN'
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         out_dir = run_dir_from_args(args, 'SplitGNN')
         save_run_outputs(

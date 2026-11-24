@@ -30,7 +30,7 @@ It uses the same model, the same class-weighted cross-entropy and Adam. All filt
 Changes from the released code:
 - **Environmental loss indexing:** the loss uses global training-node ids. The released `cal_nceloss` indexes by position inside `idx_train`, which is a bug.
 - **Environmental loss averaging:** it averages `exp(cos)` as in the paper's equation, as the repo's earlier SEC-GFD port also did. Averaging raw cosines can make the log's argument negative.
-- **Stopping rule:** instead of reporting the best *test* epoch of a fixed 100-epoch run, training stops early on validation AUROC (patience 25), with at most 500 epochs.
+- **Stopping rule:** instead of reporting the best *test* epoch of a fixed 100-epoch run, training stops early on validation AUPRC (patience 25), with at most 500 epochs.
 
 ## Run
 

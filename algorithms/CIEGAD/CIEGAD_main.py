@@ -19,7 +19,7 @@ import time
 
 import numpy as np
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -114,11 +114,11 @@ def normalize_features(features, mode):
     return features.astype(np.float32), mode
 
 
-def _auc(labels, prob):
+def _auprc(labels, prob):
     y = labels.cpu().numpy()
     if len(np.unique(y)) < 2:
         return None
-    return float(roc_auc_score(y, prob.cpu().numpy()))
+    return float(average_precision_score(y, prob.cpu().numpy()))
 
 
 def train(args=None):
@@ -196,7 +196,7 @@ def train(args=None):
         with torch.no_grad():
             val_logits, _, _, _ = model(x, a_hat_t, adj_t, deg)
             val_prob = torch.softmax(val_logits, dim=-1)[valid_idx, 1]
-        auc = _auc(labels[valid_idx], val_prob)
+        auc = _auprc(labels[valid_idx], val_prob)
         if auc is None:
             auc = -1.0
         if auc > best_auc:
@@ -209,7 +209,7 @@ def train(args=None):
         a_now = float(model.jacobi_a.detach().cpu())
         b_now = float(model.jacobi_b.detach().cpu())
         print('Epoch {:d} loss: {:.4f} (L0 {:.4f} L1 {:.4f}) a={:.3f} b={:.3f} '
-              'valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+              'valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
                   epoch, loss.item(), l0.item(), l1.item(), a_now, b_now,
                   float(auc), best_auc, best_epoch))
         if early_stop and stop_steps >= early_stop:
@@ -239,6 +239,7 @@ def train(args=None):
         y_test, pred[test_idx].cpu().numpy(), prob[test_idx].cpu().numpy(), sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     test_metrics['best_epoch'] = best_epoch
     test_metrics['epochs_executed'] = epochs_executed
     print('Train metrics:', train_metrics)
@@ -251,7 +252,7 @@ def train(args=None):
         config['model'] = 'CIEGAD'
         config['relations'] = rel_names
         config['n_edges'] = int(deg_np.sum()) // 2
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         config['epochs_executed'] = epochs_executed
         config['feat_dim'] = int(x.size(1))

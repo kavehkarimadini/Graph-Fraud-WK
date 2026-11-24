@@ -49,7 +49,7 @@ def main():
       'the arguments, so no two commands below share a folder and running the list from top to '
       'bottom never overwrites anything (`config.json` records `train_ratio` and `hparam_source`).')
     w('- Limits per run: more than 4 hours stops the run and writes `OOT.txt` (exit code 124); more '
-      'than 100 GB of GPU memory stops it and writes `OOM.txt` (exit code 125), both in the run folder. '
+      'than 95 GB of GPU memory stops it and writes `OOM.txt` (exit code 125), both in the run folder. '
       'Skip a command whose folder already has `metrics.json`, `OOT.txt` or `OOM.txt`.')
     w('')
     n_tune = sum(1 for m in models for d in DATASETS if not uses_paper_hparams(m, d))
@@ -60,8 +60,8 @@ def main():
 
     w('## Step 1 - Hyperparameter tuning (pairs not evaluated in the original paper)')
     w('')
-    w('Run once, before any training. Each command runs 20 trials x 5 seeds on the 40% split and '
-      'writes `configs/tuned/<Model>/<dataset>.json`; add `--resume` to continue an interrupted '
+    w('Run once, before any training. Each command runs 20 trials x 5 seeds on the 40% split, ranks them by '
+      'mean validation AUPRC and writes `configs/tuned/<Model>/<dataset>.json`; add `--resume` to continue an interrupted '
       'pair. Equivalent single command: `python tune_hparams.py --all --gpu 0`.')
     w('')
     for model in models:

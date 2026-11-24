@@ -70,7 +70,7 @@ def parse_args():
                         choices=['row', 'minmax', 'standard', 'none'])
     parser.add_argument('--loss_weight', type=str, default='none', choices=['none', 'balanced'],
                         help="Cross-entropy class weights ('none' as in the reference).")
-    parser.add_argument('--select_metric', type=str, default='auroc', choices=['auroc', 'auprc'],
+    parser.add_argument('--select_metric', type=str, default='auprc', choices=['auroc', 'auprc'],
                         help='Validation metric for model selection and early stopping.')
     parser.add_argument('--epochs', type=int, default=None)
     parser.add_argument('--learning_rate', type=float, default=None,
@@ -255,6 +255,7 @@ def train(args=None):
         y_test, pred[test_idx].cpu().numpy(), prob[test_idx].cpu().numpy(), sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     test_metrics['best_epoch'] = best_epoch
     test_metrics['epochs_executed'] = epochs_executed
     print('Train metrics:', train_metrics)

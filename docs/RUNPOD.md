@@ -139,9 +139,9 @@ The benchmark is 23 models (including PMP and SEC-GFD) × 6 datasets × 4 traini
 
 **Limits per run.**
 - A run that takes more than **4 hours** is stopped and leaves `OOT.txt` in its run folder.
-- A run that needs more than **100 GB of GPU memory** is stopped and leaves `OOM.txt` there.
+- A run that needs more than **95 GB of GPU memory** is stopped and leaves `OOM.txt` there.
 - Each file's first line is `OOT` or `OOM`, followed by the details; a stopped run writes no other result files.
-- **Pick a GPU with more than 100 GB** (H200 141 GB, B200 180 GB) if the OOM column should mean exactly "more than 100 GB". On an 80 GB A100/H100 a run is already marked OOM when it needs more than 80 GB.
+- **Pick a GPU with more than 95 GB** (H200 141 GB, B200 180 GB) if the OOM column should mean exactly "more than 95 GB". On an 80 GB A100/H100 a run is already marked OOM when it needs more than 80 GB.
 
 Details are in the root `README.md` ("Time and memory limits").
 
@@ -162,7 +162,7 @@ T-Social (5.8M nodes) needs a large-memory GPU; run it on its own pod if needed 
 
 ```bash
 python tune_hparams.py --list                    # TUNE = still to do
-python tune_hparams.py --all --gpu 0             # 20 trials x 5 seeds per pair, 40% split, validation AUROC only
+python tune_hparams.py --all --gpu 0             # 20 trials x 5 seeds per pair, 40% split, validation AUPRC only
 python tune_hparams.py --all --resume --gpu 0    # after a disconnect / pod restart
 python tune_hparams.py --list                    # done when no TUNE cell is left
 ```
@@ -205,7 +205,7 @@ for M in $MODELS GraphConsis; do for D in $DATASETS; do for R in $RATIOS; do for
   case $? in
     0)   ;;
     124) echo "OOT: $M $D train=$R seed=$S (over 4 h, see $RUN/OOT.txt)" ;;
-    125) echo "OOM: $M $D train=$R seed=$S (over 100 GB GPU memory, see $RUN/OOM.txt)" ;;
+    125) echo "OOM: $M $D train=$R seed=$S (over 95 GB GPU memory, see $RUN/OOM.txt)" ;;
     *)   echo "FAILED: $M $D train=$R seed=$S (see $LOG)" ;;
   esac
 done; done; done; done

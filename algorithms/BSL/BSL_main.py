@@ -20,7 +20,7 @@ import time
 
 import numpy as np
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -91,7 +91,7 @@ def _to_homo(relations):
     return np.concatenate(srcs), np.concatenate(dsts)
 
 
-def _split_auc(logits, labels, idx):
+def _split_auprc(logits, labels, idx):
     if idx is None or idx.numel() == 0:
         return None
     y = labels[idx].detach().cpu().numpy()
@@ -100,7 +100,7 @@ def _split_auc(logits, labels, idx):
     scores = torch.softmax(logits[idx], dim=-1)[:, 1].detach().cpu().numpy()
     if not np.isfinite(scores).all():
         return None
-    return float(roc_auc_score(y, scores))
+    return float(average_precision_score(y, scores))
 
 
 def train(args=None):
@@ -179,7 +179,7 @@ def train(args=None):
         with torch.no_grad():
             val_logits, _ = model(adj, feat)
         improved = False
-        auc = _split_auc(val_logits, labels, valid_idx) if use_valid else None
+        auc = _split_auprc(val_logits, labels, valid_idx) if use_valid else None
         if use_valid:
             if auc is None:
                 auc = -1.0
@@ -200,7 +200,7 @@ def train(args=None):
         else:
             stop_steps += 1
         print('Epoch {:d} loss: {:.4f} (ce {:.4f} link {:.4f} attn {:.4f} bsl {:.4f}) '
-              'valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+              'valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
                   epoch, loss.item(), losses['class'].item(), losses['link'].item(),
                   losses['attn'].item(), losses['bsl'].item(),
                   float(auc), best_auc if use_valid else best_loss, best_epoch))
@@ -230,10 +230,12 @@ def train(args=None):
         valid_metrics = compute_classification_metrics(
             y_valid, pred[valid_idx].cpu().numpy(), prob[valid_idx].cpu().numpy(), sigmoid=False)
         test_metrics['valid_auc'] = valid_metrics.get('auroc')
+        test_metrics['valid_auprc'] = valid_metrics.get('auprc')
         print('Valid metrics:', valid_metrics)
     else:
         valid_metrics = None
         test_metrics['valid_auc'] = None
+        test_metrics['valid_auprc'] = None
     print('Train metrics:', train_metrics)
     print('Test metrics:', test_metrics)
 
@@ -241,7 +243,7 @@ def train(args=None):
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'BSL'
-        config['best_valid_auc'] = best_auc if use_valid and best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if use_valid and best_auc >= 0 else None
         config['best_train_loss'] = best_loss if not use_valid else None
         config['best_epoch'] = best_epoch
         config['feat_dim'] = int(feat.size(1))

@@ -14,7 +14,7 @@ import time
 import numpy as np
 import torch
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from algorithms.BWGNN.BWGNN import BWGNN
@@ -95,14 +95,14 @@ def class_weight(labels, train_idx, device):
     return torch.tensor([1.0, (n_neg / n_pos).item()], device=device)
 
 
-def _split_auc(logits, labels, idx):
+def _split_auprc(logits, labels, idx):
     if idx is None or idx.numel() == 0:
         return None
     y = labels[idx].detach().cpu().numpy()
     if len(np.unique(y)) < 2:
         return None
     prob = torch.softmax(logits[idx], dim=-1)[:, 1].detach().cpu().numpy()
-    return float(roc_auc_score(y, prob))
+    return float(average_precision_score(y, prob))
 
 
 def train(args=None):
@@ -154,7 +154,7 @@ def train(args=None):
         model.eval()
         with torch.no_grad():
             val_logits = model(features)
-        auc = _split_auc(val_logits, labels, valid_idx)
+        auc = _split_auprc(val_logits, labels, valid_idx)
         if auc is None:
             auc = -1.0
         if auc > best_auc:
@@ -164,7 +164,7 @@ def train(args=None):
             stop_steps = 1
         else:
             stop_steps += 1
-        print('Epoch {:d} loss: {:.4f} valid AUC: {:.4f} (best {:.4f} @ {:d})'.format(
+        print('Epoch {:d} loss: {:.4f} valid AUPRC: {:.4f} (best {:.4f} @ {:d})'.format(
             epoch, loss.item(), float(auc), best_auc, best_epoch))
         if early_stop and stop_steps >= early_stop:
             print('Early stop at epoch {:d}'.format(epoch))
@@ -191,6 +191,7 @@ def train(args=None):
         y_test, pred[test_idx].cpu().numpy(), prob[test_idx].cpu().numpy(), sigmoid=False)
     test_metrics = dict(test_metrics)
     test_metrics['valid_auc'] = valid_metrics.get('auroc')
+    test_metrics['valid_auprc'] = valid_metrics.get('auprc')
     print('Train metrics:', train_metrics)
     print('Valid metrics:', valid_metrics)
     print('Test metrics:', test_metrics)
@@ -199,7 +200,7 @@ def train(args=None):
     if not args.no_save:
         config = {k: v for k, v in vars(args).items()}
         config['model'] = 'BWGNN'
-        config['best_valid_auc'] = best_auc if best_auc >= 0 else None
+        config['best_valid_auprc'] = best_auc if best_auc >= 0 else None
         config['best_epoch'] = best_epoch
         out_dir = run_dir_from_args(args, 'BWGNN')
         save_run_outputs(

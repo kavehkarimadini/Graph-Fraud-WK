@@ -8,7 +8,7 @@ For every (model, dataset) pair of the benchmark:
   does not state fall back to the authors' official code.
 * Otherwise the hyperparameters are selected by ``tune_hparams.py``: a
   validation-only random search (train_ratio 0.4, the five benchmark seeds, mean
-  validation AUROC; the test split is never used for selection). The selected
+  validation AUPRC; the test split is never used for selection). The selected
   values are stored in ``configs/tuned/<Model>/<dataset>.json`` and picked up
   automatically by the CLI entry points and ``utils.notebook_runner``.
 

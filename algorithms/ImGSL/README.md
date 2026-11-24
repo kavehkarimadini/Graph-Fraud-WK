@@ -60,7 +60,7 @@ Ablations as in the paper:
   - `beta 0.5`, `tau- 0.2`, `alpha 2`;
   - batch 256 with `epsilon 0.5` on Amazon, batch 1024 with `epsilon 0` on YelpChi.
 
-  Other datasets use the YelpChi setting, except FDCompCN, which uses batch 256. The paper's `lambda/2 ||theta||^2` term is the optimiser's weight decay. Training validates every epoch, stops after 30 epochs without improvement (T-Social: 50 epochs, patience 10), and restores the best validation-AUROC checkpoint.
+  Other datasets use the YelpChi setting, except FDCompCN, which uses batch 256. The paper's `lambda/2 ||theta||^2` term is the optimiser's weight decay. Training validates every epoch, stops after 30 epochs without improvement (T-Social: 50 epochs, patience 10), and restores the best validation-AUPRC checkpoint.
 - **Label-dependent edits of Eq. 9 are off by default.** They are removing edges between train nodes with different labels, and linking every train fraud centre to its `k_r` most similar train fraud nodes (`k_r` = half the average fraud degree under relation `r`). These edits can only reach training centres, because test labels are unknown. Training neighbourhoods therefore become much more homophilous than test ones, and the classifier learns a pattern that test nodes never show. In smoke runs, `--remove_hetero 1 --oversample_ratio 0.5` gave Amazon test AUROC about 0.89, versus 0.967 without them after 40 epochs, and YelpChi about 0.77 versus 0.895 after 15 epochs. Both flags restore the paper-literal behaviour, and the oversampling ratio can be set to any value.
 - **Features** are standardised on every dataset. PC-GNN-style row normalisation (`--feat_norm row`) did worse on Amazon (test AUROC 0.942 versus 0.967) and much worse on YelpChi.
 - **Choices the paper leaves open:**

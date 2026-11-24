@@ -53,7 +53,7 @@ Labels are never used for training. The 40/20/40 split only defines the evaluati
   - With the binary union of all relations (the default; analogous to the paper's Amazon-all / YelpChi-all), the large-graph setting applies: `K = 7` truncations and the affinity min-max normalised inside the loss (`train_large_graph.py`). The reference script uses `T = 1`; on YelpChi and Amazon the paper's `T = 3` is used instead (Sec. 4.1: `T = 3` for all datasets).
   - T-Finance (in the paper's large-graph table) uses `K = 7`, `T = 3` and the plain loss.
   - With a single relation (`--relation upu`, `--relation rur`, ...), the paper's default applies: `K = 4`, `T = 3`, plain loss (`train.py`).
-  - Elliptic / T-Social / FDCompCN are not in the paper and use `configs/tuned/TAM/<dataset>.json` (selected on validation AUROC); without it they fall back to the settings above.
+  - Elliptic / T-Social / FDCompCN are not in the paper and use `configs/tuned/TAM/<dataset>.json` (selected on validation AUPRC); without it they fall back to the settings above.
 - **Features:**
   - YelpChi and Amazon are row-normalised, as in the reference (`preprocess_features`). If any row sum is not positive, standard scaling is used instead.
   - T-Finance stays raw, as in the reference, and so does T-Social.
